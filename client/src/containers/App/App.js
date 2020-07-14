@@ -42,7 +42,7 @@ class App extends React.Component {
 
         <Route path="/">
           {this.props.isSignedIn ? (
-            <Redirect to="/home" />
+            <Redirect to="/dashboard/home" />
           ) : (
             <Redirect to="/launch" />
           )}
