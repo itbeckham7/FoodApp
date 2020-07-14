@@ -1,0 +1,72 @@
+<!-- latest jquery-->
+<script src="/assets/js/jquery-3.3.1.min.js"></script>
+
+<!-- Bootstrap js-->
+<script src="/assets/js/popper.min.js"></script>
+<script src="/assets/js/bootstrap.js"></script>
+
+<!-- feather icon js-->
+<script src="/assets/js/icons/feather-icon/feather.min.js"></script>
+<script src="/assets/js/icons/feather-icon/feather-icon.js"></script>
+
+<!-- Sidebar jquery-->
+<script src="/assets/js/sidebar-menu.js"></script>
+
+<!--Customizer admin-->
+<script src="/assets/js/admin-customizer.js"></script>
+
+<!--right sidebar js-->
+<script src="/assets/js/chat-menu.js"></script>
+
+<!-- lazyload js-->
+<script src="/assets/js/lazysizes.min.js"></script>
+
+<!--script admin-->
+<script src="/assets/js/admin-script.js"></script>
+
+
+<script>
+    var token = '';
+    var isLogin = '<%= (session.login && session.user.role != 'SuperAdmin' )? '1':'0' %>';
+    $(document).ready(function () {
+        setTimeout(function () {
+            hideNotifications();
+        }, 3000);
+        var hideNotifications = function () {
+            $(".alert").slideUp(600, function () {
+                $(this).remove();
+            })
+        }
+        function checkStatus() {
+            if (isLogin == '1') {
+                $.ajax('/users/status', {
+                    type:'post',
+                    data:{},
+                    success:function (res) {
+                        if (res.status == 'Disabled') {
+                            location.href = '/auth/logout';
+                        }
+                    }
+                })
+            }
+        }
+        setInterval(function () {
+            checkStatus();
+        }, 3000);
+        checkStatus();
+    })
+
+    window.onbeforeunload = confirmExit;
+    function confirmExit() {
+        location.href = '/auth/logout';
+    }
+</script>
+
+<% if( session && session.signinData ){ %>
+    <script>
+        
+        var signinData = '<%- JSON.stringify(session.signinData) %>'
+        signinData = JSON.parse(signinData);
+        token = signinData.token;
+    </script>
+<% } %>

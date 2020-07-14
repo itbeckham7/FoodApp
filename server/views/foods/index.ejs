@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsgrid.css">
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Food List
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Food List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="btn-popup pull-right">
+                                <a href="/foods/add" class="btn btn-primary">Add Food</a>
+                            </div>
+                            <div class="table-responsive">
+                                <div id="basicScenario" class="product-physical"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- Jsgrid js-->
+    <script src="/assets/js/jsgrid/jsgrid.min.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            var db = {
+                loadData: function(filter) {
+                    var foods = null
+                    $.ajax({
+                        url: '/api/foods',
+                        type: 'get',
+                        data: {},
+                        dataType: 'json',
+                        async: false,
+                        headers: {"Authorization": "Bearer " + token},
+                        beforeSend: function (xhr) {
+                            $('.category-info-list .loading-area').removeClass('im-hide');
+                        },
+                        success: function (res) {
+                            if (res.status == 'success') {
+                                foods = res.data;
+                            } else {
+                                foods = null;
+                            }
+                        },
+                        error: function (err) {
+                            console.log('-- err : ', err)
+                            foods = null;
+                        }
+                    });
+
+                    return foods;
+                },
+                insertItem: function(insertingClient) {
+                    
+                },
+                updateItem: function(updatingClient) {
+                    
+                },
+
+                deleteItem: function(deletingClient) {
+                    
+                }
+            };
+            window.db = db;
+
+            $(document).ready(function(){
+
+                $("#basicScenario").jsGrid({
+                    width: "100%",
+                    filtering: true,
+                    editing: false,
+                    inserting: false,
+                    sorting: true,
+                    paging: true,
+                    autoload: true,
+                    pActionSize: 15,
+                    pActionButtonCount: 5,
+                    deleteConfirm: "Do you really want to delete the client?",
+                    controller: db,
+                    fields: [
+                        {
+                            name: "image",
+                            itemTemplate: function(val, item) {
+                                return $("<img>").attr("src", val) .addClass("blur-up lazyloaded") .css({ height: 50, width: 50 });
+                            },
+                            align: "center",
+                            width: 50
+                        },
+                        { 
+                            name: "trans",
+                            title: "Title",
+                            itemTemplate: function(val, item) {
+                                var wrap = $('<div></div>');
+                                for( var i=0; i<val.length; i++ ){
+                                    var titleNode = $(`<div><span>${val[i].abbr}: </span><span>${val[i].title.replace(/<[^>]+>/g,'')}</span></div>`);
+                                    wrap.append(titleNode);
+                                }
+                                return wrap
+                            },
+                            width: 150
+                        },
+                        { 
+                            name: "trans",
+                            title: "Description",
+                            itemTemplate: function(val, item) {
+                                var wrap = $('<div></div>');
+                                for( var i=0; i<val.length; i++ ){
+                                    var descNode = $(`<div><span>${val[i].abbr}: </span><span>${val[i].desc.replace(/<[^>]+>/g,'')}</span></div>`);
+                                    wrap.append(descNode);
+                                }
+                                return wrap
+                            },
+                            width: 150
+                        },
+                        { 
+                            name: "trans",
+                            title: "Price",
+                            itemTemplate: function(val, item) {
+                                var wrap = $('<div></div>');
+                                for( var i=0; i<val.length; i++ ){
+                                    var priceNode = $(`<div><span>${val[i].languageId.currencyKey}: </span><span>${val[i].price}${val[i].languageId.currency}</span></div>`);
+                                    wrap.append(priceNode);
+                                }
+                                return wrap
+                            },
+                            width: 50
+                        },
+                        { 
+                            name: "trans",
+                            title: "Old <br/>Price",
+                            itemTemplate: function(val, item) {
+                                var wrap = $('<div></div>');
+                                for( var i=0; i<val.length; i++ ){
+                                    var oldPriceNode = $(`<div><span>${val[i].languageId.currencyKey}: </span><span>${val[i].oldPrice}${val[i].languageId.currency}</span></div>`);
+                                    wrap.append(oldPriceNode);
+                                }
+                                return wrap
+                            },
+                            width: 50
+                        },
+                        { name: "qty", title: "Qty", width: 50},
+                        { 
+                            name: "categoryId", 
+                            title: "Category", 
+                            itemTemplate: function(val, item) {
+                                if( !val || val.length != 1 ) return '';
+                                var categoryNode = $(`<div><span>${val[0].slug}</span></div>`);
+                                return categoryNode
+                            },
+                            width: 50},
+                        { name: "viewCount", title: "View <br/>Count", width: 50},
+                        { name: "sellCount", title: "Sell <br/>Count", width: 50},
+                        { 
+                            name: '_id', 
+                            title: 'Action', 
+                            itemTemplate: function(val, item) {
+                                var editNode = $(`<a href="/foods/edit/${val}" class="btn btn-warning btn-sm">Edit</a>`).css({padding: '0.25rem 0.5rem', marginRight: '5px'});
+                                var delNode = $(`<a href="/foods/delete/${val}" class="btn btn-danger btn-sm">Delete</a>`).css({padding: '0.25rem 0.5rem'});
+                                var actionNode = $('<div></div>').append(editNode).append(delNode)
+                                return actionNode
+                            },
+                            width: 100 }
+                    ]
+                });
+            })
+            
+        })(jQuery);
+    </script>
+</body>
+</html>

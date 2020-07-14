@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="../assets/css/jsgrid.css">
+    
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Transaction List
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Transaction List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="batchDelete" class="transactions"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- Jsgrid js-->
+    <script src="../assets/js/jsgrid/jsgrid.min.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            var db = {
+                loadData: function(filter) {
+                    return $.grep(this.clients, function(client) {
+                        return (!filter.Name || client.Name.indexOf(filter.Name) > -1)
+                            && (!filter.Action || client.Action === filter.Action)
+                            && (!filter.stock || client.stock.indexOf(filter.stock) > -1)
+                            && (!filter.Attribute || client.Attribute === filter.Attribute)
+                            && (filter.Married === undefined || client.Married === filter.Married);
+                    });
+                },
+                insertItem: function(insertingClient) {
+                    this.clients.push(insertingClient);
+                },
+                updateItem: function(updatingClient) { },
+
+                deleteItem: function(deletingClient) {
+                    var clientIndex = $.inArray(deletingClient, this.clients);
+                    this.clients.splice(clientIndex, 1);
+                }
+            };
+            window.db = db;
+
+            db.clients = [
+                {
+                    "Order Id": "142",
+                    "Transaction Id": "#212145214510",
+                    "Date": "Sep 2,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$175/-",
+                },
+                {
+                    "Order Id": "217",
+                    "Transaction Id": "#784561421721",
+                    "Date": "Dec 10,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Process ",
+                    "Amount": "$845/-",
+                },
+                {
+                    "Order Id": "546",
+                    "Transaction Id": "#476547821142",
+                    "Date": "Feb 15,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Delivered ",
+                    "Amount": "$314/-",
+                },
+                {
+                    "Order Id": "671",
+                    "Transaction Id": "#745384127541",
+                    "Date": "Mar 27,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$217/-",
+                },
+                {
+                    "Order Id": "565",
+                    "Transaction Id": "#96725125102",
+                    "Date": "Sep 1,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Process ",
+                    "Amount": "$542/-",
+                },
+                {
+                    "Order Id": "754",
+                    "Transaction Id": "#547121023651",
+                    "Date": "May 18,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$2141/-",
+                },
+                {
+                    "Order Id": "164",
+                    "Transaction Id": "#876412242215",
+                    "Date": "Jan 14,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Delivered",
+                    "Amount": "$4872/-",
+                },
+                {
+                    "Order Id": "841",
+                    "Transaction Id": "#31534221621",
+                    "Date": "Apr 22,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Process ",
+                    "Amount": "$7841/-",
+                },
+                {
+                    "Order Id": "354",
+                    "Transaction Id": "#78412457421",
+                    "Date": "Mar 26,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$2784/-",
+                },
+                {
+                    "Order Id": "784",
+                    "Transaction Id": "#241524757448",
+                    "Date": "Feb 29,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Delivered ",
+                    "Amount": "$461/-",
+                },
+                {
+                    "Order Id": "142",
+                    "Transaction Id": "#212145214510",
+                    "Date": "Sep 2,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$175/-",
+                },
+                {
+                    "Order Id": "217",
+                    "Transaction Id": "#784561421721",
+                    "Date": "Dec 10,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Process ",
+                    "Amount": "$845/-",
+                },
+                {
+                    "Order Id": "546",
+                    "Transaction Id": "#476547821142",
+                    "Date": "Feb 15,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Delivered ",
+                    "Amount": "$314/-",
+                },
+                {
+                    "Order Id": "671",
+                    "Transaction Id": "#745384127541",
+                    "Date": "Mar 27,19",
+                    "Payment Method": "Paypal",
+                    "Delivery Status": "Pending ",
+                    "Amount": "$217/-",
+                },
+                {
+                    "Order Id": "565",
+                    "Transaction Id": "#96725125102",
+                    "Date": "Sep 1,19",
+                    "Payment Method": "Stripe",
+                    "Delivery Status": "Process ",
+                    "Amount": "$542/-",
+                },
+
+            ];
+            
+            $(document).ready(function(){
+                $("#batchDelete").jsGrid({
+                    width: "100%",
+                    autoload: true,
+                    confirmDeleting: false,
+                    paging: true,
+                    controller: {
+                        loadData: function() {
+                            return db.clients;
+                        }
+                    },
+                    fields: [
+                        { name: "Order Id", type: "text", width: 50 },
+                        { name: "Transaction Id", type: "number", width: 100 },
+                        { name: "Date", type: "text", width: 100 },
+                        { name: "Payment Method", type: "text", width: 50 },
+                        { name: "Delivery Status", type: "text", width: 100 },
+                        { name: "Amount", type: "text", width: 100 }
+                    ]
+                });
+            })
+            
+        })(jQuery);
+    </script>
+</body>
+</html>

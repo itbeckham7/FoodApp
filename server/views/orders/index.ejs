@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- Datatables css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/datatables.css">
+    
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Order List
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Order List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body order-datatable">
+                            <table class="display" id="basic-1">
+                                <thead>
+                                <tr>
+                                    <th>Order Id</th>
+                                    <th>Food</th>
+                                    <th>Payment Status</th>
+                                    <th>Payment Method</th>
+                                    <th>Order Status</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>#51240</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/25.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/13.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/16.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-secondary">Cash On Delivery</span></td>
+                                    <td>Paypal</td>
+                                    <td><span class="badge badge-success">Delivered</span></td>
+                                    <td>Dec 10,18</td>
+                                    <td>$54671</td>
+                                </tr>
+                                <tr>
+                                    <td>#51241</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/12.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/3.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Master Card</td>
+                                    <td><span class="badge badge-primary">Shipped</span></td>
+                                    <td>Feb 15,18</td>
+                                    <td>$2136</td>
+                                </tr>
+                                <tr>
+                                    <td>#51242</td>
+                                    <td><img src="/assets/images/electronics/product/14.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded"></td>
+                                    <td><span class="badge badge-warning">Awaiting Authentication</span></td>
+                                    <td>Debit Card</td>
+                                    <td><span class="badge badge-warning">Processing</span></td>
+                                    <td>Mar 27,18</td>
+                                    <td>$8791</td>
+                                </tr>
+                                <tr>
+                                    <td>#51243</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/6.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/furniture/8.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-danger">Payment Failed</span></td>
+                                    <td>Master Card</td>
+                                    <td><span class="badge badge-danger">Cancelled</span></td>
+                                    <td>Sep 1,18</td>
+                                    <td>$139</td>
+                                </tr>
+                                <tr>
+                                    <td>#51244</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/jewellery/pro/18.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/fashion/pro/06.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Paypal</td>
+                                    <td><span class="badge badge-primary">Shipped</span></td>
+                                    <td>May 18,18</td>
+                                    <td>$4678</td>
+                                </tr>
+                                <tr>
+                                    <td>#51245</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/19.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/20.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/23.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Visa</td>
+                                    <td><span class="badge badge-success">Delivered</span></td>
+                                    <td>Jan 14,18</td>
+                                    <td>$6791</td>
+                                </tr>
+                                <tr>
+                                    <td>#51246</td>
+                                    <td><img src="/assets/images/electronics/product/24.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded"></td>
+                                    <td><span class="badge badge-warning">Awaiting Authentication</span></td>
+                                    <td>Credit Card</td>
+                                    <td><span class="badge badge-warning">Processing</span></td>
+                                    <td>Apr 22,18</td>
+                                    <td>$976</td>
+                                </tr>
+                                <tr>
+                                    <td>#51247</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/21.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/8.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-danger">Payment Failed</span></td>
+                                    <td>Master Card</td>
+                                    <td><span class="badge badge-danger">Cancelled</span></td>
+                                    <td>Mar 26,18</td>
+                                    <td>$3212</td>
+                                </tr>
+                                <tr>
+                                    <td>#51248</td>
+                                    <td><img src="/assets/images/electronics/product/18.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded"></td>
+                                    <td><span class="badge badge-secondary">Cash On Delivery</span></td>
+                                    <td>Paypal</td>
+                                    <td><span class="badge badge-primary">Shipped</span></td>
+                                    <td>Feb 29,18</td>
+                                    <td>$6719</td>
+                                </tr>
+                                <tr>
+                                    <td>#51249</td>
+                                    <td><img src="/assets/images/electronics/product/17.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded"></td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Master Card</td>
+                                    <td><span class="badge badge-secondary">Processing</span></td>
+                                    <td>Sep 2,18</td>
+                                    <td>$9765</td>
+                                </tr>
+                                <tr>
+                                    <td>#51250</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/7.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/4.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Credit Card</td>
+                                    <td><span class="badge badge-primary">Shipped</span></td>
+                                    <td>Dec 10,18</td>
+                                    <td>$9706</td>
+                                </tr>
+                                <tr>
+                                    <td>#51251</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/22.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/20.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-secondary">Cash On Delivered</span></td>
+                                    <td>Paypal</td>
+                                    <td><span class="badge badge-primary">Shipped</span></td>
+                                    <td>Feb 15,18</td>
+                                    <td>$1500</td>
+                                </tr>
+                                <tr>
+                                    <td>#51252</td>
+                                    <td>
+                                        <img src="/assets/images/electronics/product/3.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                    </td>
+                                    <td><span class="badge badge-danger">Payment Failed</span></td>
+                                    <td>Credit Card</td>
+                                    <td><span class="badge badge-danger">Cancelled</span></td>
+                                    <td>Mar 27,18</td>
+                                    <td>$18.97</td>
+                                </tr>
+                                <tr>
+                                    <td>#51253</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <img src="/assets/images/electronics/product/11.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/2.jpg" alt="" class="img-fluid img-30 mr-2 blur-up lazyloaded">
+                                            <img src="/assets/images/electronics/product/9.jpg" alt="" class="img-fluid img-30 blur-up lazyloaded">
+                                        </div>
+                                    </td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>Visa</td>
+                                    <td><span class="badge badge-success">Delivered</span></td>
+                                    <td>Mar 30,18</td>
+                                    <td>$3478</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- Datatable js-->
+    <script src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            $(document).ready(function(){
+                $('#basic-1').DataTable();
+            })
+            
+        })(jQuery);
+    </script>
+</body>
+</html>

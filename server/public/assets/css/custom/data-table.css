@@ -1,0 +1,15 @@
+.datatable-action-btn{
+  padding: 0.25rem 0.5rem
+}
+.status-mark{
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+}
+.status-mark.enabled{
+  background-color: #5cb85c;
+}
+.status-mark.disabled{
+  background-color: #e26767;
+}

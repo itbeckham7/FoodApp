@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- Datepicker css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/date-picker.css">
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Add Discount
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Add Discount</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="card tab2-card">
+                <div class="card-header">
+                    <h5>Discount Details</h5>
+                </div>
+                <div class="card-body">
+                    <% if(error && error.length > 0){ %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                    <% } else if(success && success.length > 0 ){ %>
+                        <div class="alert alert-success">
+                            <%= success %>
+                        </div>
+                    <% } %>
+                    <div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
+                        <form class="needs-validation" novalidate=""
+                            method="post" action="/discounts/<%= (pg_mode=='add')?'add':'update' %><%= (pg_mode=='edit')?'/' + discount_info._id:'' %>">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group row">
+                                        <label for="discount-title" class="col-xl-3 col-md-4"><span>*</span> Discount Title</label>
+                                        <input class="form-control col-md-7" id="discount-title" type="text" required
+                                            name="discount-title" value="<%= (pg_mode=='edit')?discount_info.title:'' %>">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="discount-code" class="col-xl-3 col-md-4"><span>*</span>Discount Code</label>
+                                        <input class="form-control col-md-7" id="discount-code" type="text" required
+                                            name="discount-code" value="<%= (pg_mode=='edit')?discount_info.code:'' %>">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-md-4">Start Date</label>
+                                        <input class="discount-datepicker form-control digits col-md-7" type="text" id="discount-fromDate" 
+                                            name="discount-fromDate" value="<%= (pg_mode=='edit')?discount_info.fromDate:'' %>">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-md-4">End Date</label>
+                                        <input class="discount-datepicker form-control digits col-md-7" type="text" id="discount-toDate" 
+                                            name="discount-toDate" value="<%= (pg_mode=='edit')?discount_info.toDate:'' %>">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-md-4">Quantity</label>
+                                        <input class="form-control col-md-7" type="number" id="discount-amount" required
+                                            name="discount-amount" value="<%= (pg_mode=='edit')?discount_info.amount:'' %>">
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-md-4">Discount Type</label>
+                                        <select class="custom-select col-md-7" required id="discount-type" name="discount-type">
+                                            <option value="0" <%= (pg_mode=='edit' && discount_info.type == 0)?'selected':'' %>>Percent</option>
+                                            <option value="1" <%= (pg_mode=='edit' && discount_info.type == 1)?'selected':'' %>>Fixed</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-md-4">Status</label>
+                                        <div class="checkbox checkbox-primary col-md-7">
+                                            <input id="discount-status" type="checkbox" name="discount-status" 
+                                                <%= (pg_mode=='edit' && discount_info.status==true)?'checked':'' %>>
+                                            <label for="discount-status">Enable the Coupon</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!--Datepicker jquery-->
+    <script src="/assets/js/datepicker/datepicker.js"></script>
+    <script src="/assets/js/datepicker/datepicker.en.js"></script>
+    <script src="/assets/js/datepicker/datepicker.custom.js"></script>
+
+    <!--right sidebar js-->
+    <script src="/assets/js/chat-menu.js"></script>
+
+    <!-- form validation js-->
+    <script src="/assets/js/dashboard/form-validation-custom.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            $(document).ready(function(){
+                $('.discount-datepicker').datepicker({
+                    language: 'en',
+                    dateFormat: 'yyyy-mm-dd'
+                }) 
+            })
+
+            $('#check-test').click(function(){
+                alert($('#discount-status').val())
+            })
+        })(jQuery);
+    </script>
+</body>
+</html>
+
+
+

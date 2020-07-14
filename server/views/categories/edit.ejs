@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsgrid.css">
+
+    <style>
+        .was-validated .form-control:invalid ~ .invalid-feedback, 
+        .was-validated .form-control:invalid ~ .invalid-tooltip, 
+        .form-control.is-invalid ~ .invalid-feedback, 
+        .form-control.is-invalid ~ .invalid-tooltip, 
+        .was-validated .custom-select:invalid ~ .invalid-feedback, 
+        .was-validated .custom-select:invalid ~ .invalid-tooltip, 
+        .custom-select.is-invalid ~ .invalid-feedback, 
+        .custom-select.is-invalid ~ .invalid-tooltip{
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3><%= (pg_mode=='add')?'Add New':'Edit' %> Category
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active"><%= (pg_mode=='add')?'Add New':'Edit' %> Category</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <% if(error && error.length > 0){ %>
+                                <div class="alert alert-danger">
+                                    <%= error %>
+                                </div>
+                            <% } else if(success && success.length > 0 ){ %>
+                                <div class="alert alert-success">
+                                    <%= success %>
+                                </div>
+                            <% } %>
+                            <form class="needs-validation add-product-form" novalidate=""
+                                method="post" action="/categories/<%= (pg_mode=='add')?'add':'update' %><%= (pg_mode=='edit')?'/' + category_info._id:'' %>" 
+                                enctype="multipart/form-data">
+                                <div class="row product-adding">
+                                    <div class="col-xl-5">
+                                        <div class="add-product">
+                                            <div class="row">
+                                                <div class="col-xl-9 xl-50 col-sm-6 col-9">
+                                                    <img src="<%= (pg_mode=='edit') ? category_info.image : '/assets/images/pro3/1.jpg' %>" alt="" class="img-fluid image_zoom_1 blur-up lazyloaded" id="category-image-preview">
+                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Image.</div>
+                                                </div>
+                                                <div class="col-xl-3 xl-50 col-sm-6 col-3">
+                                                    <ul class="file-upload-product">
+                                                        <li><div class="box-input-file">
+                                                            <input class="upload form-control" type="file" id="category-image" name="category-image" <%= (pg_mode=='edit') ? '' : 'required' %>>
+                                                            <i class="fa fa-plus"></i>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-7">
+                                        <div class="form">
+                                            <% for(var i = 0; i<languages.length; i++) {  
+                                                var name = ''
+                                                if( pg_mode=='edit' ){
+                                                    var trans = category_info.trans;                                                    
+                                                    trans = trans.filter(function( t ){
+                                                        return t.abbr == languages[i].abbr
+                                                    })
+                                                    
+                                                    name = trans[0].name;
+                                                }
+                                            %>
+                                                <div class="form-group mb-3 row">
+                                                    <label for="category-name-<%= languages[i].abbr%>" class="col-xl-3 col-sm-4 mb-0">Name(<%= languages[i].abbr%>) :</label>
+                                                    <input class="form-control col-xl-8 col-sm-7" id="category-name-<%= languages[i].abbr%>" type="text" required 
+                                                        name="category-name-<%= languages[i].abbr%>" value="<%= name %>">
+                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Name.</div>
+                                                </div>
+                                            <% } %>
+                                            
+                                            <div class="form-group mb-3 row">
+                                                <label for="category-slug" class="col-xl-3 col-sm-4 mb-0">Slug :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="category-slug" type="text" required
+                                                    name="category-slug" value="<%= (pg_mode=='edit')?category_info.slug:'' %>">
+                                                <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input category slug.</div>
+                                            </div>
+                                        </div>
+                                        <div class="form">
+                                            <div class="form-group row">
+                                                <label for="category-parentId" class="col-xl-3 col-sm-4 mb-0">Parent Category :</label>
+                                                <select class="form-control digits col-xl-8 col-sm-7" id="category-parentId" name="category-parentId">
+                                                    <option value=''>None</option>
+                                                    <% for(var i = 0; i<categories.length; i++) {  
+                                                        var trans = categories[i].trans;
+                                                        trans = trans.filter(function(t){
+                                                            return t.abbr == 'EN'
+                                                        })
+                                                        var catName = trans[0].name;
+                                                    %>
+                                                        <option <%= (pg_mode=='edit' && category_info.parentId && category_info.parentId.length>0 && category_info.parentId[0]+'' == categories[i]._id+'')?'selected':'' %> value="<%= categories[i]._id %>"><%= catName %></option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-xl-3 col-sm-4 mb-0">Position :</label>
+                                                <fieldset class="qty-box col-xl-9 col-xl-8 col-sm-7 pl-0">
+                                                    <div class="input-group">
+                                                        <input class="touchspin" type="text" id="category-position" 
+                                                            name="category-position" value="<%= (pg_mode=='edit') ? category_info.position : 0 %>">
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                        <div class="offset-xl-3 offset-sm-4">
+                                            <button type="submit" class="btn btn-primary"><%= (pg_mode=='edit')? 'Edit' : 'Add' %></button>
+                                            <a class="btn btn-light" href="/categories">Discard</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- touchspin js-->
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+
+    <!-- form validation js-->
+    <script src="/assets/js/dashboard/form-validation-custom.js"></script>
+
+    <!-- Zoom js-->
+    <script src="/assets/js/jquery.elevatezoom.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            $(document).ready(function(){
+                $('#category-image-preview').elevateZoom({
+                    zoomType: "inner",
+                    cursor: "crosshair"
+                });
+            })
+
+            $('#category-image').change(function(){
+                var input = this;
+                var url = $(this).val();
+                var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+                if (input.files && input.files[0]&& (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) 
+                {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#category-image-preview').attr('src', e.target.result);
+                        $('#category-image-preview').elevateZoom({
+                            zoomType: "inner",
+                            cursor: "crosshair"
+                        });
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } 
+            });
+        })(jQuery);
+    </script>
+</body>
+</html>
+
+
+

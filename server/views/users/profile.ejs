@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsgrid.css">
+
+</head>
+
+<body>
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Profile
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Profile</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <% if(error && error.length > 0){ %>
+                                <div class="alert alert-danger">
+                                    <%= error %>
+                                </div>
+                            <% } else if(success && success.length > 0 ){ %>
+                                <div class="alert alert-success">
+                                    <%= success %>
+                                </div>
+                            <% } %>
+                            <form class="needs-validation add-product-form" novalidate=""
+                                method="post" action="/users/<%= (pg_mode=='add')?'add':'profile' %><%= (pg_mode=='edit')?'/' + user_info._id:'' %>" 
+                                enctype="multipart/form-data">
+                                <div class="row product-adding">
+                                    <div class="col-xl-5">
+                                        <div class="add-product">
+                                            <div class="row">
+                                                <div class="col-xl-9 xl-50 col-sm-6 col-9">
+                                                    <img src="<%= (pg_mode=='edit' && user_info.picture && user_info.picture != '') ? user_info.picture : '/assets/images/pro3/1.jpg' %>" alt="" class="img-fluid image_zoom_1 blur-up lazyloaded" id="user-picture-preview">
+                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input your photo.</div>
+                                                </div>
+                                                <div class="col-xl-3 xl-50 col-sm-6 col-3">
+                                                    <ul class="file-upload-product">
+                                                        <li><div class="box-input-file">
+                                                            <input class="upload form-control" type="file" id="user-picture" name="user-picture" <%= (pg_mode=='edit') ? '' : 'required' %>>
+                                                            <i class="fa fa-plus"></i>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-7">
+                                        <div class="form">
+                                            <div class="form-group mb-3 row">
+                                                <label for="user-firstName" class="col-xl-3 col-sm-4 mb-0">First Name :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="user-firstName" type="text"
+                                                    name="user-firstName" value="<%= (pg_mode=='edit')?user_info.firstName:'' %>">
+                                            </div>
+                                            <div class="form-group mb-3 row">
+                                                <label for="user-lastName" class="col-xl-3 col-sm-4 mb-0">Last Name :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="user-lastName" type="text"
+                                                    name="user-lastName" value="<%= (pg_mode=='edit')?user_info.lastName:'' %>">
+                                            </div>
+                                            <div class="form-group mb-3 row">
+                                                <label for="user-username" class="col-xl-3 col-sm-4 mb-0">User Name :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="user-username" type="text"
+                                                    name="user-username" value="<%= (pg_mode=='edit')?user_info.username:'' %>">
+                                            </div>
+                                            <div class="form-group mb-3 row">
+                                                <label for="user-email" class="col-xl-3 col-sm-4 mb-0">Email :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="user-email" type="email" required
+                                                    name="user-email" value="<%= (pg_mode=='edit')?user_info.email:'' %>">
+                                            </div>
+                                            <div class="form-group mb-3 row">
+                                                <label for="user-phone" class="col-xl-3 col-sm-4 mb-0">Phone Number :</label>
+                                                <input class="form-control col-xl-8 col-sm-7" id="user-phone" type="text"
+                                                    name="user-phone" value="<%= (pg_mode=='edit')?user_info.phone:'' %>">
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-xl-3 col-md-4 mb-0">User Role</label>
+                                                <select class="custom-select col-md-7" required id="user-role" name="user-role" disabled>
+                                                    <option value="Admin" <%= (pg_mode=='edit' && user_info.role == 'SuperAdmin')?'selected':'' %>>Super Admin</option>
+                                                    <option value="Admin" <%= (pg_mode=='edit' && user_info.role == 'Admin')?'selected':'' %>>Admin</option>
+                                                    <option value="User" <%= (pg_mode=='edit' && user_info.role == 'User')?'selected':'' %>>User</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group mb-3 row">
+                                                <label class="col-xl-3 col-md-4 mb-0">Status</label>
+                                                <div class="checkbox checkbox-primary col-md-7">
+                                                    <input id="user-status" type="checkbox" name="user-status" 
+                                                        <%= (pg_mode=='edit' && user_info.status==true)?'checked':'' %>>
+                                                    <label for="user-status" style="font-weight: normal;">Enable</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="offset-xl-3 offset-sm-4">
+                                            <button type="submit" class="btn btn-primary"><%= (pg_mode=='edit')? 'Edit' : 'Add' %></button>
+                                            <a class="btn btn-light" href="/users">Discard</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- touchspin js-->
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+
+    <!-- form validation js-->
+    <script src="/assets/js/dashboard/form-validation-custom.js"></script>
+
+    <!-- Zoom js-->
+    <script src="/assets/js/jquery.elevatezoom.js"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+
+            $(document).ready(function(){
+                $('#user-picture-preview').elevateZoom({
+                    zoomType: "inner",
+                    cursor: "crosshair"
+                });
+            })
+
+            $('#user-picture').change(function(){
+                var input = this;
+                var url = $(this).val();
+                var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+                if (input.files && input.files[0]&& (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#user-picture-preview').attr('src', e.target.result);
+                        $('#user-picture-preview').elevateZoom({
+                            zoomType: "inner",
+                            cursor: "crosshair"
+                        });
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } 
+            });
+        })(jQuery);
+    </script>
+</body>
+</html>
+
+
+
