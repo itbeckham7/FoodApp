@@ -35,6 +35,7 @@ const styles = (theme) => ({
     '&:hover,&:focus': {
       backgroundColor: 'rgba(255, 255, 255, 0.08)',
     },
+    padding: '10px 20px'
   },
   itemCategory: {
     backgroundColor: '#000',
@@ -56,8 +57,9 @@ const styles = (theme) => ({
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   itemPrimary: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: theme.typography.fontWeightMedium,
+    color: '#fff'
   },
   itemIcon: {
     minWidth: 'auto',
@@ -146,7 +148,7 @@ function Navigator(props) {
                     }}
                   >
                     <ListItemIcon className={classes.itemIcon}>
-                      <route.icon />
+                      <img src={route.icon} />
                     </ListItemIcon>
                     <ListItemText
                       classes={{

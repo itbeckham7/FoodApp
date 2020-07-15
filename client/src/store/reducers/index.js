@@ -4,6 +4,7 @@ import { connectRouter } from 'connected-react-router';
 import authReducer from './auth.reducer';
 import categoryReducer from './category.reducer';
 import foodReducer from './food.reducer';
+import bagReducer from './bag.reducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -12,6 +13,7 @@ const createRootReducer = (history) =>
     auth: authReducer,
     category: categoryReducer,
     food: foodReducer,
+    bag: bagReducer,
   });
 
 export default createRootReducer;

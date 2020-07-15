@@ -12,7 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { push } from 'connected-react-router';
@@ -21,6 +21,7 @@ import {
   Bell,
   Logout,
   CartPlus,
+  ChevronLeft,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { connect } from 'react-redux';
@@ -66,12 +67,11 @@ const styles = (theme) => ({
   },
 });
 
-class Header extends React.Component {
+class HistoryHeader extends React.Component {
   state = { anchorEl: null };
 
   constructor() {
     super();
-    this.onGotoBag = this.onGotoBag.bind(this);
   }
 
   componentWillMount() {
@@ -94,8 +94,8 @@ class Header extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  onGotoBag = () => {
-    window.location = '/dashboard/bag';
+  onNavigatePrev = () => {
+    window.history.back();
   };
 
   getBrand = () => {
@@ -149,6 +149,16 @@ class Header extends React.Component {
               alignItems="center"
               justify="space-between"
             >
+              <Grid style={{ flex: 1}}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={this.onNavigatePrev}
+                  className={classes.menuButton}
+                >
+                  <ChevronLeft />
+                </IconButton>
+              </Grid>
               <Hidden lgUp>
                 <Grid item style={{ flex: 1 }}>
                   <IconButton
@@ -167,28 +177,8 @@ class Header extends React.Component {
                   variant="h5"
                   className={classes.logoText}
                 >
-                  {this.getBrand()}
+                  {this.props.titleElem}
                 </Typography>
-              </Grid>
-              <Grid style={{ flex: 1, textAlign: 'right' }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={this.onGotoBag}
-                  className={classes.menuButton}
-                >
-                  <Badge badgeContent={bags.length} color="primary">
-                    <div
-                      style={{
-                        width: '1em',
-                        height: '1em',
-                        backgroundImage: 'url(/images/BASKET.png)',
-                        backgroundPosition: 'center center',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                    ></div>
-                  </Badge>
-                </IconButton>
               </Grid>
             </Grid>
           </Toolbar>
@@ -198,7 +188,7 @@ class Header extends React.Component {
   }
 }
 
-Header.propTypes = {
+HistoryHeader.propTypes = {
   classes: PropTypes.object.isRequired,
   onDrawerToggle: PropTypes.func.isRequired,
   routes: PropTypes.arrayOf(PropTypes.object),
@@ -217,4 +207,4 @@ const mapStateToProps = (state) => {
 export default compose(
   connect(mapStateToProps, { signOut, push, getBags }),
   withStyles(styles)
-)(Header);
+)(HistoryHeader);

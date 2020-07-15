@@ -23,12 +23,14 @@ import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getFood } from '../../store/actions';
+import { getFood, addToBag } from '../../store/actions';
 import AddIcon from '@material-ui/icons/Add';
 import {
   getFoodFood,
   getFoodProcessing,
   getFoodError,
+  getCurrentUser,
+  getBagBags,
 } from '../../store/selectors';
 import { textEllipsis } from '../../utils/textUtils';
 import {
@@ -75,7 +77,7 @@ const styles = (theme) => ({
   },
   whiteTitle: {
     color: '#fff',
-    fontWeight: '400',
+    fontWeight: 'normal',
     padding: theme.spacing(0, 3),
     fontSize: '1.3rem',
     lineHeight: '1.5rem',
@@ -112,7 +114,7 @@ const styles = (theme) => ({
   },
   foodTitle: {
     color: '#000',
-    fontWeight: '400',
+    fontWeight: '300',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -120,14 +122,14 @@ const styles = (theme) => ({
   },
   foodDesc: {
     color: '#000',
-    fontWeight: '400',
+    fontWeight: '300',
     textOverflow: 'ellipsis',
     fontSize: '0.7rem',
   },
   foodPrice: {
     display: 'inline-block',
     color: '#fff',
-    fontWeight: '400',
+    fontWeight: '300',
     textAlign: 'right',
     padding: theme.spacing(0.3, 1.5),
     marginLeft: theme.spacing(1.5),
@@ -146,42 +148,42 @@ const styles = (theme) => ({
   foodRatingText: {
     display: 'inline-block',
     color: '#ffb400',
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '0.8rem',
     padding: theme.spacing(0, 1),
     verticalAlign: 'text-top',
   },
   tabText: {
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '0.7rem',
   },
   foodDetailTitle: {
     padding: theme.spacing(4, 0, 1),
-    fontWeight: '400',
+    fontWeight: 'normal',
     fontSize: '1.1rem',
     textAlign: 'center',
   },
   foodDetailDesc: {
     padding: theme.spacing(0, 0),
-    fontWeight: '400',
-    fontSize: '0.8rem',
+    fontWeight: '300',
+    fontSize: '0.85rem',
     textAlign: 'left',
   },
   foodDetailPrice: {
     padding: theme.spacing(0, 0),
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '1rem',
     textAlign: 'right',
   },
   foodBookTitle: {
     padding: theme.spacing(1, 0),
-    fontWeight: '400',
+    fontWeight: 'normal',
     fontSize: '1.1rem',
     textAlign: 'left',
   },
   inputLabel: {
-    fontSize: '0.8rem',
-    fontWeight: '400',
+    fontSize: '0.75rem',
+    fontWeight: '300',
   },
   inputLabelMargin: {
     display: 'inline-block',
@@ -214,6 +216,7 @@ const styles = (theme) => ({
     marginLeft: '10px',
     display: 'inline-block',
     fontSize: '1rem',
+    color: '#666'
   },
   actionSec: {
     marginTop: '40px',
@@ -238,14 +241,14 @@ const styles = (theme) => ({
   },
   foodCommentSubject: {
     padding: theme.spacing(0, 0),
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '0.8rem',
     lineHeight: '0.8rem',
     textAlign: 'left',
   },
   foodCommentDesc: {
     padding: theme.spacing(0.25, 0, 0),
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '0.8rem',
     lineHeight: '1rem',
     textAlign: 'left',
@@ -256,7 +259,7 @@ const styles = (theme) => ({
     fontSize: '0.8rem',
     lineHeight: '0.9rem',
     color: '#aaa',
-    fontWeight: '400',
+    fontWeight: '300',
     textAlign: 'right',
   },
   foodCommentUser: {
@@ -264,7 +267,7 @@ const styles = (theme) => ({
     fontSize: '0.75rem',
     lineHeight: '0.75rem',
     color: '#aaa',
-    fontWeight: '400',
+    fontWeight: '300',
     textAlign: 'right',
   },
   foodCommentAdd: {
@@ -273,21 +276,21 @@ const styles = (theme) => ({
     bottom: '70px',
     backgroundColor: '#E5293E',
     '&:hover': {
-      backgroundColor: '#E5293E'
-   }
+      backgroundColor: '#E5293E',
+    },
   },
   foodCommentAddHover: {
     position: 'absolute',
     right: '20px',
-    bottom: '70px'
-  }
+    bottom: '70px',
+  },
 });
 
 class Food extends React.Component {
   state = {
-    food: null,
     tabValue: 'book',
     qty: 0,
+    note: ''
   };
 
   constructor() {
@@ -295,6 +298,8 @@ class Food extends React.Component {
     this.onTabChange = this.onTabChange.bind(this);
     this.onPlusQty = this.onPlusQty.bind(this);
     this.onMinusQty = this.onMinusQty.bind(this);
+    this.onAddToBag = this.onAddToBag.bind(this);
+    this.onNoteChange = this.onNoteChange.bind(this);
   }
 
   componentWillMount() {
@@ -302,25 +307,31 @@ class Food extends React.Component {
     if (this.props.match.params && this.props.match.params.foodId) {
       this.props.getFood(this.props.match.params.foodId).then(() => {
         if (this.props.errorMessage) {
-          throw new SubmissionError({ _error: this.props.errorMessage });
+          console.log('-- error : ', this.props.errorMessage);
+          return;
         }
-        console.log('-- food : ', this.props.food);
 
+        var bags = this.props.bags;
         var food = this.props.food;
-        if (food) {
-          this.setState({ food: food });
+        console.log('-- bags & food : ', bags, food);
+
+        for (var i = 0; i < bags.length; i++) {
+          if (bags[i].foodId == food._id) {
+            this.setState({ qty: bags[i].qty });
+          }
         }
       });
     }
   }
 
   onTabChange(event, newValue) {
-    console.log('-- newValue : ', newValue);
     this.setState({ tabValue: newValue });
   }
 
   onPlusQty() {
-    var { qty, food } = this.state;
+    const { food } = this.props;
+    var { qty } = this.state;
+
     if (qty > food.qty) return;
     qty++;
     this.setState({
@@ -329,13 +340,35 @@ class Food extends React.Component {
   }
 
   onMinusQty() {
-    var { qty, food } = this.state;
+    const { food } = this.props;
+    var { qty } = this.state;
+
     if (qty == 0) return;
     qty--;
     this.setState({
       qty: qty,
     });
   }
+
+  onNoteChange(event) {
+    this.setState({note: event.target.value});
+  };
+
+  onAddToBag() {
+    console.log('-- onAddToBag : start');
+    const { food, me, bags } = this.props;
+    const { qty, note } = this.state;
+
+    this.props.addToBag(me._id, food._id, qty, note).then(() => {
+      if (this.props.errorMessage) {
+        throw new SubmissionError({ _error: this.props.errorMessage });
+      }
+
+      console.log('-- bags : ', this.props.bags);
+    });
+  }
+
+  onCheckOut() {}
 
   renderBook() {
     const { food, classes } = this.props;
@@ -460,7 +493,7 @@ class Food extends React.Component {
           <span className={classes.totalPriceText}>Total</span>
           <span className={classes.totalPriceText}>
             {food
-              ? food.trans[0].languageId.currency + food.trans[0].price * qty
+              ? food.trans[0].languageId.currency + (food.trans[0].price * qty)
               : ''}
           </span>
         </div>
@@ -479,6 +512,7 @@ class Food extends React.Component {
             fullWidth
             variant="outlined"
             style={{ height: '100px' }}
+            onChange={this.onNoteChange}
           />
         </div>
 
@@ -488,6 +522,7 @@ class Food extends React.Component {
             className={classes.roundBtnOutline}
             variant="outlined"
             fullWidth
+            onClick={this.onAddToBag}
           >
             Add to bag
           </Button>
@@ -497,8 +532,11 @@ class Food extends React.Component {
             color="primary"
             fullWidth
             className={classes.roundBtn}
+            onClick={()=>{
+              window.location = '/bag/checkout';
+            }}
           >
-            Checkout
+            Check out
           </Button>
         </div>
       </div>
@@ -641,7 +679,11 @@ class Food extends React.Component {
             </Typography>
           </Grid>
         </Grid>
-        <Fab color="primary" aria-label="add" className={classes.foodCommentAdd}>
+        <Fab
+          color="primary"
+          aria-label="add"
+          className={classes.foodCommentAdd}
+        >
           <AddIcon />
         </Fab>
       </div>
@@ -757,10 +799,12 @@ const maptStateToProps = (state) => {
     isProcessing: getFoodProcessing(state),
     errorMessage: getFoodError(state),
     food: getFoodFood(state),
+    bags: getBagBags(state),
+    me: getCurrentUser(state),
   };
 };
 
 export default compose(
-  connect(maptStateToProps, { getFood }),
+  connect(maptStateToProps, { getFood, addToBag }),
   withStyles(styles)
 )(Food);

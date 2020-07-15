@@ -86,7 +86,7 @@ const styles = (theme) => ({
     margin: '0 20% 10px',
     padding: '12px 0',
     fontSize: '0.8rem',
-    fontWeight: 'normal',
+    fontWeight: '300',
     textTransform: 'capitalize',
     backgroundColor: '#E5293E',
   },

@@ -12,6 +12,9 @@ import RequestVerificationEmail from '../Auth/RequestVerificationEmail';
 import RequestPasswordReset from '../Auth/RequestPasswordReset';
 import ResetPassword from '../Auth/ResetPassword';
 import Dashboard from '../../layouts/Dashboard';
+import Bag from '../../layouts/Bag';  
+import CheckOut from '../../layouts/CheckOut';   
+import CommonPage from '../../layouts/CommonPage';   
 import { getIsSignedIn } from '../../store/selectors';
 
 class App extends React.Component {
@@ -39,6 +42,9 @@ class App extends React.Component {
           component={ResetPassword}
         />
         <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/bag" component={Bag} />
+        <ProtectedRoute path="/checkout" component={CheckOut} />
+        <ProtectedRoute path="/common" component={CommonPage} />
 
         <Route path="/">
           {this.props.isSignedIn ? (

@@ -64,7 +64,7 @@ const styles = (theme) => ({
     margin: theme.spacing(3, 0),
     padding: theme.spacing(1.5, 0),
     fontSize: '0.9rem',
-    fontWeight: 'normal',
+    fontWeight: '300',
     textTransform: 'uppersize',
     backgroundColor: '#E5293E',
   },

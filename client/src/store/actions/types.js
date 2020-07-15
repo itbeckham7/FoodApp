@@ -55,3 +55,27 @@ export const GET_FOODS_FAIL = '[Food] Get Foods Fail';
 export const GET_FOOD = '[Food] Get Food';
 export const GET_FOOD_SUCCESS = '[Food] Get Food Success';
 export const GET_FOOD_FAIL = '[Food] Get Food Fail';
+
+export const GET_BAGS = '[Bag] Get Bags';
+export const GET_BAGS_SUCCESS = '[Bag] Get Bags Success';
+export const GET_BAGS_FAIL = '[Bag] Get Bags Fail';
+
+export const GET_BAG = '[Bag] Get Bag';
+export const GET_BAG_SUCCESS = '[Bag] Get Bag Success';
+export const GET_BAG_FAIL = '[Bag] Get Bag Fail';
+
+export const ADD_TO_BAG = '[Bag] Add To Bag';
+export const ADD_TO_BAG_SUCCESS = '[Bag] Add To Bag Success';
+export const ADD_TO_BAG_FAIL = '[Bag] Add To Bag Fail';
+
+export const DELETE_BAG = '[Bag] Delete Bag';
+export const DELETE_BAG_SUCCESS = '[Bag] Delete Bag Success';
+export const DELETE_BAG_FAIL = '[Bag] Delete Bag Fail';
+
+export const SET_CHECKOUT_BAGS = '[Bag] Set Checkout Bag';
+export const SET_CHECKOUT_BAGS_SUCCESS = '[Bag] Set Checkout Success';
+export const SET_CHECKOUT_BAGS_FAIL = '[Bag] Set Checkout Fail';
+
+export const GET_CHECKOUT_BAGS = '[Bag] Get Checkout Bag';
+export const GET_CHECKOUT_BAGS_SUCCESS = '[Bag] Get Checkout Success';
+export const GET_CHECKOUT_BAGS_FAIL = '[Bag] Get Checkout Fail';

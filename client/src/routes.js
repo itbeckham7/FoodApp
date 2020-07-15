@@ -5,8 +5,12 @@ import HomePage from './containers/Home/Home';
 import FoodsPage from './containers/Home/Foods';
 import FoodPage from './containers/Home/Food';
 import Order from './containers/Order/Order';
-import Bag from './containers/Bag/Bag';
-import AboutUs from './containers/AboutUs/AboutUs';
+import BagPage from './containers/Bag/Bag';
+import CheckOutBagPage from './containers/Bag/CheckOutBag';
+import CheckOutInfoPage from './containers/CheckOut/CheckOutInfo';
+import CheckOutResultPage from './containers/CheckOut/CheckOutResult';
+import AboutUs from './containers/Common/AboutUs';
+import ContactUs from './containers/Common/ContactUs';
 
 const routeCategories = [
   {
@@ -37,7 +41,7 @@ const routeCategories = [
         title: 'Fast Food',
         path: '/dashboard/home',
         component: HomePage,
-        icon: Home,
+        icon: '/images/home.png'
       },
       {
         id: 'foods',
@@ -46,7 +50,7 @@ const routeCategories = [
         path: '/dashboard/foods/:categoryId',
         component: FoodsPage,
         isHidden: true,
-        icon: Home,
+        icon: '/images/home.png',
       },
       {
         id: 'food',
@@ -55,7 +59,25 @@ const routeCategories = [
         path: '/dashboard/food/:foodId',
         component: FoodPage,
         isHidden: true,
-        icon: Home,
+        icon: '/images/home.png',
+      },
+      {
+        id: 'bag',
+        name: 'Bag',
+        title: '',
+        path: '/dashboard/bag',
+        component: BagPage,
+        isHidden: true,
+        icon: '/images/home.png',
+      },
+      {
+        id: 'bag',
+        name: 'Bag',
+        title: '',
+        path: '/common/search',
+        component: BagPage,
+        isHidden: true,
+        icon: '/images/home.png',
       },
     ],
   },
@@ -68,8 +90,32 @@ const routeCategories = [
         id: 'bag',
         name: 'Your Bag',
         path: '/dashboard/bag',
-        component: Bag,
-        icon: Cart,
+        component: BagPage,
+        icon: '/images/BASKET.png',
+      },
+      {
+        id: 'bag',
+        name: 'Your Bag',
+        path: '/bag/checkout',
+        component: CheckOutBagPage,
+        isHidden: true,
+        icon: '/images/BASKET.png',
+      },
+      {
+        id: 'checkoutinfo',
+        name: 'Check Out Info',
+        path: '/checkout/checkoutinfo',
+        component: CheckOutInfoPage,
+        isHidden: true,
+        icon: '/images/BASKET.png',
+      },
+      {
+        id: 'checkoutresult',
+        name: 'Check Out Result',
+        path: '/checkout/checkoutresult',
+        component: CheckOutResultPage,
+        isHidden: true,
+        icon: '/images/BASKET.png',
       },
     ],
   },
@@ -80,10 +126,10 @@ const routeCategories = [
     routes: [
       {
         id: ' ',
-        name: 'Order',
+        name: 'Order Status',
         path: '/dashboard/order',
         component: Order,
-        icon: TextBoxCheck,
+        icon: '/images/BASKET.png',
       },
     ],
   },
@@ -97,7 +143,21 @@ const routeCategories = [
         name: 'Profile',
         path: '/dashboard/profile',
         component: Profile,
-        icon: Account,
+        icon: '/images/profile.png',
+      },
+    ],
+  },
+  {
+    id: 'contactus',
+    name: 'Contact Us Menu',
+    isHidden: false,
+    routes: [
+      {
+        id: 'contactUs',
+        name: 'Contact Us',
+        path: '/common/contactUs',
+        component: ContactUs,
+        icon: '/images/old-typical-phone.png',
       },
     ],
   },
@@ -110,13 +170,13 @@ const routeCategories = [
         id: 'signin',
         name: 'Sign in',
         path: '/signin',
-        icon: Login,
+        icon: '/images/profile.png',
       },
       {
         id: 'signout',
         name: 'Sign out',
         path: '/sign',
-        icon: Logout,
+        icon: '/images/profile.png',
       }
     ],
   },
@@ -128,9 +188,9 @@ const routeCategories = [
       {
         id: 'aboutUs',
         name: 'About Us',
-        path: '/dashboard/aboutUs',
+        path: '/common/aboutUs',
         component: AboutUs,
-        icon: Contacts,
+        icon: '/images/profile1.png',
       },
     ],
   },
