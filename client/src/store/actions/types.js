@@ -44,6 +44,10 @@ export const RESET_PASSWORD_FAIL = '[Auth] Reset Password Fail';
 
 export const UNLOAD_AUTH_PAGE = '[Auth] Unload Auth Page';
 
+export const UPDATE_PROFILE = '[Auth] Update Profile';
+export const UPDATE_PROFILE_SUCCESS = '[Auth] Update Profile Success';
+export const UPDATE_PROFILE_FAIL = '[Auth] Update Profile Fail';
+
 export const GET_CATEGORIES = '[Category] Get Categories';
 export const GET_CATEGORIES_SUCCESS = '[Category] Get Categories Success';
 export const GET_CATEGORIES_FAIL = '[Category] Get Categories Fail';
@@ -79,3 +83,19 @@ export const SET_CHECKOUT_BAGS_FAIL = '[Bag] Set Checkout Fail';
 export const GET_CHECKOUT_BAGS = '[Bag] Get Checkout Bag';
 export const GET_CHECKOUT_BAGS_SUCCESS = '[Bag] Get Checkout Success';
 export const GET_CHECKOUT_BAGS_FAIL = '[Bag] Get Checkout Fail';
+
+export const GET_COMMENTS = '[Comment] Get Comments';
+export const GET_COMMENTS_SUCCESS = '[Comment] Get Comments Success';
+export const GET_COMMENTS_FAIL = '[Comment] Get Comments Fail';
+
+export const GET_COMMENT = '[Comment] Get Comment';
+export const GET_COMMENT_SUCCESS = '[Comment] Get Comment Success';
+export const GET_COMMENT_FAIL = '[Comment] Get Comment Fail';
+
+export const ADD_COMMENT = '[Comment] Add To Comment';
+export const ADD_COMMENT_SUCCESS = '[Comment] Add To Comment Success';
+export const ADD_COMMENT_FAIL = '[Comment] Add To Comment Fail';
+
+export const GET_SETTING = '[Setting] Get Setting';
+export const GET_SETTING_SUCCESS = '[Setting] Get Setting Success';
+export const GET_SETTING_FAIL = '[Setting] Get Setting Fail';

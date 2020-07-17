@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-export const getCategoryState = (state) => {console.log('-- state : ', state); return state.category};
+export const getCategoryState = (state) => {return state.category};
 
 export const getCategoryCategories = createSelector(
   getCategoryState,
@@ -14,7 +14,7 @@ export const getCategoryError = createSelector(
 
 export const getCategoryProcessing = createSelector(
   getCategoryState,
-  (category) => category.processing
+  (category) => {return category.processing}
 );
 
 export const getCategoryProcessed = createSelector(

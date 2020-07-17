@@ -7,6 +7,7 @@ const { languageSeed } = require('../seed/languages')
 const { discountSeed } = require('../seed/discounts')
 const { categorySeed, categoryTransSeed } = require('../seed/categories')
 const { foodSeed, foodTransSeed } = require('../seed/foods')
+const { settingSeed } = require('../seed/settings')
 var languageIds = [];
 var categoryIds = [];
 /**
@@ -286,4 +287,47 @@ module.exports.createFoods = () => {
         });
     }, Promise.resolve())
     .then(() => Promise.resolve(addedFoods));
+};
+
+
+
+module.exports.createSettings = () => {
+  const Setting = mongoose.model('setting');
+  let addedSettings = [];
+
+  return settingSeed
+    .reduce((sequence, settingInfo) => {
+      return sequence
+        .then(() => {
+          return Setting.find();
+        })
+        .then((existingSetting) => {
+          if (existingSetting) {
+            throw new Error(
+              chalk.yellow(
+                `[-] [Warning] Database seeding: settings already in use.`
+              )
+            );
+          }
+          const setting = new Setting(settingInfo);
+
+          return setting.save();
+        })
+        .then((setting) => {
+          if (config.seed.logging) {
+            console.log(
+              chalk.green(
+                `[+] Database Seeding: A new setting added (${settingInfo.code})`
+              )
+            );
+          }
+          addedSettings.push(setting);
+        })
+        .catch((err) => {
+          if (config.seed.logging) {
+            console.log(err.message);
+          }
+        });
+    }, Promise.resolve())
+    .then(() => Promise.resolve(addedSettings));
 };

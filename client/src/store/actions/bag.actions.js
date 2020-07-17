@@ -1,16 +1,23 @@
-import { replace } from 'connected-react-router';
 import * as actionTypes from './types';
 
 export const getBags = (userId) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.GET_BAGS });
 
   const bags = JSON.parse(getBagsFromStorage(userId));
-  console.log('-- getBags storage bags : ', bags);
+  console.log('-- bags : ', bags, userId)
   if (bags) {
     return mernApi.post('/api/bags/detailBags', { bags }).then(
-      (response) => {
+      (response) => {        
         var bags = response.data.bags;
-        console.log('-- getBags bags : ', bags);
+        var newBags = []
+        bags.map((bag)=>{
+          newBags.push({
+            foodId: bag.foodId,
+            qty: bag.qty,
+            note: bag.note
+          })
+        })
+        setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.GET_BAGS_SUCCESS, payload: bags });
       },
       (err) => {
@@ -49,13 +56,15 @@ export const getBag = (userId, bagId) => (dispatch, getState, { mernApi }) => {
   });
 };
 
-export const addToBag = (userId, foodId, qty, note) => (
+export const addToBag = (userId, foodId, qty, nt) => (
   dispatch,
   getState,
   { mernApi }
 ) => {
+  console.log('-- addToBag start : ', userId, foodId, qty, nt)
   dispatch({ type: actionTypes.ADD_TO_BAG });
 
+  var note = nt ? nt : '';
   var bags = JSON.parse(getBagsFromStorage(userId));
   if (bags) {
     var isFind = false;
@@ -76,12 +85,21 @@ export const addToBag = (userId, foodId, qty, note) => (
   }
 
   if (bags) {
+    console.log('-- addToBag bags : ', bags)
     return mernApi.post('/api/bags/detailBags', { bags }).then(
       (response) => {
-        setBagsToStorage(userId, bags);
-        var newBags = response.data.bags;
-        console.log('-- addToBag newBags : ', newBags);
-        dispatch({ type: actionTypes.ADD_TO_BAG_SUCCESS, payload: newBags });
+        var bags = response.data.bags;
+        var newBags = []
+        bags.map((bag)=>{
+          newBags.push({
+            foodId: bag.foodId,
+            qty: bag.qty,
+            note: bag.note
+          })
+        })
+        console.log('-- addToBag newBags : ', newBags)
+        setBagsToStorage(userId, newBags);
+        dispatch({ type: actionTypes.ADD_TO_BAG_SUCCESS, payload: bags });
       },
       (err) => {
         dispatch({
@@ -118,10 +136,17 @@ export const deleteBag = (userId, foodId) => (
 
     return mernApi.post('/api/bags/detailBags', { bags }).then(
       (response) => {
-        setBagsToStorage(userId, bags);
-        var newBags = response.data.bags;
-        console.log('-- deleteBag newBags : ', newBags);
-        dispatch({ type: actionTypes.DELETE_BAG_SUCCESS, payload: newBags });
+        var bags = response.data.bags;
+        var newBags = []
+        bags.map((bag)=>{
+          newBags.push({
+            foodId: bag.foodId,
+            qty: bag.qty,
+            note: bag.note
+          })
+        })
+        setBagsToStorage(userId, newBags);
+        dispatch({ type: actionTypes.DELETE_BAG_SUCCESS, payload: bags });
       },
       (err) => {
         dispatch({

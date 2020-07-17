@@ -405,7 +405,6 @@ module.exports = BaseController.extend({
 
         var totalItems = await UserModel.find(query).select('_id');
         totalItems = totalItems.length;
-        console.log('-- totalItems : ', totalItems);
 
         UserModel.find(query)
             .limit(pageCount)
@@ -417,7 +416,7 @@ module.exports = BaseController.extend({
                     console.log(err);
                     return res.json(ret);
                 }
-                console.log('-- result : ', result)
+                
                 ret.data = {
                     draw: 1,
                     recordsTotal: totalItems,

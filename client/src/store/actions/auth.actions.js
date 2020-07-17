@@ -114,7 +114,6 @@ export const setAttemptedPath = (path) => {
 };
 
 export const signOut = () => (dispatch, getState, { mernApi }) => {
-  console.log('-- signOut start')
   dispatch({ type: actionTypes.SIGN_OUT });
   clearAuthInfo(mernApi);
   dispatch({ type: actionTypes.SIGN_OUT_SUCCESS });
@@ -179,6 +178,26 @@ export const resetPassword = (formValues, token) => {
       (err) =>
         dispatch({
           type: actionTypes.RESET_PASSWORD_FAIL,
+          payload: err.response.data.error.message,
+        })
+    );
+  };
+};
+
+export const updateProfile = (userId, formValues) => {
+  return (dispatch, getState, { mernApi }) => {
+    dispatch({ type: actionTypes.UPDATE_PROFILE });
+    return mernApi.put(`/api/profiles`, formValues).then(
+      (response) => {
+        const authInfo = JSON.parse(localStorage.getItem('authInfo'));
+        authInfo.user = response.data.user;
+        localStorage.setItem('authInfo', JSON.stringify(authInfo));
+
+        dispatch({ type: actionTypes.UPDATE_PROFILE_SUCCESS, payload: response.data });
+      },
+      (err) =>
+        dispatch({
+          type: actionTypes.UPDATE_PROFILE_FAIL,
           payload: err.response.data.error.message,
         })
     );

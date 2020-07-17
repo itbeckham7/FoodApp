@@ -15,6 +15,7 @@ let FoodSchema = new Schema(
         status: Boolean,
         viewCount: Number,
         sellCount: Number,
+        rating: Number,
         trans: [{ type: Schema.Types.ObjectId, ref: 'food_trans' }]
     },
     { timestamps: true }

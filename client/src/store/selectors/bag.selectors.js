@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-export const getBagState = (state) => {console.log('-- state : ', state); return state.bag};
+export const getBagState = (state) => state.bag;
 
 export const getBagBags = createSelector(
   getBagState,

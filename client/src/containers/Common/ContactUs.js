@@ -1,39 +1,14 @@
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Snackbar from '@material-ui/core/Snackbar';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Rating from '@material-ui/lab/Rating';
-import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getBags, deleteBag } from '../../store/actions';
 import {
-  getBagBags,
   getBagProcessing,
   getBagError,
   getCurrentUser,
 } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-} from 'pure-react-carousel';
-import 'pure-react-carousel/dist/react-carousel.es.css';
-import config from '../../config';
-import { textEllipsis } from '../../utils/textUtils';
 
 const styles = (theme) => ({
   root: {
@@ -118,63 +93,26 @@ const styles = (theme) => ({
 });
 
 class AboutUs extends React.Component {
-  state = {
-    bags: null,
-  };
-
-  constructor() {
-    super();
-  }
-
-  componentWillMount() {
-    this.props.getBags(this.props.me._id).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      console.log('-- bags : ', this.props.bags);
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
-  }
-
-  onDeleteBag(bag) {
-    console.log('-- onDeleteBag bag : ', bag);
-    const { me } = this.props;
-
-    this.props.deleteBag(me._id, bag.foodId).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      console.log('-- bags : ', this.props.bags);
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
-  }
 
   renderContactInfo() {
     const { classes } = this.props;
-    const { bags } = this.state;
-    console.log('-- renderBags bags : ', bags);
+    
     var contactElems = [];
     for (var i = 0; i < 5; i++) {
       contactElems.push(
         <Grid container className={classes.contactElem}>
-          <Grid xs={4} className={classes.contactElemText}>
+          <Grid xs={4} item className={classes.contactElemText}>
             <Typography component="span" className={classes.contactElemText}>
               KUWAIT
             </Typography>
           </Grid>
-          <Grid xs={4} className={classes.contactElemText} style={{borderLeft: '1px solid #E5293E', borderRight: '1px solid #E5293E'}}>
+          <Grid xs={4} item className={classes.contactElemText} style={{borderLeft: '1px solid #E5293E', borderRight: '1px solid #E5293E'}}>
             <img src="/images/phone-solid.png" className={classes.contactElemImage}/>
             <Typography component="span" className={classes.contactElemText}>
               KUWAIT
             </Typography>
           </Grid>
-          <Grid xs={4} className={classes.contactElemText}>
+          <Grid xs={4} item className={classes.contactElemText}>
             <img src="/images/map-marker-alt-solid.png" className={classes.contactElemImage}/>
             <Typography component="span" className={classes.contactElemText}>
               KUWAIT
@@ -190,39 +128,12 @@ class AboutUs extends React.Component {
   render() {
     const {
       classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
     } = this.props;
-    const { bags } = this.state;
-
-    var totalPrice = 0;
-    var currency = '';
-    var itemCounts = 0;
-
-    if (bags && bags.length > 0) {
-      itemCounts = bags.length;
-      bags.map((bag) => {
-        currency = bag.food.trans[0].languageId.currency;
-        totalPrice += bag.food.trans[0].price * bag.qty;
-      });
-    }
-
-    var currentDate = new Date();
-    currentDate = currentDate.toString();
-    currentDate = currentDate.split(' ');
-    currentDate =
-      currentDate.length > 4
-        ? currentDate[1] + ' ' + currentDate[2] + ', ' + currentDate[3]
-        : '';
-    console.log('-- currentDate : ', currentDate);
 
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
-          <div container className={classes.topSec}>
+          <div  className={classes.topSec}>
             <div className={classes.pageTitleSec}>
               <Typography
                 component="p"
@@ -245,7 +156,7 @@ class AboutUs extends React.Component {
               }}
             ></div>
           </div>
-          <div container className={classes.mainSec}>
+          <div  className={classes.mainSec}>
             <div
               className={classes.infoSec}
               style={{
@@ -272,12 +183,11 @@ const maptStateToProps = (state) => {
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
-    bags: getBagBags(state),
     me: getCurrentUser(state),
   };
 };
 
 export default compose(
-  connect(maptStateToProps, { getBags, deleteBag }),
+  connect(maptStateToProps, {}),
   withStyles(styles)
 )(AboutUs);

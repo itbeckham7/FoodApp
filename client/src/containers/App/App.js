@@ -7,17 +7,33 @@ import Launch from '../Auth/Launch';
 import SignIn from '../Auth/SignIn';
 import SignUp from '../Auth/SignUp';
 import VerifyEmail from '../Auth/VerifyEmail';
-import { tryLocalSignIn } from '../../store/actions';
+import { tryLocalSignIn, getSetting } from '../../store/actions';
 import RequestVerificationEmail from '../Auth/RequestVerificationEmail';
 import RequestPasswordReset from '../Auth/RequestPasswordReset';
 import ResetPassword from '../Auth/ResetPassword';
 import Dashboard from '../../layouts/Dashboard';
-import Bag from '../../layouts/Bag';  
-import CheckOut from '../../layouts/CheckOut';   
-import CommonPage from '../../layouts/CommonPage';   
-import { getIsSignedIn } from '../../store/selectors';
+import Bag from '../../layouts/Bag';
+import CheckOut from '../../layouts/CheckOut';
+import CommonPage from '../../layouts/CommonPage';
+import Profile from '../../layouts/Profile';
+import {
+  getIsSignedIn,
+  getSettingSetting,
+  getSettingProcessing,
+  getSettingError,
+} from '../../store/selectors';
 
 class App extends React.Component {
+  componentWillMount() {
+    if (this.props.setting == null) {
+      this.props.getSetting().then(() => {
+        if (this.props.errorMessageSetting) {
+          console.log('-- error : ', this.props.errorMessageSetting);
+        }
+      });
+    }
+  }
+
   componentDidMount() {
     this.props.tryLocalSignIn();
   }
@@ -45,6 +61,7 @@ class App extends React.Component {
         <ProtectedRoute path="/bag" component={Bag} />
         <ProtectedRoute path="/checkout" component={CheckOut} />
         <ProtectedRoute path="/common" component={CommonPage} />
+        <ProtectedRoute path="/profile" component={Profile} />
 
         <Route path="/">
           {this.props.isSignedIn ? (
@@ -61,7 +78,10 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
   return {
     isSignedIn: getIsSignedIn(state),
+    setting: getSettingSetting(state),
+    isProcessingSetting: getSettingProcessing(state),
+    errorMessageSetting: getSettingError(state),
   };
 };
 
-export default connect(mapStateToProps, { tryLocalSignIn })(App);
+export default connect(mapStateToProps, { tryLocalSignIn, getSetting })(App);

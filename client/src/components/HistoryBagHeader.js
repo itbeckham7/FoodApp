@@ -76,13 +76,11 @@ class HistoryBagHeader extends React.Component {
 
   componentWillMount() {
     const { me } = this.props;
-    this.props.getBags(me._id).then(() => {
+    this.props.getBags(me.id).then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-
-      console.log('-- bags : ', this.props.bags);
     });
   }
 
@@ -107,13 +105,10 @@ class HistoryBagHeader extends React.Component {
         var pathArr = path.split('/');
         var pathnameArr = pathname.split('/');
 
-        console.log('-- pathArr : ', pathArr, pathnameArr);
-
         if (pathArr.length == pathnameArr.length) {
           var isSuccess = true;
           for (var i = 0; i < pathArr.length; i++) {
             if (pathArr[i] != pathnameArr[i]) {
-              console.log('-- pathArr[i][0] : ', pathArr[i][0]);
               if (pathArr[i][0] == ':') continue;
               isSuccess = false;
               break;

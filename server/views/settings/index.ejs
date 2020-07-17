@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- Datatables css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/datatables.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom/data-table.css">
+    
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Discount List
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Discount List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body order-datatable">
+                            <div class="btn-popup pull-right">
+                                <a href="/discounts/add" class="btn btn-primary">Add Discount</a>
+                            </div>
+                            <table class="display" id="discounts_list">
+                                <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Code</th>
+                                    <th>Quantity</th>
+                                    <th>Type</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- Datatable js-->
+    <script src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+    
+
+    <script>
+        (function($) {
+            "use strict";
+
+            var itemCount = parseInt('<%= discounts.length %>');
+
+            $(document).ready(function(){
+                var dt = $('#discounts_list').DataTable({
+                    "serverSide": true,
+                    "processing": true,
+                    "ajax": {
+                        url: '/api/discounts/',
+                        type: 'POST',
+                        dataSrc: 'data',
+                        dataType :"json",
+                        headers: {"Authorization": "Bearer " + token},
+                        dataFilter: function(data){
+                            var json = jQuery.parseJSON( data );
+                            var ret;
+                            if( json.status == 'fail' ){
+                                ret = {
+                                    data: [],
+                                    recordsTotal: 0,
+                                    recordsFiltered: 0
+                                }
+                            } else {
+                                ret = {
+                                    data: json.data.data,
+                                    recordsTotal: json.data.recordsTotal,
+                                    recordsFiltered: json.data.recordsFiltered
+                                }
+                            }
+                            return JSON.stringify(ret)
+                        }
+                    },
+                    columnDefs: [ 
+                        {"orderable": true, "targets": [0,1,2,3,4,5,6]},
+                        {"orderable": false, "sorting": false, "targets": [7]},
+                        {"searchable": true, "targets": [0,1]},
+                        {"searchable": false, "targets": [2,3,4,5,6,7]},
+                        {
+                            "targets": 0,
+                            "data": 'title',
+                        }, {
+                            "targets": 1,
+                            "data": 'code',
+                        }, {
+                            "targets": 2,
+                            "data": 'amount',
+                        }, {
+                            "targets": 3,
+                            "data": 'type',
+                        }, {
+                            "targets": 4,
+                            "data": 'fromDate',
+                        }, {
+                            "targets": 5,
+                            "data": 'toDate',
+                        }, {
+                            "targets": 6,
+                            "data": 'status',
+                        }, {
+                            "targets": 7,
+                            "data": '_id',
+                            "render": function (data, type, row) {
+                                return `
+                                    <a href="/discounts/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a>
+                                    <a href="/discounts/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>
+                                `
+                            }
+                        } 
+                    ],
+                });
+
+                $('#discounts_list').on( 'page.dt', function (e) {
+                    var info = dt.settings();
+                } );
+            })
+            
+        })(jQuery);
+    </script>
+</body>
+</html>

@@ -37,7 +37,6 @@ module.exports = {
 
       var totalItems = await DiscountModel.find(query).select('_id');
       totalItems = totalItems.length;
-      console.log('-- totalItems : ', totalItems);
 
       DiscountModel.find(query)
         .limit(pageCount)

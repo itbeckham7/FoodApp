@@ -102,10 +102,8 @@ module.exports = BaseController.extend({
         };
         
         var cat = await CategoryModel.create(categoryInfo);
-        console.log('-- cat : ', cat);
         if( cat && cat._id ){
             languages = await LanguageModel.find().sort({createdAt: 1});
-            console.log('-- languages : ', languages)
             var trans = [];
             for( var i=0; i<languages.length; i++ ){
                 var categoryTrans = {
@@ -119,10 +117,8 @@ module.exports = BaseController.extend({
             }
 
             cat = await CategoryModel.findOne({_id: cat._id});
-            console.log('-- cat : ', cat);
             cat.trans = trans;
             await cat.save();
-            console.log('-- trans : ', trans);
         }
 
         req.flash('success', 'New category created successfully!');

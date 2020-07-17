@@ -1,19 +1,9 @@
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Snackbar from '@material-ui/core/Snackbar';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Rating from '@material-ui/lab/Rating';
-import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBags, deleteBag } from '../../store/actions';
@@ -23,17 +13,7 @@ import {
   getBagError,
   getCurrentUser,
 } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-} from 'pure-react-carousel';
-import 'pure-react-carousel/dist/react-carousel.es.css';
 import config from '../../config';
-import { textEllipsis } from '../../utils/textUtils';
 
 const styles = (theme) => ({
   root: {
@@ -219,7 +199,7 @@ const styles = (theme) => ({
   },
 
   checkoutBtnSec: {
-    padding: theme.spacing(0, 3, 3)
+    padding: theme.spacing(0, 3, 3),
   },
   roundBtn: {
     borderRadius: '50px',
@@ -249,12 +229,12 @@ class CheckOutInfo extends React.Component {
   }
 
   componentWillMount() {
-    this.props.getBags(this.props.me._id).then(() => {
+    this.props.getBags(this.props.me.id).then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      console.log('-- bags : ', this.props.bags);
+      
       this.setState({
         bags: this.props.bags,
       });
@@ -262,15 +242,14 @@ class CheckOutInfo extends React.Component {
   }
 
   onDeleteBag(bag) {
-    console.log('-- onDeleteBag bag : ', bag);
     const { me } = this.props;
 
-    this.props.deleteBag(me._id, bag.foodId).then(() => {
+    this.props.deleteBag(me.id, bag.foodId).then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      console.log('-- bags : ', this.props.bags);
+      
       this.setState({
         bags: this.props.bags,
       });
@@ -280,7 +259,6 @@ class CheckOutInfo extends React.Component {
   renderBags() {
     const { classes } = this.props;
     const { bags } = this.state;
-    console.log('-- renderBags bags : ', bags);
 
     var bagElems = [];
     if (bags && bags.length > 0) {
@@ -344,11 +322,7 @@ class CheckOutInfo extends React.Component {
   render() {
     const {
       classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
+      me,
     } = this.props;
     const { bags } = this.state;
 
@@ -371,12 +345,11 @@ class CheckOutInfo extends React.Component {
       currentDate.length > 4
         ? currentDate[1] + ' ' + currentDate[2] + ', ' + currentDate[3]
         : '';
-    console.log('-- currentDate : ', currentDate);
 
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
-          <div container className={classes.topSec}>
+          <div  className={classes.topSec}>
             <div className={classes.pageTitleSec}>
               <Typography
                 component="p"
@@ -432,7 +405,7 @@ class CheckOutInfo extends React.Component {
               }}
             ></div>
           </div>
-          <div container className={classes.mainSec}>
+          <div  className={classes.mainSec}>
             <div
               className={classes.infoSec}
               style={{
@@ -459,16 +432,18 @@ class CheckOutInfo extends React.Component {
               <div className={classes.infoContentSec}>
                 <div style={{ marginBottom: '15px' }}>
                   <div className={classes.infoLabel}>NAME</div>
-                  <div className={classes.infoValue}>Jenis</div>
+                  <div className={classes.infoValue}>
+                    {me.firstName} {me.lastName}
+                  </div>
                 </div>
                 <div style={{ marginBottom: '15px' }}>
                   <div className={classes.infoLabel}>PHONE NUMBER</div>
-                  <div className={classes.infoValue}>+086565766</div>
+                  <div className={classes.infoValue}>{me.phone}</div>
                 </div>
                 <div style={{ marginBottom: '15px' }}>
                   <div className={classes.infoLabel}>EMAIL</div>
                   <div className={classes.infoValue}>
-                    itbeckham7@hotmail.com
+                    {me.email}
                   </div>
                 </div>
                 <div style={{ marginBottom: '15px' }}>
@@ -590,7 +565,7 @@ class CheckOutInfo extends React.Component {
                     variant="contained"
                     color="primary"
                     className={classes.delieveryBtn}
-                    style={{marginRight: '4vw'}}
+                    style={{ marginRight: '4vw' }}
                   >
                     Now
                   </Button>
@@ -611,7 +586,9 @@ class CheckOutInfo extends React.Component {
                 color="primary"
                 fullWidth
                 className={classes.roundBtn}
-                onClick={()=>{window.location='/checkout/checkoutresult'}}
+                onClick={() => {
+                  window.location = '/checkout/checkoutresult';
+                }}
               >
                 Confirm
               </Button>
@@ -621,7 +598,9 @@ class CheckOutInfo extends React.Component {
                 color="primary"
                 fullWidth
                 className={classes.roundBtnOutlined}
-                onClick={()=>{window.history.back()}}
+                onClick={() => {
+                  window.history.back();
+                }}
               >
                 Back
               </Button>

@@ -1,51 +1,20 @@
 import React from 'react';
 import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import {
-  red,
-  pink,
-  purple,
-  deepPurple,
-  indigo,
-  blue,
-  lightBlue,
-  cyan,
-  teal,
-  green,
-  lightGreen,
-  lime,
-  yellow,
-  amber,
-  orange,
-  deepOrange,
-  brown,
-  grey,
-  blueGrey,
-} from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
-import { Facebook, Google } from 'mdi-material-ui';
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {
   signIn,
-  facebookSignIn,
-  googleSignIn,
   unloadAuthPage,
 } from '../../store/actions';
 import { getProcessing, getError } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
 
 const styles = (theme) => ({
   root: {
@@ -69,7 +38,8 @@ const styles = (theme) => ({
     textAlign: 'center',
   },
   logoImage: {
-    width: '100%',
+    width: '70%',
+    display: 'inline-block'
   },
   logoText: {
     textAlign: 'center',
@@ -131,10 +101,6 @@ class Launch extends React.Component {
   render() {
     const {
       classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
       error,
     } = this.props;
 
@@ -143,19 +109,15 @@ class Launch extends React.Component {
         <CssBaseline />
         <div className={classes.paper}>
           <Grid container style={{ flex: 1 }}></Grid>
-          <Grid container style={{ flex: 1.7 }}>
-            <Grid xs={1}></Grid>
-            <Grid xs={10}>
-              <img
-                alt="avatar"
-                src={'images/picturemessage_intra0vh.wzc.png'}
-                className={classes.logoImage}
-              />
-            </Grid>
-            <Grid xs={1}></Grid>
-          </Grid>
+          <div style={{ flex: 1.7, textAlign: 'center', width: '100%' }}>
+            <img
+              alt="avatar"
+              src={'images/picturemessage_intra0vh.wzc.png'}
+              className={classes.logoImage}
+            />
+          </div>
           <Grid container style={{ flex: 1.5 }}>
-            <Grid xs={12}>
+            <Grid xs={12} item>
               <Typography
                 component="h4"
                 variant="h5"
@@ -166,7 +128,7 @@ class Launch extends React.Component {
             </Grid>
           </Grid>
           <Grid container className={classes.actionSec}>
-            <Grid xs={12}>
+            <Grid xs={12} item>
               <Button
                 variant="contained"
                 color="secondary"
@@ -184,7 +146,7 @@ class Launch extends React.Component {
                 Login
               </Button>
             </Grid>
-            <Grid xs={12} className={classes.textLink}>
+            <Grid xs={12} item className={classes.textLink}>
               <span>Don't have a account? </span>
               <Link
                 className={classes.textLinkLink}
@@ -221,13 +183,6 @@ const maptStateToProps = (state) => {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
   };
-};
-
-const validate = (values) => {
-  const errors = {};
-  errors.email = required(values.email) || email(values.email);
-  errors.password = required(values.password) || minLength(8)(values.password);
-  return errors;
 };
 
 export default compose(

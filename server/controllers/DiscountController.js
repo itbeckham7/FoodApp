@@ -146,7 +146,6 @@ module.exports = BaseController.extend({
             return res.redirect('/discounts/edit/' + discountId);
         }
 
-        console.log('-- req.body : ', req.body);
         discountInfo.title = req.body['discount-title'],
         discountInfo.code = req.body['discount-code'],
         discountInfo.fromDate = new Date(req.body['discount-fromDate']),
@@ -222,7 +221,6 @@ module.exports = BaseController.extend({
 
         var totalItems = await DiscountModel.find(query).select('_id');
         totalItems = totalItems.length;
-        console.log('-- totalItems : ', totalItems);
 
         DiscountModel.find(query)
             .limit(pageCount)

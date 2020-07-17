@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-export const getFoodState = (state) => {console.log('-- state : ', state); return state.food};
+export const getFoodState = (state) => state.food;
 
 export const getFoodFoods = createSelector(
   getFoodState,

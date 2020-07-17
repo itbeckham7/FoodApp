@@ -1,17 +1,11 @@
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import Rating from '@material-ui/lab/Rating';
-import Tabs from '@material-ui/core/Tab';
 import Tab from '@material-ui/core/Tab';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
@@ -19,11 +13,21 @@ import TabContext from '@material-ui/lab/TabContext';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
 import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getFood, addToBag } from '../../store/actions';
+import {
+  getFood,
+  addToBag,
+  getComments,
+  addComment,
+} from '../../store/actions';
 import AddIcon from '@material-ui/icons/Add';
 import {
   getFoodFood,
@@ -31,16 +35,10 @@ import {
   getFoodError,
   getCurrentUser,
   getBagBags,
+  getCommentComments,
 } from '../../store/selectors';
+import { required } from '../../utils/formValidator';
 import { textEllipsis } from '../../utils/textUtils';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-} from 'pure-react-carousel';
-import 'pure-react-carousel/dist/react-carousel.es.css';
 import config from '../../config';
 
 const styles = (theme) => ({
@@ -216,7 +214,7 @@ const styles = (theme) => ({
     marginLeft: '10px',
     display: 'inline-block',
     fontSize: '1rem',
-    color: '#666'
+    color: '#666',
   },
   actionSec: {
     marginTop: '40px',
@@ -247,12 +245,12 @@ const styles = (theme) => ({
     textAlign: 'left',
   },
   foodCommentDesc: {
-    padding: theme.spacing(0.25, 0, 0),
+    padding: theme.spacing(0, 0, 0),
     fontWeight: '300',
     fontSize: '0.8rem',
     lineHeight: '1rem',
     textAlign: 'left',
-    marginTop: '5px',
+    marginTop: '0',
   },
   foodCommentDate: {
     margin: '0',
@@ -286,11 +284,18 @@ const styles = (theme) => ({
   },
 });
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 class Food extends React.Component {
   state = {
     tabValue: 'book',
     qty: 0,
-    note: ''
+    note: '',
+    rating: 0,
+    isVisibleAddCommentDlg: false,
+    comments: [],
   };
 
   constructor() {
@@ -300,10 +305,12 @@ class Food extends React.Component {
     this.onMinusQty = this.onMinusQty.bind(this);
     this.onAddToBag = this.onAddToBag.bind(this);
     this.onNoteChange = this.onNoteChange.bind(this);
+    this.openAddCommentDlg = this.openAddCommentDlg.bind(this);
+    this.closeAddCommentDlg = this.closeAddCommentDlg.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentWillMount() {
-    console.log('-- params : ', this.props.match.params);
     if (this.props.match.params && this.props.match.params.foodId) {
       this.props.getFood(this.props.match.params.foodId).then(() => {
         if (this.props.errorMessage) {
@@ -313,12 +320,25 @@ class Food extends React.Component {
 
         var bags = this.props.bags;
         var food = this.props.food;
-        console.log('-- bags & food : ', bags, food);
 
-        for (var i = 0; i < bags.length; i++) {
-          if (bags[i].foodId == food._id) {
-            this.setState({ qty: bags[i].qty });
+        if (bags) {
+          for (var i = 0; i < bags.length; i++) {
+            if (bags[i].foodId == food._id) {
+              this.setState({ qty: bags[i].qty });
+            }
           }
+        }
+      });
+      this.props.getComments(this.props.match.params.foodId).then(() => {
+        if (this.props.errorMessage) {
+          console.log('-- error : ', this.props.errorMessage);
+          return;
+        }
+
+        var comments = this.props.comments;
+
+        if (comments) {
+          this.setState({ comments });
         }
       });
     }
@@ -351,11 +371,10 @@ class Food extends React.Component {
   }
 
   onNoteChange(event) {
-    this.setState({note: event.target.value});
-  };
+    this.setState({ note: event.target.value });
+  }
 
   onAddToBag() {
-    console.log('-- onAddToBag : start');
     const { food, me, bags } = this.props;
     const { qty, note } = this.state;
 
@@ -363,8 +382,6 @@ class Food extends React.Component {
       if (this.props.errorMessage) {
         throw new SubmissionError({ _error: this.props.errorMessage });
       }
-
-      console.log('-- bags : ', this.props.bags);
     });
   }
 
@@ -493,7 +510,7 @@ class Food extends React.Component {
           <span className={classes.totalPriceText}>Total</span>
           <span className={classes.totalPriceText}>
             {food
-              ? food.trans[0].languageId.currency + (food.trans[0].price * qty)
+              ? food.trans[0].languageId.currency + food.trans[0].price * qty
               : ''}
           </span>
         </div>
@@ -532,7 +549,7 @@ class Food extends React.Component {
             color="primary"
             fullWidth
             className={classes.roundBtn}
-            onClick={()=>{
+            onClick={() => {
               window.location = '/bag/checkout';
             }}
           >
@@ -568,148 +585,211 @@ class Food extends React.Component {
 
   renderComment() {
     const { food, classes } = this.props;
+    const { comments } = this.props;
+
+    var commentElems = [];
+    if (comments && comments.length > 0) {
+      comments.map((comment) => {
+        var commentTime = new Date(comment.createdAt);
+        commentTime = commentTime.toString();
+        commentTime = commentTime.split(' ');
+        commentTime =
+          commentTime.length > 4
+            ? commentTime[1] + ' ' + commentTime[2] 
+            : '';
+        commentElems.push(
+          <Grid container className={classes.commentElem}>
+            <Grid xs={2} item>
+              <Avatar
+                src={
+                  config.serverUrl + comment.userId[0].provider.local.picture
+                }
+                alt="Avatar"
+                className={classes.avatar}
+              />
+            </Grid>
+            <Grid xs={10} item>
+              <Grid container>
+                <Grid xs={6} item>
+                  <Typography
+                    component="p"
+                    variant="h6"
+                    className={classes.foodCommentSubject}
+                  >
+                    {comment.subject}
+                  </Typography>
+                  <Rating
+                    name="read-only"
+                    value={comment.rating}
+                    readOnly
+                    size="small"
+                    className={classes.foodRating}
+                  />
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography
+                    component="p"
+                    variant="h6"
+                    className={classes.foodCommentDate}
+                  >
+                    {commentTime}
+                  </Typography>
+                  <Typography
+                    component="p"
+                    variant="h6"
+                    className={classes.foodCommentUser}
+                  >
+                    {comment.userId[0].username}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Typography
+                component="p"
+                variant="h6"
+                className={classes.foodCommentDesc}
+              >
+                {comment.description}
+              </Typography>
+            </Grid>
+          </Grid>
+        );
+      });
+    }
 
     return (
       <div>
-        <Grid container className={classes.commentElem}>
-          <Grid xs={2}>
-            <Avatar
-              src={config.serverUrl + '/assets/images/dashboard/man.jpg'}
-              alt="My Avatar"
-              className={classes.avatar}
-            />
-          </Grid>
-          <Grid xs={10}>
-            <Grid container>
-              <Grid xs={6}>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentSubject}
-                >
-                  Nice
-                </Typography>
-                <Rating
-                  name="read-only"
-                  value={4}
-                  readOnly
-                  size="small"
-                  className={classes.foodRating}
-                />
-              </Grid>
-              <Grid xs={6}>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentDate}
-                >
-                  23 Mar
-                </Typography>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentUser}
-                >
-                  jenis
-                </Typography>
-              </Grid>
-            </Grid>
-
-            <Typography
-              component="p"
-              variant="h6"
-              className={classes.foodCommentDesc}
-            >
-              layer fragrance products for lasting scent - e.g lotion and then
-              spray perfume.
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid container className={classes.commentElem}>
-          <Grid xs={2}>
-            <Avatar
-              src={config.serverUrl + '/assets/images/dashboard/man.jpg'}
-              alt="My Avatar"
-              className={classes.avatar}
-            />
-          </Grid>
-          <Grid xs={10}>
-            <Grid container>
-              <Grid xs={6}>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentSubject}
-                >
-                  Nice
-                </Typography>
-                <Rating
-                  name="read-only"
-                  value={4}
-                  readOnly
-                  size="small"
-                  className={classes.foodRating}
-                />
-              </Grid>
-              <Grid xs={6}>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentDate}
-                >
-                  23 Mar
-                </Typography>
-                <Typography
-                  component="p"
-                  variant="h6"
-                  className={classes.foodCommentUser}
-                >
-                  jenis
-                </Typography>
-              </Grid>
-            </Grid>
-
-            <Typography
-              component="p"
-              variant="h6"
-              className={classes.foodCommentDesc}
-            >
-              layer fragrance products for lasting scent - e.g lotion and then
-              spray perfume.
-            </Typography>
-          </Grid>
-        </Grid>
+        {commentElems}
         <Fab
           color="primary"
           aria-label="add"
           className={classes.foodCommentAdd}
+          onClick={this.openAddCommentDlg}
         >
           <AddIcon />
         </Fab>
+        {this.renderAddCommentModal()}
       </div>
     );
   }
 
+  openAddCommentDlg() {
+    this.setState({ isVisibleAddCommentDlg: true });
+  }
+
+  closeAddCommentDlg() {
+    this.setState({ isVisibleAddCommentDlg: false });
+  }
+
+  renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
+    <TextField
+      label={label}
+      error={touched && !!error}
+      helperText={touched && error}
+      variant="outlined"
+      margin="none"
+      required
+      fullWidth
+      {...input}
+      {...custom}
+    />
+  );
+
+  onSubmit = (formValues) => {
+    const { me, food } = this.props;
+    const { rating } = this.state;
+    
+    formValues.rating = rating;
+    return this.props.addComment(me.id, food._id, formValues).then(() => {
+      if (this.props.errorMessage) {
+        throw new SubmissionError({ _error: this.props.errorMessage });
+      }
+
+      var comments = this.props.comments;
+      this.setState({ isVisibleAddCommentDlg: false, comments: comments });
+    });
+  };
+
+  renderAddCommentModal() {
+    const { handleSubmit, classes } = this.props;
+    const { isVisibleAddCommentDlg } = this.state;
+    return (
+      <Dialog
+        open={isVisibleAddCommentDlg}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={this.closeAddCommentDlg}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title" style={{textAlign: 'center', fontSize: '1.5rem'}}>
+          {"Please comment now"}
+        </DialogTitle>
+        <form onSubmit={handleSubmit(this.onSubmit)}>
+          <DialogContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12} className={classes.inputElem}>
+                <Field
+                  id="subject"
+                  label="Subject"
+                  name="subject"
+                  autoComplete="subject"
+                  component={this.renderTextField}
+                />
+              </Grid>
+              <Grid item xs={12} className={classes.inputElem}>
+                <Field
+                  name="description"
+                  label="Description"
+                  id="description"
+                  autoComplete="description"
+                  component={this.renderTextField}
+                />
+              </Grid>
+              <Grid item xs={12} className={classes.inputElem}>
+                <span style={{verticalAlign: 'middle', display: 'inline-block', marginRight: '20px'}}>Rating: </span>
+                <Rating
+                  name="rating"
+                  size="large"
+                  value={this.state.rating}
+                  onChange={(event, newValue) => {
+                    this.setState({rating: newValue})
+                  }}
+                  style={{verticalAlign: 'middle'}}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.closeAddCommentDlg} variant="outlined">
+              Cancel
+            </Button>
+            <Button color="primary" variant="contained" type="submit">
+              Submit
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    );
+  }
+
   render() {
-    const {
-      classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
-      food,
-    } = this.props;
+    const { classes, food } = this.props;
 
-    const { tabValue } = this.state;
+    const { tabValue, comments } = this.state;
 
-    console.log('-- food : ', food);
-
+    var totalRating = 0;
+    if( comments && comments.length > 0 ){
+      comments.map((comment) => {
+        totalRating += comment.rating
+      })
+      totalRating = parseFloat(totalRating/comments.length).toFixed(1)
+    }
+    
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
           <div
-            container
             className={classes.topSec}
             style={{
               backgroundImage: food
@@ -732,7 +812,7 @@ class Food extends React.Component {
               </Typography>
             </div>
           </div>
-          <div container className={classes.mainSec}>
+          <div  className={classes.mainSec}>
             <div>
               <Typography
                 component="h1"
@@ -751,12 +831,13 @@ class Food extends React.Component {
               <div className={classes.foodRatingSec}>
                 <Rating
                   name="read-only"
-                  value={4}
+                  value={totalRating}
+                  precision={0.1}
                   readOnly
                   className={classes.foodRating}
                 />
                 <Typography component="span" className={classes.foodRatingText}>
-                  4
+                  {totalRating}
                 </Typography>
               </div>
             </div>
@@ -794,17 +875,26 @@ class Food extends React.Component {
   }
 }
 
+const validate = (values) => {
+  const errors = {};
+  errors.subject = required(values.subject);
+  errors.description = required(values.description);
+  return errors;
+};
+
 const maptStateToProps = (state) => {
   return {
     isProcessing: getFoodProcessing(state),
     errorMessage: getFoodError(state),
     food: getFoodFood(state),
     bags: getBagBags(state),
+    comments: getCommentComments(state),
     me: getCurrentUser(state),
   };
 };
 
 export default compose(
-  connect(maptStateToProps, { getFood, addToBag }),
+  connect(maptStateToProps, { getFood, addToBag, getComments, addComment }),
+  reduxForm({ form: 'addComment', validate }),
   withStyles(styles)
 )(Food);

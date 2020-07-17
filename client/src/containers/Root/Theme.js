@@ -218,6 +218,11 @@ const theme = createMuiTheme({
         },
       },
     },
+    MuiOutlinedInput: {
+      input: {
+        padding: '15.5px 14px'
+      }
+    },
     MuiBadge: {
       colorPrimary: {
         backgroundColor: '#ffb400',
@@ -244,6 +249,22 @@ const theme = createMuiTheme({
         fontSize: '1rem',
         fontWeight: '300',
       },
+    },
+    MuiFormLabel: {
+      root: {
+        '&$focused': {
+          color: '#E5293E'
+        }
+      }
+    },
+    MuiOutlinedInput: {
+      root: {
+        '&$focused': {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#E5293E'
+          }
+        }
+      }
     },
     Navigator:{
       item: {

@@ -5,6 +5,8 @@ import authReducer from './auth.reducer';
 import categoryReducer from './category.reducer';
 import foodReducer from './food.reducer';
 import bagReducer from './bag.reducer';
+import commentReducer from './comment.reducer';
+import settingReducer from './setting.reducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -12,8 +14,10 @@ const createRootReducer = (history) =>
     form: formReducer,
     auth: authReducer,
     category: categoryReducer,
+    setting: settingReducer,
     food: foodReducer,
     bag: bagReducer,
+    comment: commentReducer,
   });
 
 export default createRootReducer;

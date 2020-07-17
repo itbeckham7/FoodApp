@@ -18,6 +18,7 @@ if (config.env !== 'test') {
     await seed.createDiscounts();
     await seed.createCategories();
     await seed.createFoods();
+    await seed.createSettings();
   });
 } else {
   mongoose.connect(config.mongo.testUri);

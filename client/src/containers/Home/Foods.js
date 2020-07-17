@@ -1,18 +1,9 @@
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import Snackbar from '@material-ui/core/Snackbar';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
 import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getFoods } from '../../store/actions';
@@ -22,14 +13,6 @@ import {
   getFoodError,
 } from '../../store/selectors';
 import { textEllipsis } from '../../utils/textUtils';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-} from 'pure-react-carousel';
-import 'pure-react-carousel/dist/react-carousel.es.css';
 import config from '../../config';
 
 const styles = (theme) => ({
@@ -132,13 +115,11 @@ class Foods extends React.Component {
   state = { category: null };
 
   componentWillMount() {
-    console.log('-- params : ', this.props.match.params);
     if (this.props.match.params && this.props.match.params.categoryId) {
       this.props.getFoods(this.props.match.params.categoryId).then(() => {
         if (this.props.errorMessage) {
-          throw new SubmissionError({ _error: this.props.errorMessage });
+          console.log('-- error : ', this.props.errorMessage)
         }
-        console.log('-- foods : ', this.props.foods);
 
         var foods = this.props.foods;
         if (foods.length > 0 && foods[0].categoryId.length > 0) {
@@ -151,12 +132,11 @@ class Foods extends React.Component {
 
   renderFoods() {
     const { foods, classes } = this.props;
-    console.log('-- renderFoods foods : ', foods);
     var foodElems = [];
     if (foods && foods.length > 0) {
       foods.map((food) => {
         foodElems.push(
-          <Grid xs={6} style={{ padding: '5px' }}>
+          <Grid xs={6} item key={food._id} style={{ padding: '5px' }}>
             <Link className={classes.foodElem} href={'/dashboard/food/' + food._id}>
               <div
                 className={classes.foodImage}
@@ -175,9 +155,9 @@ class Foods extends React.Component {
               </Typography>
 
               <div style={{verticalAlign: 'middle'}}>
-                <Rating name="read-only" value={4} readOnly size="small" />
+                <Rating name="read-only" value={food.rating} readOnly size="small" />
                 <Typography component="span" className={classes.foodRating}>
-                  4
+                  {food.rating}
                 </Typography>
               </div>
 
@@ -214,22 +194,14 @@ class Foods extends React.Component {
   render() {
     const {
       classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
-      foods,
     } = this.props;
 
     const { category } = this.state;
-    console.log('-- category : ', category);
 
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
           <div
-            container
             className={classes.topSec}
             style={{
               backgroundImage: category
@@ -245,7 +217,7 @@ class Foods extends React.Component {
               {category ? category.trans[0].name : ''}
             </Typography>
           </div>
-          <div container className={classes.mainSec}>
+          <div  className={classes.mainSec}>
             <div>{this.renderFoods()}</div>
           </div>
         </div>

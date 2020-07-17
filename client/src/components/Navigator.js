@@ -12,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import { Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { push } from 'connected-react-router';
-import { Tag } from 'mdi-material-ui';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
@@ -113,7 +112,6 @@ function Navigator(props) {
           {me.firstName} {me.lastName}
         </ListItem>
         {routeCategories.map((category) => {
-          console.log('-- category : ', category);
           if (category.isHidden) return null;
           return (
             <React.Fragment key={category.id}>
@@ -138,9 +136,7 @@ function Navigator(props) {
                         classes.itemActiveItem
                     )}
                     onClick={() => {
-                      console.log('-- route.id : ', route.id);
-                      if (route.id == 'signout') {
-                        console.log('-- signout : ');
+                      if (route.id === 'signout') {
                         signOut();
                       } else {
                         push(route.path);

@@ -1,7 +1,7 @@
 import * as actionTypes from '../actions/types';
 
 const INITIAL_STATE = {
-  categories: {},
+  categories: null,
   processing: false,
   processed: false,
   error: null,
@@ -12,7 +12,6 @@ const categoryReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.GET_CATEGORIES:
       return { ...state, processed: false, processing: true, error: null };
     case actionTypes.GET_CATEGORIES_SUCCESS:
-      console.log('-- action.payload success : ', action.payload)
       return {
         ...state,
         processing: false,
@@ -20,7 +19,6 @@ const categoryReducer = (state = INITIAL_STATE, action) => {
         categories: action.payload.data,
       };
     case actionTypes.GET_CATEGORIES_FAIL:
-      console.log('-- action.payload fail : ', action.payload)
       return {
         ...state,
         processing: false,

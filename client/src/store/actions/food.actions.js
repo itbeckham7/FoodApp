@@ -1,4 +1,3 @@
-import { replace } from 'connected-react-router';
 import * as actionTypes from './types';
 
 export const getFoods = (categoryId) => (dispatch, getState, { mernApi }) => {

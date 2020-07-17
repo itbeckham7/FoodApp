@@ -1,7 +1,8 @@
 import * as actionTypes from '../actions/types';
 
 const INITIAL_STATE = {
-  foods: {},
+  foods: null,
+  food: null,
   processing: false,
   processed: false,
   error: null,
@@ -13,7 +14,6 @@ const foodReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.GET_FOOD:
       return { ...state, processed: false, processing: true, error: null };
     case actionTypes.GET_FOODS_SUCCESS:
-      console.log('-- action.payload success : ', action.payload)
       return {
         ...state,
         processing: false,
@@ -21,7 +21,6 @@ const foodReducer = (state = INITIAL_STATE, action) => {
         foods: action.payload.data,
       };
     case actionTypes.GET_FOOD_SUCCESS:
-      console.log('-- action.payload success : ', action.payload)
       return {
         ...state,
         processing: false,
@@ -30,7 +29,6 @@ const foodReducer = (state = INITIAL_STATE, action) => {
       };
     case actionTypes.GET_FOODS_FAIL:
     case actionTypes.GET_FOOD_FAIL:
-      console.log('-- action.payload fail : ', action.payload)
       return {
         ...state,
         processing: false,

@@ -164,7 +164,6 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.apiGetUsers = async (req, res, next) => {
-  console.log('-- apiGetUsers');
   let ret = { status: 'fail', data: '' };
 
   if (req.user) {
@@ -200,7 +199,6 @@ module.exports.apiGetUsers = async (req, res, next) => {
 
     var totalItems = await UserModel.find(query).select('_id');
     totalItems = totalItems.length;
-    console.log('-- totalItems : ', totalItems);
 
     UserModel.find(query)
       .limit(pageCount)
@@ -215,7 +213,7 @@ module.exports.apiGetUsers = async (req, res, next) => {
           res.status(200).send(ret);
           return;
         }
-        console.log('-- result : ', result);
+        
         ret.data = {
           draw: 1,
           recordsTotal: totalItems,

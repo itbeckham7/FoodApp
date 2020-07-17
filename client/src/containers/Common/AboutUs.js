@@ -1,19 +1,9 @@
 import React from 'react';
-import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Snackbar from '@material-ui/core/Snackbar';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Rating from '@material-ui/lab/Rating';
-import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBags, deleteBag } from '../../store/actions';
@@ -23,15 +13,6 @@ import {
   getBagError,
   getCurrentUser,
 } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
-import {
-  CarouselProvider,
-  Slider,
-  Slide,
-  ButtonBack,
-  ButtonNext,
-} from 'pure-react-carousel';
-import 'pure-react-carousel/dist/react-carousel.es.css';
 import config from '../../config';
 import { textEllipsis } from '../../utils/textUtils';
 
@@ -235,12 +216,12 @@ class AboutUs extends React.Component {
   }
 
   componentWillMount() {
-    this.props.getBags(this.props.me._id).then(() => {
+    this.props.getBags(this.props.me.id).then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      console.log('-- bags : ', this.props.bags);
+      
       this.setState({
         bags: this.props.bags,
       });
@@ -248,15 +229,14 @@ class AboutUs extends React.Component {
   }
 
   onDeleteBag(bag) {
-    console.log('-- onDeleteBag bag : ', bag);
     const { me } = this.props;
 
-    this.props.deleteBag(me._id, bag.foodId).then(() => {
+    this.props.deleteBag(me.id, bag.foodId).then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      console.log('-- bags : ', this.props.bags);
+      
       this.setState({
         bags: this.props.bags,
       });
@@ -266,12 +246,12 @@ class AboutUs extends React.Component {
   renderFoods() {
     const { classes } = this.props;
     const { bags } = this.state;
-    console.log('-- renderBags bags : ', bags);
+    
     var bagElems = [];
     for (var i = 0; i < 5; i++) {
       bagElems.push(
         <Grid container className={classes.bagElem}>
-          <Grid xs={3}>
+          <Grid xs={3} item>
             <Box
               style={{
                 width: '100%',
@@ -289,7 +269,7 @@ class AboutUs extends React.Component {
               }}
             ></Box>
           </Grid>
-          <Grid xs={9} style={{ paddingLeft: '10px' }}>
+          <Grid xs={9} item style={{ paddingLeft: '10px' }}>
             <div className={classes.bagElemTitleSec}>
               <span className={classes.bagElemTitleSpan}>
                 {textEllipsis('Foodbakery Special Pizza', 40, '...')}
@@ -326,11 +306,6 @@ class AboutUs extends React.Component {
   render() {
     const {
       classes,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
     } = this.props;
     const { bags } = this.state;
 
@@ -353,12 +328,11 @@ class AboutUs extends React.Component {
       currentDate.length > 4
         ? currentDate[1] + ' ' + currentDate[2] + ', ' + currentDate[3]
         : '';
-    console.log('-- currentDate : ', currentDate);
 
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
-          <div container className={classes.topSec}>
+          <div  className={classes.topSec}>
             <div className={classes.pageTitleSec}>
               <Typography
                 component="p"
@@ -381,7 +355,7 @@ class AboutUs extends React.Component {
               }}
             ></div>
           </div>
-          <div container className={classes.mainSec}>
+          <div  className={classes.mainSec}>
             <div
               className={classes.infoSec}
               style={{

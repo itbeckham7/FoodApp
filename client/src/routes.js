@@ -1,12 +1,13 @@
-import { Account, AccountMultiple, Home, Cart, TextBoxCheck, Contacts, Login, Logout, Newspaper } from 'mdi-material-ui';
+import { AccountMultiple } from 'mdi-material-ui';
 import UserList from './containers/Users/UserList';
-import Profile from './containers/Auth/Profile';
+import Profile from './containers/Profile/Profile';
+import ProfileGeneral from './containers/Profile/General';
+import ProfileAddress  from './containers/Profile/Address';
 import HomePage from './containers/Home/Home';
 import FoodsPage from './containers/Home/Foods';
 import FoodPage from './containers/Home/Food';
 import Order from './containers/Order/Order';
 import BagPage from './containers/Bag/Bag';
-import CheckOutBagPage from './containers/Bag/CheckOutBag';
 import CheckOutInfoPage from './containers/CheckOut/CheckOutInfo';
 import CheckOutResultPage from './containers/CheckOut/CheckOutResult';
 import AboutUs from './containers/Common/AboutUs';
@@ -89,16 +90,8 @@ const routeCategories = [
       {
         id: 'bag',
         name: 'Your Bag',
-        path: '/dashboard/bag',
-        component: BagPage,
-        icon: '/images/BASKET.png',
-      },
-      {
-        id: 'bag',
-        name: 'Your Bag',
         path: '/bag/checkout',
-        component: CheckOutBagPage,
-        isHidden: true,
+        component: BagPage,
         icon: '/images/BASKET.png',
       },
       {
@@ -141,8 +134,27 @@ const routeCategories = [
       {
         id: 'profile',
         name: 'Profile',
-        path: '/dashboard/profile',
+        title: 'Profile',
+        path: '/profile/profile',
         component: Profile,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileGeneral',
+        name: 'Profile General',
+        title: '',
+        isHidden: true,
+        path: '/profile/general',
+        component: ProfileGeneral,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileAddress',
+        name: 'Profile Address',
+        title: 'Shipping Address',
+        isHidden: true,
+        path: '/profile/address',
+        component: ProfileAddress,
         icon: '/images/Profile.png',
       },
     ],

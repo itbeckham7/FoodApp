@@ -98,8 +98,6 @@ module.exports = BaseController.extend({
             return res.redirect('/foods/add');
         }
 
-        console.log('-- req.body : ', req.body, req.files);
-
         let upload_file, fn, ext, dest_fn, folder;
         upload_file = req.files['food-image'];
         fn = upload_file.name;
@@ -124,10 +122,8 @@ module.exports = BaseController.extend({
         };
 
         var food = await FoodModel.create(foodInfo);
-        console.log('-- food : ', food);
         if( food && food._id ){
             languages = await LanguageModel.find().sort({createdAt: 1});
-            console.log('-- languages : ', languages)
             var trans = [];
             for( var i=0; i<languages.length; i++ ){
                 var foodTrans = {
@@ -145,10 +141,8 @@ module.exports = BaseController.extend({
             }
 
             food = await FoodModel.findOne({_id: food._id});
-            console.log('-- food : ', food);
             food.trans = trans;
             await food.save();
-            console.log('-- trans : ', trans);
         }
 
         req.flash('success', 'New category created successfully!');
@@ -211,7 +205,6 @@ module.exports = BaseController.extend({
             return res.redirect('/foods/edit/' + foodId);
         }
 
-        console.log('-- req.body : ', req.body);
         if( req.files && req.files['food-image'] ){
             let upload_file, fn, ext, dest_fn, folder;
             upload_file = req.files['food-image'];

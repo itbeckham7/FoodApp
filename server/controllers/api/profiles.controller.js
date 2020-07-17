@@ -24,6 +24,10 @@ const updateProfileSchema = Joi.object({
   password: Joi.string().min(8).messages(constants.PASSWORD_ERROR_MESSAGES),
   firstName: Joi.string().trim(),
   lastName: Joi.string().trim(),
+  username: Joi.string().trim(),
+  email: Joi.string().trim(),
+  phone: Joi.string().trim(),
+  country: Joi.string().trim(),
 });
 
 /**
@@ -39,9 +43,11 @@ module.exports.updateProfile = (req, res, next) => {
     if (_.isEmpty(req.body)) {
       return res.status(200).json({ updatedFields: [] });
     }
+    console.log('-- updateProfile 1')
     updateProfileSchema
       .validateAsync(req.body, { stripUnknown: true })
       .then((payload) => {
+        console.log('-- updateProfile 2')
         req.body = payload;
         const { password, ...others } = req.body;
         _.merge(req.user, others);
@@ -51,10 +57,12 @@ module.exports.updateProfile = (req, res, next) => {
         }
       })
       .then(() => {
+        console.log('-- updateProfile 3 : ', req.user)
         return req.user.save();
       })
       .then((updatedUser) => {
-        res.status(200).json({ updatedFields: _.keys(req.body) });
+        console.log('-- updateProfile 4')
+        res.status(200).json({ user: updatedUser.toJsonFor(updatedUser) });
       })
       .catch(next);
   }

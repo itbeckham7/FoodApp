@@ -1,7 +1,8 @@
 import * as actionTypes from '../actions/types';
 
 const INITIAL_STATE = {
-  bags: {},
+  bags: null,
+  bag: null,
   processing: false,
   processed: false,
   error: null,
@@ -17,7 +18,6 @@ const bagReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.GET_BAGS_SUCCESS:
     case actionTypes.ADD_TO_BAG_SUCCESS:
     case actionTypes.DELETE_BAG_SUCCESS:
-      console.log('-- action.payload success : ', state, action.type, action.payload);
       return {
         ...state,
         processing: false,
@@ -25,7 +25,6 @@ const bagReducer = (state = INITIAL_STATE, action) => {
         bags: action.payload,
       };
     case actionTypes.GET_BAG_SUCCESS:
-      console.log('-- action.payload success : ', action.type, action.payload);
       return {
         ...state,
         processing: false,
@@ -34,7 +33,6 @@ const bagReducer = (state = INITIAL_STATE, action) => {
       };
     case actionTypes.SET_CHECKOUT_BAGS_SUCCESS:
     case actionTypes.GET_CHECKOUT_BAGS_SUCCESS:
-      console.log('-- action.payload success : ', action.type, action.payload);
       return {
         ...state,
         processing: false,
@@ -45,7 +43,6 @@ const bagReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.GET_BAG_FAIL:
     case actionTypes.ADD_TO_BAG_FAIL:
     case actionTypes.DELETE_BAG_FAIL:
-      console.log('-- action.payload fail : ', action.type, action.payload);
       return {
         ...state,
         processing: false,

@@ -95,7 +95,7 @@ module.exports = {
   apiGetFoodsFromCategory: async function (req, res) {
     let ret = { status: 'fail', data: '' };
     var categoryId = req.params.categoryId
-console.log('-- categoryId : ', categoryId)
+
     if (req.user) {
       FoodModel.find({categoryId: categoryId})
         .populate({

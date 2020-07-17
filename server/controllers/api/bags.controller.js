@@ -15,12 +15,13 @@ module.exports = {
   apiGetDetailBags: async function (req, res) {
     if (req.user) {
       var bags = req.body.bags;
-console.log('-- bags : ', bags)
+
       var foodIds = [];
       bags.map((bag) => {
-        foodIds.push(bag.foodId);
+        if( bag.qty > 0 )
+          foodIds.push(bag.foodId);
       });
-      console.log('-- foodIds : ', foodIds)
+      
       foodModel
         .find({ _id: { $in: foodIds } })
         .populate({
@@ -38,15 +39,16 @@ console.log('-- bags : ', bags)
           }
 
           var foods = result;
-          console.log('-- foods : ', foods)
+          var newBags = [];
           bags.map((bag) => {
             var food = foods.filter((f)=>f._id == bag.foodId);
             if( food && food[0] ){
-              bag.food = food[0]
+              bag.food = food[0];
+              newBags.push(bag)
             }
           });
-          console.log('-- bags : ', bags)
-          res.status(200).json({ bags: bags });
+          
+          res.status(200).json({ bags: newBags });
           return;
         });
     } else {

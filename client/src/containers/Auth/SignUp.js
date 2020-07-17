@@ -216,7 +216,7 @@ class SignUp extends React.Component {
         <CssBaseline />
         <div className={classes.paper}>
           <Grid container style={{ flex: 1 }}>
-            <Grid xs={12} className={classes.logoSec}>
+            <Grid xs={12} item className={classes.logoSec}>
               <IOSSwitch checked={status} onChange={this.onChangeStatus}/>
               <Typography
                 component="h4"
@@ -236,7 +236,7 @@ class SignUp extends React.Component {
             </Grid>
           </Grid>
           <Grid container style={{ flex: 2, overflowY: 'auto' }}>
-            <Grid xs={12}>
+            <Grid xs={12} item>
               <Typography component="h4" variant="h4" className={classes.title}>
                 Sign up
               </Typography>
@@ -290,7 +290,7 @@ class SignUp extends React.Component {
                   Sign Up
                 </Button>
                 <Grid container>
-                  <Grid xs={12} className={classes.textLink}>
+                  <Grid xs={12} item className={classes.textLink}>
                     <span>Already have a account? </span>
                     <Link
                       className={classes.textLinkLink}
@@ -300,7 +300,7 @@ class SignUp extends React.Component {
                       Login
                     </Link>
                   </Grid>
-                  <Grid xs={12} className={classes.textDescription}>
+                  <Grid xs={12} item className={classes.textDescription}>
                     <span>
                       By signing up you accept the Terms of
                       <br />

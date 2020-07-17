@@ -22,6 +22,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.REQUEST_VERIFICATION_EMAIL:
     case actionTypes.REQUEST_PASSWORD_RESET:
     case actionTypes.RESET_PASSWORD:
+    case actionTypes.UPDATE_PROFILE:
       return { ...state, processed: false, processing: true, error: null };
     case actionTypes.SIGN_IN_SUCCESS:
     case actionTypes.FACEBOOK_SIGN_IN_SUCCESS:
@@ -46,6 +47,13 @@ const authReducer = (state = INITIAL_STATE, action) => {
         processing: false,
         processed: true,
       };
+    case actionTypes.UPDATE_PROFILE_SUCCESS:
+      return {
+        ...state,
+        processing: false,
+        processed: true,
+        user: { ...action.payload.user },
+      };
     case actionTypes.SIGN_IN_FAIL:
     case actionTypes.FACEBOOK_SIGN_IN_FAIL:
     case actionTypes.GOOGLE_SIGN_IN_FAIL:
@@ -54,6 +62,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.REQUEST_VERIFICATION_EMAIL_FAIL:
     case actionTypes.REQUEST_PASSWORD_RESET_FAIL:
     case actionTypes.RESET_PASSWORD_FAIL:
+    case actionTypes.UPDATE_PROFILE_FAIL:
       return {
         ...state,
         processing: false,

@@ -22,8 +22,15 @@ import {
   facebookSignIn,
   googleSignIn,
   unloadAuthPage,
+  getSetting,
 } from '../../store/actions';
-import { getProcessing, getError } from '../../store/selectors';
+import {
+  getProcessing,
+  getError,
+  getSettingSetting,
+  getSettingProcessing,
+  getSettingError,
+} from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
 
 const styles = (theme) => ({
@@ -56,7 +63,7 @@ const styles = (theme) => ({
   logoText: {
     textAlign: 'center',
     color: '#232020',
-    fontSize: '2.5rem'
+    fontSize: '2.5rem',
   },
   actionBtn: {
     display: 'inline-block',
@@ -84,6 +91,8 @@ const styles = (theme) => ({
 });
 
 class SignIn extends React.Component {
+  
+
   onSubmit = (formValues) => {
     return this.props.signIn(formValues).then(() => {
       if (this.props.errorMessage) {
@@ -149,7 +158,7 @@ class SignIn extends React.Component {
         <div className={classes.paper}>
           <Grid container style={{ flex: 1 }}></Grid>
           <Grid container style={{ flex: 1.5 }}>
-            <Grid xs={12}>
+            <Grid xs={12} item>
               <Typography
                 component="h4"
                 variant="h4"
@@ -193,7 +202,7 @@ class SignIn extends React.Component {
                   Submit
                 </Button>
                 <Grid container>
-                  <Grid xs={12} className={classes.textLink}>
+                  <Grid xs={12} item className={classes.textLink}>
                     <span>Don't have a account? </span>
                     <Link
                       className={classes.textLinkLink}
@@ -248,6 +257,7 @@ export default compose(
     facebookSignIn,
     googleSignIn,
     unloadAuthPage,
+    getSetting,
   }),
   reduxForm({ form: 'signIn', validate }),
   withStyles(styles)
