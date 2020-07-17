@@ -302,7 +302,8 @@ module.exports.createSettings = () => {
           return Setting.find();
         })
         .then((existingSetting) => {
-          if (existingSetting) {
+          console.log('-- existingSetting : ', existingSetting)
+          if (existingSetting && existingSetting.length > 0) {
             throw new Error(
               chalk.yellow(
                 `[-] [Warning] Database seeding: settings already in use.`
