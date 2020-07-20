@@ -6,10 +6,9 @@ const createAuthenticationStrategy = (strategy, admin) => (req, res, next) => {
     if (err) {
       return next(createError(500, err));
     }
-    
     if (!user) {
       return next(createError(401, info.message));
-    }
+    }    
     console.log('-- admin : ', admin, user.role)
     if( admin === true && (user.role == 'user' || user.role == 'guest') ){
       return next(createError(401, 'This user can\'t login to admin pannel.'));

@@ -9,14 +9,11 @@ import { Switch, Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Navigator from '../components/Navigator';
+import CheckoutHeader from '../components/CheckoutHeader';
+import BottomNavigator from '../components/BottomNavigator';
 import ProtectedRoute from '../components/accessControl/ProtectedRoute';
 import { getRouteCategories } from '../store/selectors';
-import {
-  Home,
-  CartPlus,
-  Menu,
-  SearchWeb
-} from 'mdi-material-ui';
+import { Home, CartPlus, Menu, SearchWeb } from 'mdi-material-ui';
 
 const drawerWidth = 256;
 
@@ -38,9 +35,7 @@ const styles = (theme) => ({
   main: {
     height: 'calc( 100% - 56px )',
   },
-  bottomNav: {
-
-  }
+  bottomNav: {},
 });
 
 class Dashboard extends React.Component {
@@ -89,36 +84,14 @@ class Dashboard extends React.Component {
           </Hidden>
         </nav>
         <div className={classes.app}>
+          <CheckoutHeader
+            onDrawerToggle={this.handleDrawerToggle}
+            routes={routeCategories}
+          />
           <main className={classes.main}>
             {this.renderSwitchRoutes(routeCategories)}
           </main>
-          <BottomNavigation
-            value={'search'}
-            onChange={()=>{}}
-            showLabels
-            className={classes.bottomNav}
-          >
-            <BottomNavigationAction
-              label="Home"
-              value="home"
-              icon={<Home />}
-            />
-            <BottomNavigationAction
-              label="Cart"
-              value="cart"
-              icon={<CartPlus />}
-            />
-            <BottomNavigationAction
-              label="Search"
-              value="search"
-              icon={<SearchWeb />}
-            />
-            <BottomNavigationAction
-              label="Menu"
-              value="menu"
-              icon={<Menu />}
-            />
-          </BottomNavigation>
+          <BottomNavigator />
         </div>
       </div>
     );

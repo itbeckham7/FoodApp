@@ -96,6 +96,36 @@ export const ADD_COMMENT = '[Comment] Add To Comment';
 export const ADD_COMMENT_SUCCESS = '[Comment] Add To Comment Success';
 export const ADD_COMMENT_FAIL = '[Comment] Add To Comment Fail';
 
+export const GET_ADDRESSES = '[Address] Get Addresses';
+export const GET_ADDRESSES_SUCCESS = '[Address] Get Addresses Success';
+export const GET_ADDRESSES_FAIL = '[Address] Get Addresses Fail';
+
+export const GET_ADDRESS = '[Address] Get Address';
+export const GET_ADDRESS_SUCCESS = '[Address] Get Address Success';
+export const GET_ADDRESS_FAIL = '[Address] Get Address Fail';
+
+export const GET_ACTIVE_ADDRESS = '[Address] Get Active Address';
+export const GET_ACTIVE_ADDRESS_SUCCESS = '[Address] Get Active Address Success';
+export const GET_ACTIVE_ADDRESS_FAIL = '[Address] Get Active Address Fail';
+
+export const ADD_ADDRESS = '[Address] Add To Address';
+export const ADD_ADDRESS_SUCCESS = '[Address] Add To Address Success';
+export const ADD_ADDRESS_FAIL = '[Address] Add To Address Fail';
+
+export const UPDATE_ADDRESS = '[Address] Update Address';
+export const UPDATE_ADDRESS_SUCCESS = '[Address] Update Address Success';
+export const UPDATE_ADDRESS_FAIL = '[Address] Update Address Fail';
+
+export const UPDATE_ACTIVE_ADDRESS = '[Address] Update Active Address';
+export const UPDATE_ACTIVE_ADDRESS_SUCCESS = '[Address] Update Active Address Success';
+export const UPDATE_ACTIVE_ADDRESS_FAIL = '[Address] Update Active Address Fail';
+
+export const DELETE_ADDRESS = '[Address] Delete Address';
+export const DELETE_ADDRESS_SUCCESS = '[Address] Delete Address Success';
+export const DELETE_ADDRESS_FAIL = '[Address] Delete Address Fail';
+
 export const GET_SETTING = '[Setting] Get Setting';
 export const GET_SETTING_SUCCESS = '[Setting] Get Setting Success';
 export const GET_SETTING_FAIL = '[Setting] Get Setting Fail';
+
+export const ADDRESS_INITIAL_VALUES = '[Address] Address Initial Value';

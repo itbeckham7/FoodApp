@@ -378,7 +378,7 @@ class Food extends React.Component {
     const { food, me, bags } = this.props;
     const { qty, note } = this.state;
 
-    this.props.addToBag(me._id, food._id, qty, note).then(() => {
+    this.props.addToBag(me.id, food._id, qty, note).then(() => {
       if (this.props.errorMessage) {
         throw new SubmissionError({ _error: this.props.errorMessage });
       }
@@ -594,9 +594,7 @@ class Food extends React.Component {
         commentTime = commentTime.toString();
         commentTime = commentTime.split(' ');
         commentTime =
-          commentTime.length > 4
-            ? commentTime[1] + ' ' + commentTime[2] 
-            : '';
+          commentTime.length > 4 ? commentTime[1] + ' ' + commentTime[2] : '';
         commentElems.push(
           <Grid container className={classes.commentElem}>
             <Grid xs={2} item>
@@ -660,15 +658,17 @@ class Food extends React.Component {
     return (
       <div>
         {commentElems}
-        <Fab
-          color="primary"
-          aria-label="add"
-          className={classes.foodCommentAdd}
-          onClick={this.openAddCommentDlg}
-        >
-          <AddIcon />
-        </Fab>
-        {this.renderAddCommentModal()}
+        {this.props.me.role != 'guest' && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.foodCommentAdd}
+            onClick={this.openAddCommentDlg}
+          >
+            <AddIcon />
+          </Fab>
+        )}
+        {this.props.me.role != 'guest' && this.renderAddCommentModal()}
       </div>
     );
   }
@@ -698,7 +698,7 @@ class Food extends React.Component {
   onSubmit = (formValues) => {
     const { me, food } = this.props;
     const { rating } = this.state;
-    
+
     formValues.rating = rating;
     return this.props.addComment(me.id, food._id, formValues).then(() => {
       if (this.props.errorMessage) {
@@ -722,8 +722,11 @@ class Food extends React.Component {
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle id="alert-dialog-slide-title" style={{textAlign: 'center', fontSize: '1.5rem'}}>
-          {"Please comment now"}
+        <DialogTitle
+          id="alert-dialog-slide-title"
+          style={{ textAlign: 'center', fontSize: '1.5rem' }}
+        >
+          {'Please comment now'}
         </DialogTitle>
         <form onSubmit={handleSubmit(this.onSubmit)}>
           <DialogContent>
@@ -747,15 +750,23 @@ class Food extends React.Component {
                 />
               </Grid>
               <Grid item xs={12} className={classes.inputElem}>
-                <span style={{verticalAlign: 'middle', display: 'inline-block', marginRight: '20px'}}>Rating: </span>
+                <span
+                  style={{
+                    verticalAlign: 'middle',
+                    display: 'inline-block',
+                    marginRight: '20px',
+                  }}
+                >
+                  Rating:{' '}
+                </span>
                 <Rating
                   name="rating"
                   size="large"
                   value={this.state.rating}
                   onChange={(event, newValue) => {
-                    this.setState({rating: newValue})
+                    this.setState({ rating: newValue });
                   }}
-                  style={{verticalAlign: 'middle'}}
+                  style={{ verticalAlign: 'middle' }}
                 />
               </Grid>
             </Grid>
@@ -779,13 +790,13 @@ class Food extends React.Component {
     const { tabValue, comments } = this.state;
 
     var totalRating = 0;
-    if( comments && comments.length > 0 ){
+    if (comments && comments.length > 0) {
       comments.map((comment) => {
-        totalRating += comment.rating
-      })
-      totalRating = parseFloat(totalRating/comments.length).toFixed(1)
+        totalRating += comment.rating;
+      });
+      totalRating = parseFloat(totalRating / comments.length).toFixed(1);
     }
-    
+
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
@@ -812,7 +823,7 @@ class Food extends React.Component {
               </Typography>
             </div>
           </div>
-          <div  className={classes.mainSec}>
+          <div className={classes.mainSec}>
             <div>
               <Typography
                 component="h1"

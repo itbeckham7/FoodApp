@@ -81,7 +81,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'root'],
+      enum: ['guest', 'user', 'admin', 'root'],
       default: 'user',
       index: true,
     },
@@ -130,8 +130,11 @@ const userSchema = new mongoose.Schema(
       commentInsert: { type: Boolean, default: true },
       commentModify: { type: Boolean, default: true },
       commentRead: { type: Boolean, default: true },
-      settingInsert: { type: Boolean, default: true },
-      settingModify: { type: Boolean, default: true },
+      addressInsert: { type: Boolean, default: true },
+      addressModify: { type: Boolean, default: true },
+      addressRead: { type: Boolean, default: true },
+      settingInsert: { type: Boolean, default: false },
+      settingModify: { type: Boolean, default: false },
       settingRead: { type: Boolean, default: true },
       // Example: permissions for ExamplePost model should be defined as below:
       // examplePostInsert: { type: Boolean, default: false }, // Insert only

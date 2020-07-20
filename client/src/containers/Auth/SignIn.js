@@ -94,6 +94,7 @@ class SignIn extends React.Component {
   
 
   onSubmit = (formValues) => {
+    console.log('-- formValues : ', formValues)
     return this.props.signIn(formValues).then(() => {
       if (this.props.errorMessage) {
         throw new SubmissionError({ _error: this.props.errorMessage });
@@ -152,6 +153,8 @@ class SignIn extends React.Component {
       valid,
       error,
     } = this.props;
+
+    console.log('-- signin render start')
     return (
       <div className={classes.root}>
         <CssBaseline />

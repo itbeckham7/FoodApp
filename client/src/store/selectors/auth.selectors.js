@@ -60,7 +60,8 @@ export const getRouteCategories = createSelector(getCurrentUser, (user) => {
     let isHidden = true;
     category.routes.forEach((route) => {
       if (isAuthorized(user, route)) {
-        if( user && route.id == 'signin' ) return;
+        if( user && user.role == 'guest' && route.id == 'signout' ) return;
+        if( user && user.role != 'guest' && route.id == 'signin' ) return;
         routes.push(route);
         if (!category.isHidden && !route.isHidden) {
           isHidden = false;

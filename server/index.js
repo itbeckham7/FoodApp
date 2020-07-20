@@ -2,11 +2,15 @@ const http = require('http');
 const chalk = require('chalk');
 const config = require('./config');
 
+
 // Load mongoose and models
 require('./core/mongoose');
 
 // Load express
 const app = require('./core/express');
+
+const routes = require('./routes');
+app.use(routes);
 
 // Server Setup
 const server = http.createServer(app);

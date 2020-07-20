@@ -6,6 +6,7 @@ import categoryReducer from './category.reducer';
 import foodReducer from './food.reducer';
 import bagReducer from './bag.reducer';
 import commentReducer from './comment.reducer';
+import addressReducer from './address.reducer';
 import settingReducer from './setting.reducer';
 
 const createRootReducer = (history) =>
@@ -18,6 +19,7 @@ const createRootReducer = (history) =>
     food: foodReducer,
     bag: bagReducer,
     comment: commentReducer,
+    address: addressReducer,
   });
 
 export default createRootReducer;

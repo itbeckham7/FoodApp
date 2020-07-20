@@ -97,7 +97,7 @@ export const addToBag = (userId, foodId, qty, nt) => (
             note: bag.note
           })
         })
-        console.log('-- addToBag newBags : ', newBags)
+        console.log('-- addToBag newBags : ', newBags, userId)
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.ADD_TO_BAG_SUCCESS, payload: bags });
       },

@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Navigator from '../components/Navigator';
 import HistoryBagHeader from '../components/HistoryBagHeader';
+import BottomNavigator from '../components/BottomNavigator';
 import ProtectedRoute from '../components/accessControl/ProtectedRoute';
 import { getRouteCategories } from '../store/selectors';
 import {
@@ -100,33 +101,7 @@ class CommonPage extends React.Component {
           <main className={classes.main}>
             {this.renderSwitchRoutes(routeCategories)}
           </main>
-          <BottomNavigation
-            value={'search'}
-            onChange={()=>{}}
-            showLabels
-            className={classes.bottomNav}
-          >
-            <BottomNavigationAction
-              label="Home"
-              value="home"
-              icon={<Home />}
-            />
-            <BottomNavigationAction
-              label="Cart"
-              value="cart"
-              icon={<CartPlus />}
-            />
-            <BottomNavigationAction
-              label="Search"
-              value="search"
-              icon={<SearchWeb />}
-            />
-            <BottomNavigationAction
-              label="Menu"
-              value="menu"
-              icon={<Menu />}
-            />
-          </BottomNavigation>
+          <BottomNavigator />
         </div>
       </div>
     );

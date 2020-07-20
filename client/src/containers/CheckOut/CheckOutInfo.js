@@ -3,16 +3,21 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getBags, deleteBag } from '../../store/actions';
+import csc from 'country-state-city';
+import { getBags, deleteBag, getActiveAddress } from '../../store/actions';
 import {
   getBagBags,
   getBagProcessing,
   getBagError,
   getCurrentUser,
+  getAddressActiveAddress,
 } from '../../store/selectors';
+import { email, minLength, required } from '../../utils/formValidator';
 import config from '../../config';
 
 const styles = (theme) => ({
@@ -62,9 +67,10 @@ const styles = (theme) => ({
     flex: 3.5,
     width: '100%',
     overflowY: 'auto',
+    backgroundColor: '#fff',
   },
   infoSec: {
-    padding: theme.spacing(1, 3),
+    padding: theme.spacing(1, 3, 5),
   },
   infoTitleSec: {
     verticalAlign: 'middle',
@@ -220,12 +226,17 @@ const styles = (theme) => ({
 });
 
 class CheckOutInfo extends React.Component {
-  state = {
-    bags: null,
-  };
-
-  constructor() {
+  constructor(props) {
     super();
+
+    this.state = {
+      bags: null,
+      firstName: props.me.role == 'guest' ? '' : props.me.firstName,
+      lastName: props.me.role == 'guest' ? '' : props.me.lastName,
+      phone: props.me.role == 'guest' ? '' : props.me.phone,
+      email: props.me.role == 'guest' ? '' : props.me.email,
+      address: props.me.role == 'guest' ? '' : props.me.address,
+    };
   }
 
   componentWillMount() {
@@ -234,10 +245,17 @@ class CheckOutInfo extends React.Component {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      
+
       this.setState({
         bags: this.props.bags,
       });
+    });
+
+    this.props.getActiveAddress(this.props.me.id).then(() => {
+      if (this.props.errorMessage) {
+        console.log('-- error : ', this.props.errorMessage);
+        return;
+      }
     });
   }
 
@@ -249,7 +267,7 @@ class CheckOutInfo extends React.Component {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-      
+
       this.setState({
         bags: this.props.bags,
       });
@@ -264,7 +282,7 @@ class CheckOutInfo extends React.Component {
     if (bags && bags.length > 0) {
       bags.map((bag) => {
         bagElems.push(
-          <Grid container className={classes.bagElem}>
+          <Grid container className={classes.bagElem} key={bag.foodId}>
             <div className={classes.bagElemImageSec}>
               <Box
                 className={classes.bagElemImage}
@@ -319,11 +337,331 @@ class CheckOutInfo extends React.Component {
     return <div>{bagElems}</div>;
   }
 
+  renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
+    <TextField
+      label={label}
+      error={touched && !!error}
+      helperText={touched && error}
+      variant="outlined"
+      margin="none"
+      required
+      fullWidth
+      style={{ padding: '5px' }}
+      {...input}
+      {...custom}
+    />
+  );
+
+  renderTextAreaField = ({
+    input,
+    label,
+    meta: { touched, error },
+    ...custom
+  }) => (
+    <TextField
+      label={label}
+      error={touched && !!error}
+      helperText={touched && error}
+      multiline={true}
+      rows={4}
+      fullWidth
+      variant="outlined"
+      margin="none"
+      required
+      fullWidth
+      {...input}
+      {...custom}
+      style={{ height: '100px', padding: '5px' }}
+    />
+  );
+
+  renderGuestContactInfo() {
+    const { classes, me } = this.props;
+    const { bags } = this.state;
+
+    return (
+      <div
+        className={classes.infoSec}
+        style={{
+          backgroundColor: '#fff',
+        }}
+      >
+        <div className={classes.infoTitleSec}>
+          <span className={classes.infoSecNum}>1</span>
+          <Typography
+            component="span"
+            variant="h6"
+            className={classes.infoSecTitle}
+          >
+            Contact Info
+          </Typography>
+        </div>
+        <div className={classes.infoContentSec}>
+          <Grid container>
+            <Grid xs={6} item>
+              <Field
+                name="firstName"
+                label="First Name"
+                id="firstName"
+                autoComplete="firstName"
+                component={this.renderTextField}
+              />
+            </Grid>
+            <Grid xs={6} item>
+              <Field
+                name="lastName"
+                label="Last Name"
+                id="lastName"
+                autoComplete="lastName"
+                component={this.renderTextField}
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid xs={6} item>
+              <Field
+                name="phone"
+                label="Phone"
+                id="phone"
+                autoComplete="firstName"
+                component={this.renderTextField}
+              />
+            </Grid>
+            <Grid xs={6} item>
+              <Field
+                name="email"
+                label="Email"
+                id="email"
+                autoComplete="email"
+                component={this.renderTextField}
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid xs={12} item>
+              <Field
+                name="address"
+                label="Address"
+                id="address"
+                autoComplete="address"
+                component={this.renderTextAreaField}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      </div>
+    );
+  }
+
+  renderUserContactInfo() {
+    const { classes, me, activeAddress } = this.props;
+    const { bags } = this.state;
+    console.log('-- renderUserContactInfo activeAddress : ', activeAddress);
+    var addressInfo = '';
+    if (activeAddress) {
+      var country = csc.getCountryById(activeAddress.countryId);
+      var state = csc.getStateById(activeAddress.stateId);
+      var city = csc.getCityById(activeAddress.cityId);
+      addressInfo = `${activeAddress.address}, ${city.name}, ${state.name}, ${country.name}`;
+    }
+    return (
+      <div
+        className={classes.infoSec}
+        style={{
+          backgroundColor: '#fff',
+        }}
+      >
+        <div className={classes.infoTitleSec}>
+          <span className={classes.infoSecNum}>1</span>
+          <Typography
+            component="span"
+            variant="h6"
+            className={classes.infoSecTitle}
+          >
+            Contact Info
+          </Typography>
+          <Button size="small" className={classes.infoSecEdit} onClick={()=>{window.location = '/profile/general';}}>Edit</Button>
+          {/* <Typography
+            component="span"
+            variant="h6"
+            className={classes.infoSecEdit}
+          >
+            Edit
+          </Typography> */}
+        </div>
+        <div className={classes.infoContentSec}>
+          <div style={{ marginBottom: '15px' }}>
+            <div className={classes.infoLabel}>NAME</div>
+            <div className={classes.infoValue}>
+              {me.firstName} {me.lastName}
+            </div>
+          </div>
+          <div style={{ marginBottom: '15px' }}>
+            <div className={classes.infoLabel}>PHONE NUMBER</div>
+            <div className={classes.infoValue}>{me.phone}</div>
+          </div>
+          <div style={{ marginBottom: '15px' }}>
+            <div className={classes.infoLabel}>EMAIL</div>
+            <div className={classes.infoValue}>{me.email}</div>
+          </div>
+          <div style={{ marginBottom: '15px' }}>
+            <div className={classes.infoLabel}>ADDRESS</div>
+            <div className={classes.infoValue}>{addressInfo}</div>
+            <div>
+              <Button
+                variant="contained"
+                size="small"
+                color="primary"
+                className={classes.roundBtn}
+                onClick={() => {
+                  window.location = '/profile/address';
+                }}
+              >
+                Change Address
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  renderGuestPaymentInfo() {
+    const { classes, me } = this.props;
+    const { bags } = this.state;
+
+    return (
+      <div
+        className={classes.infoSec}
+        style={{
+          paddingTop: '40px',
+          paddingBottom: '40px',
+        }}
+      >
+        <div className={classes.infoTitleSec}>
+          <span className={classes.infoSecNum}>2</span>
+          <Typography
+            component="span"
+            variant="h6"
+            className={classes.infoSecTitle}
+          >
+            Payment Info
+          </Typography>
+        </div>
+        <div className={classes.infoContentSec}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div className={classes.paymentElem}>
+              <img src="/images/visa_PNG30.png" />
+            </div>
+            <div className={classes.paymentElem}>
+              <img src="/images/MasterCard_Logo.svg.png" />
+            </div>
+            <div className={classes.paymentElem}>
+              <img src="/images/PayPal.svg.png" />
+            </div>
+          </div>
+          <div style={{ paddingTop: '20px' }}>
+            <Grid container>
+              <Grid xs={12} item>
+                <Field
+                  name="cardholder"
+                  label="Cardholder Name"
+                  id="cardholder"
+                  autoComplete="cardholder"
+                  component={this.renderTextField}
+                />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid xs={12} item>
+                <Field
+                  name="cardNumber"
+                  label="Card Number"
+                  id="cardNumber"
+                  autoComplete="cardNumber"
+                  component={this.renderTextField}
+                />
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid xs={6} item>
+                <Field
+                  name="cardcvv"
+                  label="CVV"
+                  id="cardcvv"
+                  autoComplete="cardcvv"
+                  component={this.renderTextField}
+                />
+              </Grid>
+              <Grid xs={6} item>
+                <Field
+                  name="cardExpiration"
+                  label="Card Expiration"
+                  id="cardExpiration"
+                  autoComplete="cardExpiration"
+                  component={this.renderTextField}
+                />
+              </Grid>
+            </Grid>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  renderUserPaymentInfo() {
+    const { classes, me } = this.props;
+    const { bags } = this.state;
+
+    return (
+      <div
+        className={classes.infoSec}
+        style={{
+          paddingTop: '40px',
+          paddingBottom: '40px',
+        }}
+      >
+        <div className={classes.infoTitleSec}>
+          <span className={classes.infoSecNum}>2</span>
+          <Typography
+            component="span"
+            variant="h6"
+            className={classes.infoSecTitle}
+          >
+            Payment Info
+          </Typography>
+        </div>
+        <div className={classes.infoContentSec}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div className={classes.paymentElem}>
+              <img src="/images/visa_PNG30.png" />
+            </div>
+            <div className={classes.paymentElem}>
+              <img src="/images/MasterCard_Logo.svg.png" />
+            </div>
+            <div className={classes.paymentElem}>
+              <img src="/images/PayPal.svg.png" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
-    const {
-      classes,
-      me,
-    } = this.props;
+    const { classes, me } = this.props;
     const { bags } = this.state;
 
     var totalPrice = 0;
@@ -349,7 +687,7 @@ class CheckOutInfo extends React.Component {
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
-          <div  className={classes.topSec}>
+          <div className={classes.topSec}>
             <div className={classes.pageTitleSec}>
               <Typography
                 component="p"
@@ -405,93 +743,12 @@ class CheckOutInfo extends React.Component {
               }}
             ></div>
           </div>
-          <div  className={classes.mainSec}>
-            <div
-              className={classes.infoSec}
-              style={{
-                backgroundColor: '#fff',
-              }}
-            >
-              <div className={classes.infoTitleSec}>
-                <span className={classes.infoSecNum}>1</span>
-                <Typography
-                  component="span"
-                  variant="h6"
-                  className={classes.infoSecTitle}
-                >
-                  Contact Info
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="h6"
-                  className={classes.infoSecEdit}
-                >
-                  Edit
-                </Typography>
-              </div>
-              <div className={classes.infoContentSec}>
-                <div style={{ marginBottom: '15px' }}>
-                  <div className={classes.infoLabel}>NAME</div>
-                  <div className={classes.infoValue}>
-                    {me.firstName} {me.lastName}
-                  </div>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                  <div className={classes.infoLabel}>PHONE NUMBER</div>
-                  <div className={classes.infoValue}>{me.phone}</div>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                  <div className={classes.infoLabel}>EMAIL</div>
-                  <div className={classes.infoValue}>
-                    {me.email}
-                  </div>
-                </div>
-                <div style={{ marginBottom: '15px' }}>
-                  <div className={classes.infoLabel}>ADDRESS</div>
-                  <div className={classes.infoValue}>
-                    1783 Ump town 4780, New York
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className={classes.mainSec}>
+            {this.props.me.role == 'guest' && this.renderGuestContactInfo()}
+            {this.props.me.role != 'guest' && this.renderUserContactInfo()}
 
-            <div
-              className={classes.infoSec}
-              style={{
-                paddingTop: '40px',
-                paddingBottom: '40px',
-              }}
-            >
-              <div className={classes.infoTitleSec}>
-                <span className={classes.infoSecNum}>2</span>
-                <Typography
-                  component="span"
-                  variant="h6"
-                  className={classes.infoSecTitle}
-                >
-                  Payment Info
-                </Typography>
-              </div>
-              <div className={classes.infoContentSec}>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div className={classes.paymentElem}>
-                    <img src="/images/visa_PNG30.png" />
-                  </div>
-                  <div className={classes.paymentElem}>
-                    <img src="/images/MasterCard_Logo.svg.png" />
-                  </div>
-                  <div className={classes.paymentElem}>
-                    <img src="/images/PayPal.svg.png" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            {this.props.me.role == 'guest' && this.renderGuestPaymentInfo()}
+            {this.props.me.role != 'guest' && this.renderUserPaymentInfo()}
 
             <div
               className={classes.infoSec}
@@ -618,10 +875,22 @@ const maptStateToProps = (state) => {
     errorMessage: getBagError(state),
     bags: getBagBags(state),
     me: getCurrentUser(state),
+    activeAddress: getAddressActiveAddress(state),
   };
 };
 
+const validate = (values) => {
+  const errors = {};
+  errors.firstName = required(values.firstName) || email(values.firstName);
+  errors.lastName = required(values.lastName) || minLength(8)(values.lastName);
+  errors.phone = required(values.phone) || minLength(8)(values.phone);
+  errors.email = required(values.email) || minLength(8)(values.email);
+  errors.address = required(values.address) || minLength(8)(values.address);
+  return errors;
+};
+
 export default compose(
-  connect(maptStateToProps, { getBags, deleteBag }),
+  connect(maptStateToProps, { getBags, deleteBag, getActiveAddress }),
+  reduxForm({ form: 'checkout', validate }),
   withStyles(styles)
 )(CheckOutInfo);

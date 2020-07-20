@@ -7,6 +7,7 @@ const foodsRoutes = require('./foods.route');
 const discountsRoutes = require('./discounts.route');
 const bagsRoutes = require('./bags.route');
 const commentsRoutes = require('./comments.route');
+const addressesRoutes = require('./addresses.route');
 const settingsRoutes = require('./settings.route');
 
 const router = express.Router();
@@ -23,6 +24,7 @@ router.use('/foods', foodsRoutes);
 router.use('/discounts', discountsRoutes);
 router.use('/bags', bagsRoutes);
 router.use('/comments', commentsRoutes);
+router.use('/addresses', addressesRoutes);
 router.use('/settings', settingsRoutes);
 
 module.exports = router;

@@ -7,6 +7,7 @@ import Link from '@material-ui/core/Link';
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -14,7 +15,8 @@ import {
   signIn,
   unloadAuthPage,
 } from '../../store/actions';
-import { getProcessing, getError } from '../../store/selectors';
+import { getProcessing, getError, getCurrentUser } from '../../store/selectors';
+import config from '../../config';
 
 const styles = (theme) => ({
   root: {
@@ -91,7 +93,19 @@ class Launch extends React.Component {
   );
 
   onClickGuest = () => {
-    window.location = '/signup';
+    console.log('-- onClickGuest : ', config)
+    var formValues = new FormData();
+    console.log('-- onClickGuest 1 : ', config.guestEmail, config.guestPassword)
+    formValues.append('email', config.guestEmail);
+    formValues.append('password', config.guestPassword);
+    console.log('-- onClickGuest formValues : ', formValues)
+    return this.props.signIn(formValues).then((ret) => {
+      console.log('-- ret : ', ret)
+      if (this.props.errorMessage) {
+        throw new SubmissionError({ _error: this.props.errorMessage });
+      }
+      console.log('-- me: ', this.props.me)
+    });
   };
 
   onClickLogin = () => {
@@ -182,6 +196,7 @@ const maptStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
+    me: getCurrentUser(state)
   };
 };
 

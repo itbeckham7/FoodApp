@@ -302,7 +302,6 @@ module.exports.createSettings = () => {
           return Setting.find();
         })
         .then((existingSetting) => {
-          console.log('-- existingSetting : ', existingSetting)
           if (existingSetting && existingSetting.length > 0) {
             throw new Error(
               chalk.yellow(

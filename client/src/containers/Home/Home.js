@@ -518,7 +518,7 @@ class Home extends React.Component {
     console.log('-- renderMainSec start');
     const { setting } = this.props;
 
-    if (setting.homeType == 'home1') {
+    if (!setting || setting.homeType == 'home1') {
       return this.renderMainSecHome1();
     } else {
       return this.renderMainSecHome2();

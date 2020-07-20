@@ -16,14 +16,39 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import AddAddressModal from './AddAddressModal';
+import UpdateAddressModal from './UpdateAddressModal';
 import csc from 'country-state-city';
 import { withStyles } from '@material-ui/core/styles';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getCurrentUser, getSignedInWith } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
-import { updateProfile } from '../../store/actions';
+import {
+  getCurrentUser,
+  getSignedInWith,
+  getAddressAddresses,
+  getAddressProcessing,
+  getAddressError,
+  getAddressActiveAddress,
+} from '../../store/selectors';
+import {
+  updateProfile,
+  getAddresses,
+  deleteAddress,
+  updateActiveAddress,
+  getActiveAddress,
+  changeAddressInitialValues,
+} from '../../store/actions';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const styles = (theme) => ({
   root: {
@@ -44,7 +69,7 @@ const styles = (theme) => ({
     textAlign: 'center',
   },
   mainSec: {
-    flex: 4,
+    flex: 15,
     width: '100%',
     overflowY: 'auto',
     padding: theme.spacing(3),
@@ -55,7 +80,7 @@ const styles = (theme) => ({
     width: '30%',
     borderRadius: '100px',
   },
-  whiteText: {
+  pageTitle: {
     color: '#333',
     fontSize: '1.3rem',
     fontWeight: 'normal',
@@ -70,272 +95,246 @@ const styles = (theme) => ({
   },
   actionBtn: {
     // borderRadius: '50px',
-    margin: theme.spacing(2, 0),
-    padding: theme.spacing(1.5, 0),
+    position: 'absolute',
+    right: '30px',
+    bottom: '120px',
+    padding: theme.spacing(1.5, 3),
   },
   formControl: {
     width: '100%',
   },
+  noAddress: {
+    textAlign: 'center',
+    color: '#333',
+    fontWeight: '300',
+    fontSize: '1rem',
+    padding: '10%',
+  },
+  addressElem: {
+    verticalAlign: 'top',
+    marginBottom: '40px',
+  },
+  addressElemLeft: {
+    display: 'inline-block',
+    width: '90%',
+  },
+  addressElemRight: {
+    display: 'inline-block',
+    width: '9%',
+  },
+  addressElemTitle: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    marginBottom: '5px',
+  },
+  addressElemInfo: {
+    color: '#333',
+    fontWeight: '300',
+    fontSize: '0.8rem',
+  },
 });
 
-class Profile extends React.Component {
-  
-  constructor(props){
+class Address extends React.Component {
+  constructor(props) {
     super();
     this.state = {
-      me: props.me
-    }
-    
+      me: props.me,
+      addresses: null,
+      selectAddress: null,
+      isVisibleAddAddressDlg: false,
+      isVisibleUpdateAddressDlg: false,
+    };
+
+    this.activeAddress = this.activeAddress.bind(this);
+    this.onClickAddressElem = this.onClickAddressElem.bind(this);
+    this.closeAddAddressDlg = this.closeAddAddressDlg.bind(this);
+    this.closeUpdateAddressDlg = this.closeUpdateAddressDlg.bind(this);
+    this.activeAddress = this.activeAddress.bind(this);
+    this.updateAddresses = this.updateAddresses.bind(this);
   }
 
-  renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => {
-    return (
-      <TextField
-        label={label}
-        error={touched && !!error}
-        helperText={touched && error}
-        variant="outlined"
-        margin="none"
-        fullWidth
-        {...input}
-        {...custom}
-        value={input.value}
-        style={{ marginBottom: '30px' }}
-      />
-    );
-  };
-
-  renderCountryField = ({
-    input,
-    label,
-    meta: { touched, error },
-    ...custom
-  }) => {
-    const { classes } = this.props;
-    var countries = csc.getAllCountries();
-    var countriesElem = [
-      <MenuItem key={'country-none'} value="">
-        <em>None</em>
-      </MenuItem>,
-    ];
-    countries.map((country) => {
-      countriesElem.push(
-        <MenuItem key={country.id} value={country.sortname}>{country.name}</MenuItem>
-      );
-    });
-
-    return (
-      <FormControl className={classes.formControl}>
-        <InputLabel
-          id="country-label"
-          className={classes.countryLabel}
-          variant="outlined"
-          required
-        >
-          Country
-        </InputLabel>
-        <Select
-          labelId="country-label"
-          label={label}
-          error={touched && !!error}
-          variant="outlined"
-          margin="none"
-          fullWidth
-          {...input}
-          {...custom}
-          value={input.value}
-          style={{ marginBottom: '30px' }}
-        >
-          {countriesElem}
-        </Select>
-      </FormControl>
-    );
-  };
-
-  onSubmit = (formValues) => {
+  componentWillMount() {
     const { me } = this.props;
-    return this.props.updateProfile(me.id, formValues).then(() => {
+
+    this.props.getAddresses(me.id).then(() => {
       if (this.props.errorMessage) {
-        throw new SubmissionError({ _error: this.props.errorMessage });
+        console.log('-- error : ', this.props.errorMessage);
+        return;
       }
-      
-      this.setState({me: this.props.me})
+
+      var addresses = this.props.addresses;
+      this.setState({ addresses });
     });
-  };
+  }
+
+  closeAddAddressDlg() {
+    this.setState({
+      isVisibleAddAddressDlg: false,
+    });
+  }
+
+  closeUpdateAddressDlg() {
+    this.setState({
+      isVisibleUpdateAddressDlg: false,
+    });
+  }
+
+  activeAddress(addressId) {
+    const { me } = this.props;
+
+    return this.props.updateActiveAddress(me.id, addressId).then(() => {
+      if (this.props.errorMessage) {
+        console.log('-- error : ', this.props.errorMessage)
+        return;
+      }
+
+      this.setState({
+        addresses: this.props.addresses,
+      });
+    });
+  }
+
+  onClickAddressElem(addressInfo) {
+    const {addressName, countryId, stateId, cityId, address} = addressInfo
+    this.props.changeAddressInitialValues({addressName, countryId, stateId, cityId, address});
+
+    this.setState({
+      selectAddress: addressInfo,
+      isVisibleUpdateAddressDlg: true,
+    });
+  }
+
+  renderAddresses() {
+    const { classes } = this.props;
+    const { addresses } = this.state;
+    console.log('-- addresses : ', addresses);
+    if (addresses && addresses.length > 0) {
+      var addressElems = [];
+      addresses.map((address) => {
+        var country = csc.getCountryById(address.countryId);
+        var state = csc.getStateById(address.stateId);
+        var city = csc.getCityById(address.cityId);
+        var addressInfo = `${address.address}, ${city.name}, ${state.name}, ${country.name}`;
+        var checkImage = address.active
+          ? '/images/Checkbox-1.png'
+          : '/images/Checkbox.png';
+        addressElems.push(
+          <div
+            className={classes.addressElem}
+            onClick={this.onClickAddressElem.bind(this, address)}
+            key={address._id}
+          >
+            <div className={classes.addressElemLeft}>
+              <div className={classes.addressElemTitle}>
+                {address.addressName}
+              </div>
+              <div className={classes.addressElemInfo}>{addressInfo}</div>
+            </div>
+            <div className={classes.addressElemRight}>
+              <IconButton
+                color="inherit"
+                aria-label="active address"
+                onClick={this.activeAddress.bind(this, address._id)}
+              >
+                <img src={checkImage} />
+              </IconButton>
+            </div>
+          </div>
+        );
+      });
+      return <div>{addressElems}</div>;
+    } else {
+      return (
+        <div className={classes.noAddress}>
+          There are no addresses. Please add new address.
+        </div>
+      );
+    }
+  }
+
+  updateAddresses(addresses) {
+    this.setState({ addresses: addresses });
+  }
 
   render() {
+    const { classes } = this.props;
     const {
-      classes,
-      authProvider,
-      handleSubmit,
-      pristine,
-      submitting,
-      valid,
-      error,
-    } = this.props;
-    const {me} = this.state
-
-    let picture = '';
-    if (me.provider) {
-      picture = me.provider[authProvider].picture;
-    }
-
-    picture = picture ? picture : '/logo-circle512.png';
+      me,
+      isVisibleAddAddressDlg,
+      isVisibleUpdateAddressDlg,
+      selectAddress,
+    } = this.state;
 
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
-          <div  className={classes.topSec}>
-            <img alt="avatar" src={picture} className={classes.image} />
+          <div className={classes.topSec}>
             <Typography
-              variant="h4"
-              color="textSecondary"
-              component="h4"
-              className={classes.whiteText}
+              component="p"
+              variant="h6"
+              className={classes.pageTitle}
             >
-              {me.firstName} {me.lastName}
+              Shipping Address
             </Typography>
           </div>
-          <div  className={classes.mainSec}>
-            <div className={classes.tabPanel}>
-              <form onSubmit={handleSubmit(this.onSubmit)}>
-                <Field
-                  id="firstName"
-                  label="First Name"
-                  required
-                  name="firstName"
-                  autoComplete="firstName"
-                  component={this.renderTextField}
-                />
-                <Field
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  required
-                  autoComplete="lastName"
-                  component={this.renderTextField}
-                />
-                <Field
-                  id="username"
-                  label="User Name"
-                  name="username"
-                  required
-                  autoComplete="username"
-                  component={this.renderTextField}
-                />
-                <Field
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  required
-                  autoComplete="email"
-                  component={this.renderTextField}
-                />
-                <Field
-                  id="phone"
-                  label="Phone"
-                  name="phone"
-                  required
-                  autoComplete="phone"
-                  component={this.renderTextField}
-                />
-                <Field
-                  id="country"
-                  label="Country"
-                  name="country"
-                  required
-                  autoComplete="country"
-                  component={this.renderCountryField}
-                />
-                <Button
-                  className={classes.actionBtn}
-                  color="secondary"
-                  disabled={pristine || submitting || !valid}
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                >
-                  Save
-                </Button>
-              </form>
-            </div>
+          <div className={classes.mainSec}>
+            <div className={classes.tabPanel}>{this.renderAddresses()}</div>
           </div>
+
+          <Button
+            className={classes.actionBtn}
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              this.props.changeAddressInitialValues({
+                addressName: '', 
+                countryId: '', 
+                stateId: '', 
+                cityId: '', 
+                address: ''
+              });
+              this.setState({ isVisibleAddAddressDlg: true });
+            }}
+          >
+            New Address
+          </Button>
+          {isVisibleAddAddressDlg && (
+            <AddAddressModal
+              updateAddresses={this.updateAddresses}
+              closeModal={this.closeAddAddressDlg}
+            />
+          )}
+          {isVisibleUpdateAddressDlg && (
+            <UpdateAddressModal
+              updateAddresses={this.updateAddresses}
+              closeModal={this.closeUpdateAddressDlg}
+              selectAddress={selectAddress}
+            />
+          )}
         </div>
       </div>
-      // <Grid container justify="center">
-      //   <Grid xs={12} sm={5} md={3} item>
-      //     <Card>
-      //       <CardActionArea>
-      //         <CardMedia
-      //           component={() => (
-      //             <div>
-      //               <img alt="avatar" src={picture} className={classes.image} />
-      //             </div>
-      //           )}
-      //         />
-      //         <CardContent>
-      //           <Typography gutterBottom variant="h5" component="h2">
-      //             {`${me.firstName} ${me.lastName}`}
-      //           </Typography>
-      //           <Typography variant="body2" color="textSecondary" component="p">
-      //             Joined in {new Date(me.createdAt).getFullYear()}
-      //           </Typography>
-      // <Typography variant="body2" color="textSecondary" component="p">
-      //   You are logged in as <b>{me.username}</b>
-      // </Typography>
-      //         </CardContent>
-      //       </CardActionArea>
-      //     </Card>
-      //   </Grid>
-      // </Grid>
     );
   }
 }
 
-const validate = (values) => {
-  const errors = {};
-  errors.firstName = required(values.firstName);
-  errors.lastName = required(values.lastName);
-  errors.username = required(values.username);
-  errors.email = required(values.email) || email(values.email);
-  errors.phone = required(values.phone);
-  errors.country = required(values.country);
-  return errors;
-};
-
-const mapStateToProps = (st) => {
-  var me = getCurrentUser(st);
-  const {
-    firstName,
-    lastName,
-    username,
-    email,
-    phone,
-    country,
-    state,
-    city,
-    address,
-  } = me;
-  var initialValues = {
-    firstName,
-    lastName,
-    username,
-    email,
-    phone,
-    country,
-    state,
-    city,
-    address,
-  };
+const mapStateToProps = (state) => {
   return {
-    me: me,
-    authProvider: getSignedInWith(st),
-    initialValues: initialValues,
+    me: getCurrentUser(state),
+    authProvider: getSignedInWith(state),
+    addresses: getAddressAddresses(state),
+    activeAddress: getAddressActiveAddress(state),
   };
 };
 
 export default compose(
-  connect(mapStateToProps, { updateProfile }),
-  reduxForm({ form: 'profile', validate }),
+  connect(mapStateToProps, {
+    updateProfile,
+    getAddresses,
+    deleteAddress,
+    updateActiveAddress,
+    getActiveAddress,
+    changeAddressInitialValues,
+  }),
   withStyles(styles)
-)(Profile);
+)(Address);

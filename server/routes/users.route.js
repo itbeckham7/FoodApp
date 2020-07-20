@@ -22,6 +22,7 @@ router.get('/edit/:userId', function (req, res) {
 });
 
 router.post('/add', function (req, res) {
+    console.log('-- users/add')
     user_controller.createUser(req, res);
 });
 

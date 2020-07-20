@@ -3,7 +3,7 @@ const createAuthenticationStrategy = require('../middleware/createAuthentication
 
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
-const localAuthenticate = createAuthenticationStrategy('local');
+const localAuthenticate = createAuthenticationStrategy('local', true);
 const googleAuthenticate = createAuthenticationStrategy('google-token');
 const facebookAuthenticate = createAuthenticationStrategy('facebook-token');
 

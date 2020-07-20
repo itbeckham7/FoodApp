@@ -46,7 +46,9 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Support parsing of */* type post data
-app.use(bodyParser.json({ type: '*/*' }));
+// app.use(bodyParser.json({ type: '*/*' }));
+app.use(bodyParser.json());
+app.use(bodyParser.json({type: 'application/vnd.api+json'})); // parse application/vnd.api+json as json
 
 app.use(passport.initialize());
 
@@ -85,15 +87,17 @@ app.use((req, res, next) => {
 if (config.env === 'development') {
   app.use((err, req, res, next) => {
     console.log(err.stack);
+    console.log('-- req : ', req.header)
     res
       .status(err.status || 400)
-      .json({ error: { message: err.message, details: err.stack } });
+      .json({ error: { message: err.message, details: err.stack}});
   });
 }
 
 // error handler
 // no stracktrace sent to client
 app.use((err, req, res, next) => {
+  console.log('-- err : ', err)
   res.status(err.status || 400).json({ error: { message: err.message } });
 });
 

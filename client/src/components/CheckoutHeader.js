@@ -67,7 +67,7 @@ const styles = (theme) => ({
   },
 });
 
-class HistoryBagHeader extends React.Component {
+class CheckoutHeader extends React.Component {
   state = { anchorEl: null };
 
   constructor() {
@@ -154,47 +154,6 @@ class HistoryBagHeader extends React.Component {
                   <ChevronLeft />
                 </IconButton>
               </Grid>
-              <Hidden lgUp>
-                <Grid item style={{ flex: 1 }}>
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={onDrawerToggle}
-                    className={classes.menuButton}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                </Grid>
-              </Hidden>
-              <Grid style={{ flex: 5 }}>
-                <Typography
-                  component="h4"
-                  variant="h5"
-                  className={classes.logoText}
-                >
-                  {this.props.titleElem}
-                </Typography>
-              </Grid>
-              <Grid style={{ flex: 1, textAlign: 'right' }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={this.onGotoBag}
-                  className={classes.menuButton}
-                >
-                  <Badge badgeContent={bags ? bags.length : 0} color="primary">
-                    <div
-                      style={{
-                        width: '1em',
-                        height: '1em',
-                        backgroundImage: 'url(/images/BASKET.png)',
-                        backgroundPosition: 'center center',
-                        backgroundRepeat: 'no-repeat',
-                      }}
-                    ></div>
-                  </Badge>
-                </IconButton>
-              </Grid>
             </Grid>
           </Toolbar>
         </AppBar>
@@ -203,7 +162,7 @@ class HistoryBagHeader extends React.Component {
   }
 }
 
-HistoryBagHeader.propTypes = {
+CheckoutHeader.propTypes = {
   classes: PropTypes.object.isRequired,
   onDrawerToggle: PropTypes.func.isRequired,
   routes: PropTypes.arrayOf(PropTypes.object),
@@ -222,4 +181,4 @@ const mapStateToProps = (state) => {
 export default compose(
   connect(mapStateToProps, { signOut, push, getBags }),
   withStyles(styles)
-)(HistoryBagHeader);
+)(CheckoutHeader);

@@ -6,6 +6,7 @@ import ProfileAddress  from './containers/Profile/Address';
 import HomePage from './containers/Home/Home';
 import FoodsPage from './containers/Home/Foods';
 import FoodPage from './containers/Home/Food';
+import SearchPage from './containers/Home/Search';
 import Order from './containers/Order/Order';
 import BagPage from './containers/Bag/Bag';
 import CheckOutInfoPage from './containers/CheckOut/CheckOutInfo';
@@ -76,7 +77,7 @@ const routeCategories = [
         name: 'Bag',
         title: '',
         path: '/common/search',
-        component: BagPage,
+        component: SearchPage,
         isHidden: true,
         icon: '/images/home.png',
       },

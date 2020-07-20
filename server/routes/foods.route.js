@@ -22,6 +22,7 @@ router.get('/edit/:foodId', function (req, res) {
 });
 
 router.post('/add', function (req, res) {
+  console.log('-- add route')
   food_controller.createFood(req, res);
 });
 
