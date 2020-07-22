@@ -5,6 +5,7 @@ const config = require('../config/index');
 const { usersSeed } = require('../seed/users')
 const { languageSeed } = require('../seed/languages')
 const { discountSeed } = require('../seed/discounts')
+const { branchSeed } = require('../seed/branches')
 const { categorySeed, categoryTransSeed } = require('../seed/categories')
 const { foodSeed, foodTransSeed } = require('../seed/foods')
 const { settingSeed } = require('../seed/settings')
@@ -151,6 +152,49 @@ module.exports.createDiscounts = () => {
         });
     }, Promise.resolve())
     .then(() => Promise.resolve(addedDiscounts));
+};
+
+
+
+module.exports.createBranches = () => {
+  const Branch = mongoose.model('branch');
+  let addedBranches = [];
+
+  return branchSeed
+    .reduce((sequence, branchInfo) => {
+      return sequence
+        .then(() => {
+          return Branch.findOne({ code: branchInfo.code });
+        })
+        .then((existingBranch) => {
+          if (existingBranch) {
+            throw new Error(
+              chalk.yellow(
+                `[-] [Warning] Database seeding: Code (${branchInfo.code}) already in use.`
+              )
+            );
+          }
+          const branch = new Branch(branchInfo);
+
+          return branch.save();
+        })
+        .then((branch) => {
+          if (config.seed.logging) {
+            console.log(
+              chalk.green(
+                `[+] Database Seeding: A new branch added (${branchInfo.code})`
+              )
+            );
+          }
+          addedBranches.push(branch);
+        })
+        .catch((err) => {
+          if (config.seed.logging) {
+            console.log(err.message);
+          }
+        });
+    }, Promise.resolve())
+    .then(() => Promise.resolve(addedBranches));
 };
 
 

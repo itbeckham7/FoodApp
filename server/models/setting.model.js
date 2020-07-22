@@ -4,6 +4,8 @@ let Schema = mongoose.Schema;
 let SettingSchema = new Schema(
     {
         homeType: String,
+        startTime: String,
+        endTime: String,
     },
     { timestamps: true }
 );

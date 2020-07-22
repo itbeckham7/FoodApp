@@ -136,7 +136,7 @@ class RequestTokenForm extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     errorMessage: getError(state),
     isProcessed: getProcessed(state),
@@ -150,7 +150,7 @@ const validate = (values) => {
 };
 
 export default compose(
-  connect(maptStateToProps),
+  connect(mapStateToProps),
   reduxForm({ form: 'requestToken', validate }),
   withStyles(styles)
 )(RequestTokenForm);

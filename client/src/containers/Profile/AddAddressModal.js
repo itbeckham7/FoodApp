@@ -328,9 +328,6 @@ class AddAddressModal extends React.Component {
                   required
                   autoComplete="stateId"
                   component={this.renderStateField}
-                  ref={(ref) => {
-                    this.stateRef = ref;
-                  }}
                 />
               </Grid>
               <Grid item xs={12} className={classes.inputElem}>
@@ -341,9 +338,6 @@ class AddAddressModal extends React.Component {
                   required
                   autoComplete="cityId"
                   component={this.renderCityField}
-                  ref={(ref) => {
-                    this.cityRef = ref;
-                  }}
                 />
               </Grid>
               <Grid item xs={12} className={classes.inputElem}>
@@ -351,6 +345,7 @@ class AddAddressModal extends React.Component {
                   name="address"
                   label="Address"
                   id="address"
+                  required
                   autoComplete="address"
                   component={this.renderTextAreaField}
                 />
@@ -358,7 +353,7 @@ class AddAddressModal extends React.Component {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.closeAddCommentDlg} variant="outlined">
+            <Button onClick={this.closeAddAddressDlg} variant="outlined">
               Cancel
             </Button>
             <Button color="primary" variant="contained" type="submit">

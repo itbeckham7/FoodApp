@@ -171,7 +171,7 @@ class Bag extends React.Component {
         console.log('-- error : ', this.props.errorMessage);
         return;
       }
-console.log('-- bag this.props.bags : ', this.props.bags)
+
       this.setState({
         bags: this.props.bags,
       });
@@ -199,16 +199,21 @@ console.log('-- bag this.props.bags : ', this.props.bags)
     if (bag.qty > bag.food.qty) return;
     bag.qty++;
 
-    this.props.addToBag(me.id, bag.foodId, bag.qty).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
+    var price = bag.food.trans[0].price;
+    var currency = bag.food.trans[0].languageId.currency;
 
-      this.setState({
-        bags: this.props.bags,
+    this.props
+      .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+      .then(() => {
+        if (this.props.errorMessage) {
+          console.log('-- error : ', this.props.errorMessage);
+          return;
+        }
+
+        this.setState({
+          bags: this.props.bags,
+        });
       });
-    });
   }
 
   onMinusQty(bag) {
@@ -217,16 +222,21 @@ console.log('-- bag this.props.bags : ', this.props.bags)
     if (bag.qty === 0) return;
     bag.qty--;
 
-    this.props.addToBag(me.id, bag.foodId, bag.qty).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
+    var price = bag.food.trans[0].price;
+    var currency = bag.food.trans[0].languageId.currency;
 
-      this.setState({
-        bags: this.props.bags,
+    this.props
+      .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+      .then(() => {
+        if (this.props.errorMessage) {
+          console.log('-- error : ', this.props.errorMessage);
+          return;
+        }
+
+        this.setState({
+          bags: this.props.bags,
+        });
       });
-    });
   }
 
   renderBags() {
@@ -237,7 +247,7 @@ console.log('-- bag this.props.bags : ', this.props.bags)
     if (bags && bags.length > 0) {
       bags.map((bag) => {
         bagElems.push(
-          <Grid container className={classes.bagElem}>
+          <Grid container className={classes.bagElem} key={bag.foodId}>
             <div className={classes.bagElemImageSec}>
               <Box
                 className={classes.bagElemImage}
@@ -289,10 +299,7 @@ console.log('-- bag this.props.bags : ', this.props.bags)
                   variant="h6"
                   className={classes.bagElemPrice}
                 >
-                  {bag.food
-                    ? bag.food.trans[0].languageId.currency +
-                      bag.food.trans[0].price * bag.qty
-                    : ''}
+                  {bag.food ? bag.currency + bag.price * bag.qty : ''}
                 </Typography>
               </div>
 
@@ -323,8 +330,8 @@ console.log('-- bag this.props.bags : ', this.props.bags)
     if (bags && bags.length > 0) {
       itemCounts = bags.length;
       bags.map((bag) => {
-        currency = bag.food.trans[0].languageId.currency;
-        totalPrice += bag.food.trans[0].price * bag.qty;
+        currency = bag.currency;
+        totalPrice += bag.price * bag.qty;
       });
     }
 
@@ -372,7 +379,7 @@ console.log('-- bag this.props.bags : ', this.props.bags)
                 </div>
               </div>
             </div>
-            { itemCounts ? (
+            {itemCounts ? (
               <div style={{ margin: '30px 0' }}>
                 <Button
                   variant="contained"
@@ -381,7 +388,7 @@ console.log('-- bag this.props.bags : ', this.props.bags)
                   fullWidth
                   className={classes.roundBtn}
                   onClick={() => {
-                    window.location = '/checkout/checkoutinfo';
+                    this.props.history.push('/checkout/checkoutinfo');
                   }}
                 >
                   Check out
@@ -397,7 +404,7 @@ console.log('-- bag this.props.bags : ', this.props.bags)
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
@@ -407,6 +414,6 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { getBags, addToBag, deleteBag }),
+  connect(mapStateToProps, { getBags, addToBag, deleteBag }),
   withStyles(styles)
 )(Bag);

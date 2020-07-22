@@ -1,26 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { push } from 'connected-react-router';
 import {
-  Account,
-  Bell,
-  Logout,
-  CartPlus,
   ChevronLeft,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
@@ -32,7 +21,7 @@ import {
   getSignedInWith,
   getBagBags,
 } from '../store/selectors';
-import { signOut, getBags } from '../store/actions';
+import { getBags } from '../store/actions';
 
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
@@ -68,7 +57,6 @@ const styles = (theme) => ({
 });
 
 class HistoryBagHeader extends React.Component {
-  state = { anchorEl: null };
 
   constructor() {
     super();
@@ -76,63 +64,29 @@ class HistoryBagHeader extends React.Component {
 
   componentWillMount() {
     const { me } = this.props;
-    this.props.getBags(me.id).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-    });
+    
+    var that = this;
+    setTimeout(function(){
+      if( that.props.bags ) return;
+      that.props.getBags(me.id).then(() => {
+        if (that.props.errorMessage) {
+          console.log('-- error : ', that.props.errorMessage);
+          return;
+        }
+      });
+    }, 2000)
   }
-
-  onMenuOpen = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  onMenuClose = () => {
-    this.setState({ anchorEl: null });
-  };
 
   onNavigatePrev = () => {
     window.history.back();
-  };
-
-  getBrand = () => {
-    const { routes: routeCategories, pathname } = this.props;
-
-    let brand = '';
-    routeCategories.forEach(({ routes }) => {
-      routes.forEach(({ name, path, title }) => {
-        var pathArr = path.split('/');
-        var pathnameArr = pathname.split('/');
-
-        if (pathArr.length == pathnameArr.length) {
-          var isSuccess = true;
-          for (var i = 0; i < pathArr.length; i++) {
-            if (pathArr[i] != pathnameArr[i]) {
-              if (pathArr[i][0] == ':') continue;
-              isSuccess = false;
-              break;
-            }
-          }
-
-          if (isSuccess) brand = title;
-        }
-      });
-    });
-    return brand;
   };
 
   render() {
     const {
       classes,
       onDrawerToggle,
-      me,
-      authProvider,
-      signOut,
       bags,
     } = this.props;
-
-    const { anchorEl } = this.state;
 
     return (
       <React.Fragment>
@@ -220,6 +174,6 @@ const mapStateToProps = (state) => {
 };
 
 export default compose(
-  connect(mapStateToProps, { signOut, push, getBags }),
+  connect(mapStateToProps, { getBags }),
   withStyles(styles)
 )(HistoryBagHeader);

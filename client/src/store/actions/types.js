@@ -80,6 +80,8 @@ export const SET_CHECKOUT_BAGS = '[Bag] Set Checkout Bag';
 export const SET_CHECKOUT_BAGS_SUCCESS = '[Bag] Set Checkout Success';
 export const SET_CHECKOUT_BAGS_FAIL = '[Bag] Set Checkout Fail';
 
+export const CLEAR_BAG = '[Bag] Clear Bag';
+
 export const GET_CHECKOUT_BAGS = '[Bag] Get Checkout Bag';
 export const GET_CHECKOUT_BAGS_SUCCESS = '[Bag] Get Checkout Success';
 export const GET_CHECKOUT_BAGS_FAIL = '[Bag] Get Checkout Fail';
@@ -124,8 +126,64 @@ export const DELETE_ADDRESS = '[Address] Delete Address';
 export const DELETE_ADDRESS_SUCCESS = '[Address] Delete Address Success';
 export const DELETE_ADDRESS_FAIL = '[Address] Delete Address Fail';
 
+export const ADDRESS_INITIAL_VALUES = '[Address] Address Initial Value';
+
+
+
+
+export const GET_CARDS = '[Card] Get Cards';
+export const GET_CARDS_SUCCESS = '[Card] Get Cards Success';
+export const GET_CARDS_FAIL = '[Card] Get Cards Fail';
+
+export const GET_CARD = '[Card] Get Card';
+export const GET_CARD_SUCCESS = '[Card] Get Card Success';
+export const GET_CARD_FAIL = '[Card] Get Card Fail';
+
+export const GET_ACTIVE_CARD = '[Card] Get Active Card';
+export const GET_ACTIVE_CARD_SUCCESS = '[Card] Get Active Card Success';
+export const GET_ACTIVE_CARD_FAIL = '[Card] Get Active Card Fail';
+
+export const ADD_CARD = '[Card] Add To Card';
+export const ADD_CARD_SUCCESS = '[Card] Add To Card Success';
+export const ADD_CARD_FAIL = '[Card] Add To Card Fail';
+
+export const UPDATE_CARD = '[Card] Update Card';
+export const UPDATE_CARD_SUCCESS = '[Card] Update Card Success';
+export const UPDATE_CARD_FAIL = '[Card] Update Card Fail';
+
+export const UPDATE_ACTIVE_CARD = '[Card] Update Active Card';
+export const UPDATE_ACTIVE_CARD_SUCCESS = '[Card] Update Active Card Success';
+export const UPDATE_ACTIVE_CARD_FAIL = '[Card] Update Active Card Fail';
+
+export const DELETE_CARD = '[Card] Delete Card';
+export const DELETE_CARD_SUCCESS = '[Card] Delete Card Success';
+export const DELETE_CARD_FAIL = '[Card] Delete Card Fail';
+
+export const CARD_INITIAL_VALUES = '[Card] Card Initial Value';
+
+
+
+export const GET_ORDERS = '[Order] Get Orders';
+export const GET_ORDERS_SUCCESS = '[Order] Get Orders Success';
+export const GET_ORDERS_FAIL = '[Order] Get Orders Fail';
+
+export const GET_ORDER = '[Order] Get Order';
+export const GET_ORDER_SUCCESS = '[Order] Get Order Success';
+export const GET_ORDER_FAIL = '[Order] Get Order Fail';
+
+export const ADD_ORDER = '[Order] Add To Order';
+export const ADD_ORDER_SUCCESS = '[Order] Add To Order Success';
+export const ADD_ORDER_FAIL = '[Order] Add To Order Fail';
+
+export const ORDER_INITIAL_VALUES = '[Order] Order Initial Value';
+
+
+
+export const GET_BRANCHES = '[Branch] Get Branches';
+export const GET_BRANCHES_SUCCESS = '[Branch] Get Branches Success';
+export const GET_BRANCHES_FAIL = '[Branch] Get Branches Fail';
+
+
 export const GET_SETTING = '[Setting] Get Setting';
 export const GET_SETTING_SUCCESS = '[Setting] Get Setting Success';
 export const GET_SETTING_FAIL = '[Setting] Get Setting Fail';
-
-export const ADDRESS_INITIAL_VALUES = '[Address] Address Initial Value';

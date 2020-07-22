@@ -49,6 +49,13 @@ const bagReducer = (state = INITIAL_STATE, action) => {
         processed: true,
         error: action.payload,
       };
+    case actionTypes.CLEAR_BAG:
+      return {
+        ...state,
+        processing: false,
+        processed: true,
+        bags: null,
+      };
     default:
       return state;
   }

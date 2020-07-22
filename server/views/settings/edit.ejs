@@ -39,42 +39,80 @@
 
         <!-- Container-fluid starts-->
         <div class="container-fluid">
-            <div class="card tab2-card">
-                <div class="card-header">
-                    <h5>Setting Details</h5>
+            <% if(error && error.length > 0){ %>
+                <div class="alert alert-danger">
+                    <%= error %>
                 </div>
-                <div class="card-body">
-                    <% if(error && error.length > 0){ %>
-                        <div class="alert alert-danger">
-                            <%= error %>
+            <% } else if(success && success.length > 0 ){ %>
+                <div class="alert alert-success">
+                    <%= success %>
+                </div>
+            <% } %>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card tab2-card">
+                        <div class="card-header">
+                            <h5>Home</h5>
                         </div>
-                    <% } else if(success && success.length > 0 ){ %>
-                        <div class="alert alert-success">
-                            <%= success %>
-                        </div>
-                    <% } %>
-                    <div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
-                        <form class="needs-validation" novalidate=""
-                            method="post" action="/settings/update/<%= setting_info._id %>">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group row">
-                                        <label class="col-xl-3 col-md-4">Home Type</label>
-                                        <select class="custom-select col-md-7" required id="setting-homeType" name="setting-homeType">
-                                            <option value="home1" <%= setting_info.homeType == 'home1'?'selected':'' %>>Home 1</option>
-                                            <option value="home2" <%= setting_info.homeType == 'home2'?'selected':'' %>>Home 2</option>
-                                        </select>
+                        <div class="card-body">
+                            <div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                <form class="needs-validation" novalidate=""
+                                    method="post" action="/settings/update/<%= setting_info._id %>">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group row">
+                                                <label class="col-md-4">Home Type</label>
+                                                <select class="custom-select col-md-7" required id="setting-homeType" name="setting-homeType">
+                                                    <option value="home1" <%= setting_info.homeType == 'home1'?'selected':'' %>>Home 1</option>
+                                                    <option value="home2" <%= setting_info.homeType == 'home2'?'selected':'' %>>Home 2</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="pull-right">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-                        </form>
+                            
+                        </div>
                     </div>
-                    
+                </div>
+                <div class="col-lg-6">
+                    <div class="card tab2-card">
+                        <div class="card-header">
+                            <h5>Restaurent</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
+                                <form class="needs-validation" novalidate=""
+                                    method="post" action="/settings/update/<%= setting_info._id %>">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group row">
+                                                <label class="col-md-4">Start Time</label>
+                                                <input class="form-control digits col-md-7" type="text" id="setting-startTime" 
+                                                    name="setting-startTime" value="<%= setting_info.startTime %>">
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-md-4">End Time</label>
+                                                <input class="form-control digits col-md-7" type="text" id="setting-endTime" 
+                                                    name="setting-endTime" value="<%= setting_info.endTime %>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
         </div>
         <!-- Container-fluid Ends-->
 

@@ -68,6 +68,8 @@ console.log('-- showEditSetting 1');
             settingInfo = settings[0]
 
             settingInfo.homeType = req.body['setting-homeType'];
+            settingInfo.startTime = req.body['setting-startTime'];
+            settingInfo.endTime = req.body['setting-endTime'];
             await settingInfo.save();
             req.flash('success', 'Updated successfully');
             return res.redirect('/settings');

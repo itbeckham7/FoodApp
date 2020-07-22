@@ -13,8 +13,8 @@ router.get('/', function(req, res, next) {
   order_controller.showOrders(req, res);
 });
 
-router.get('/add', function (req, res) {
-  order_controller.showAddOrder(req, res);
+router.get('/detail/:orderId', function (req, res) {
+  order_controller.showDetailOrder(req, res);
 });
 
 module.exports = router;

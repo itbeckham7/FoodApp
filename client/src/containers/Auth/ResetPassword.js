@@ -156,7 +156,7 @@ class ResetPassword extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessed: getProcessed(state),
     errorMessage: getError(state),
@@ -171,7 +171,7 @@ const validate = (values) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { resetPassword, unloadAuthPage }),
+  connect(mapStateToProps, { resetPassword, unloadAuthPage }),
   reduxForm({ form: 'reset-password', validate }),
   withStyles(styles)
 )(ResetPassword);

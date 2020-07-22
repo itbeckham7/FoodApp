@@ -15,7 +15,7 @@ import { compose } from 'redux';
 import { ChevronRight } from 'mdi-material-ui';
 import { getCurrentUser, getSignedInWith } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
-import { updateProfile } from '../../store/actions';
+import { updateProfile, signOut } from '../../store/actions';
 
 const styles = (theme) => ({
   root: {
@@ -161,7 +161,7 @@ class Profile extends React.Component {
             </div>
           </div>
           <div  className={classes.mainSec}>
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/profile/general'}}>
+            <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/general');}}>
               <Grid xs={2} item className={classes.menuIcon}>
                 <img src={'/images/Icon_Edit-Profile.png'} />
               </Grid>
@@ -173,7 +173,7 @@ class Profile extends React.Component {
               </Grid>
             </Grid>
 
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/profile/address'}}>
+            <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/address');}}>
               <Grid xs={2} item className={classes.menuIcon}>
                 <img src={'/images/Icon_Location.png'} />
               </Grid>
@@ -185,43 +185,7 @@ class Profile extends React.Component {
               </Grid>
             </Grid>
 
-            <Grid container className={classes.menuElem} onClick={() => {}}>
-              <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Exit.png'} />
-              </Grid>
-              <Grid xs={8} item className={classes.menuText}>Log Out</Grid>
-              <Grid xs={2} item className={classes.menuNav}>
-                <IconButton color="#333">
-                  <ChevronRight />
-                </IconButton>
-              </Grid>
-            </Grid>
-
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/order/history'}}>
-              <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_History.png'} />
-              </Grid>
-              <Grid xs={8} item className={classes.menuText}>Order History</Grid>
-              <Grid xs={2} item className={classes.menuNav}>
-                <IconButton color="#333">
-                  <ChevronRight />
-                </IconButton>
-              </Grid>
-            </Grid>
-
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/order/track'}}>
-              <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Order.png'} />
-              </Grid>
-              <Grid xs={8} item className={classes.menuText}>Track Order</Grid>
-              <Grid xs={2} item className={classes.menuNav}>
-                <IconButton color="#333">
-                  <ChevronRight />
-                </IconButton>
-              </Grid>
-            </Grid>
-
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/profile/cards'}}>
+            <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/card');}}>
               <Grid xs={2} item className={classes.menuIcon}>
                 <img src={'/images/Icon_Payment.png'} />
               </Grid>
@@ -233,7 +197,45 @@ class Profile extends React.Component {
               </Grid>
             </Grid>
 
-            <Grid container className={classes.menuElem} onClick={() => {window.location = '/profile/notification'}}>
+            <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/orderhistory');}}>
+              <Grid xs={2} item className={classes.menuIcon}>
+                <img src={'/images/Icon_History.png'} />
+              </Grid>
+              <Grid xs={8} item className={classes.menuText}>Order History</Grid>
+              <Grid xs={2} item className={classes.menuNav}>
+                <IconButton color="#333">
+                  <ChevronRight />
+                </IconButton>
+              </Grid>
+            </Grid>
+
+            <Grid container className={classes.menuElem} onClick={() => {this.props.signOut()}}>
+              <Grid xs={2} item className={classes.menuIcon}>
+                <img src={'/images/Icon_Exit.png'} />
+              </Grid>
+              <Grid xs={8} item className={classes.menuText}>Log Out</Grid>
+              <Grid xs={2} item className={classes.menuNav}>
+                <IconButton color="#333">
+                  <ChevronRight />
+                </IconButton>
+              </Grid>
+            </Grid>
+
+            {/* <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/order/track');}}>
+              <Grid xs={2} item className={classes.menuIcon}>
+                <img src={'/images/Icon_Order.png'} />
+              </Grid>
+              <Grid xs={8} item className={classes.menuText}>Track Order</Grid>
+              <Grid xs={2} item className={classes.menuNav}>
+                <IconButton color="#333">
+                  <ChevronRight />
+                </IconButton>
+              </Grid>
+            </Grid> */}
+
+            
+
+            {/* <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/notification');}}>
               <Grid xs={2} item className={classes.menuIcon}>
                 <img src={'/images/Icon_Alert.png'} />
               </Grid>
@@ -243,7 +245,7 @@ class Profile extends React.Component {
                   <ChevronRight />
                 </IconButton>
               </Grid>
-            </Grid>
+            </Grid> */}
           </div>
         </div>
       </div>
@@ -291,7 +293,7 @@ const mapStateToProps = (st) => {
 };
 
 export default compose(
-  connect(mapStateToProps, { updateProfile }),
+  connect(mapStateToProps, { updateProfile, signOut }),
   reduxForm({ form: 'profile', validate }),
   withStyles(styles)
 )(Profile);

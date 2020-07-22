@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <style>
+        .card .card-header {
+            padding: 20px 30px
+        }
+
+        .bagElem {
+            font-family: Nunito;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .bagElemImage {
+            display: inline-block;
+            width: 20%;
+            vertical-align: top;
+        }
+
+        .bagElemImage img {
+            width: 100%;
+        }
+
+        .bagElemInfo {
+            display: inline-block;
+            width: 60%;
+            vertical-align: top;
+            padding-left: 10px;
+        }
+
+        .bagElemInfoTitle {
+
+            font-size: 16px;
+            font-weight: bold;
+            color: #000
+        }
+
+        .bagElemInfoDesc {
+            font-size: 14px;
+            font-weight: 400;
+            color: #777
+        }
+
+        .bagElemPrice {
+            display: inline-block;
+            width: 10%;
+            vertical-align: top;
+        }
+
+        .bagElemQty {
+            display: inline-block;
+            width: 5%;
+            vertical-align: top;
+        }
+
+        .totalPriceSec {
+            font-family: Nunito;
+            padding-top: 20px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            width: 95%
+        }
+
+        .totalPriceSecLabel {
+            text-align: right;
+            font-size: 14px;
+            padding-right: 20px;
+        }
+
+        .totalPriceSecValue {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .orderInfoElem {
+            padding: 10px 0
+        }
+
+        .orderInfoElemLabel {
+            display: inline-block;
+            vertical-align: top;
+            width: 30%;
+            padding-right: 20px;
+            text-align: right;
+
+        }
+
+        .orderInfoElemValue {
+            display: inline-block;
+            vertical-align: top;
+            width: 65%;
+        }
+    </style>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Detail Order
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Detail Order</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Foods</h5>
+                        </div>
+                        <div class="card-body">
+                            <% 
+                            var totalPrice = 0;
+                            var currency = '';
+                            for(var i=0; i<orderInfo.bags.length; i++) {
+                                var bag = orderInfo.bags[i];
+                                totalPrice += bag.food.trans[0].price * bag.qty;
+                                currency = bag.food.trans[0].languageId.currency
+                            %>
+                            <div class="bagElem">
+                                <div class="bagElemImage">
+                                    <img src="<%= bag.food.image %>" />
+                                </div>
+                                <div class="bagElemInfo">
+                                    <div class="bagElemInfoTitle"><%= bag.food.trans[0].title %></div>
+                                    <div class="bagElemInfoDesc"><%= bag.food.trans[0].desc %></div>
+                                </div>
+                                <div class="bagElemPrice">
+                                    <span>
+                                        <%= bag.food.trans[0].languageId.currency %>
+                                        <%= bag.food.trans[0].price %>
+                                    </span>
+                                </div>
+                                <div class="bagElemQty">
+                                    &times;<%= bag.qty %>
+                                </div>
+                            </div>
+                            <%
+                            }%>
+                            <div class="totalPriceSec">
+                                <span class="totalPriceSecLabel">Total : </span>
+                                <span class="totalPriceSecValue"><%= currency + totalPrice %></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Delivery</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="orderInfoElem">
+                                <span class="orderInfoElemLabel">Delivery Style : </span>
+                                <span class="orderInfoElemValue">
+                                    <%
+                                    var badgeType = 'danger'
+                                    if(orderInfo.deliveryStyle == 'pickup') badgeType = 'warning'
+                                    else if(orderInfo.deliveryStyle == 'later') badgeType = 'secondary'
+                                    %>
+                                    <h3><span
+                                            class="badge badge-<%= badgeType %> badge-lg"><%=orderInfo.deliveryStyle%></span>
+                                    </h3>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>User Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">User Name : </span>
+                                    <span
+                                        class="orderInfoElemValue"><%=orderInfo.firstName + ' ' + orderInfo.lastName%></span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Email : </span>
+                                    <span class="orderInfoElemValue"><%=orderInfo.email%></span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Phone : </span>
+                                    <span class="orderInfoElemValue"><%=orderInfo.phone%></span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Address : </span>
+                                    <span class="orderInfoElemValue"><%=orderInfo.address%></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Payment Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="orderInfoElem">
+                                    <%
+                                    var cardIcon = '/assets/images/master-icon.png'
+                                    if(orderInfo.cardType == 'visa') cardIcon = '/assets/images/visa-icon.png'
+                                    else if(orderInfo.cardType == 'knet') cardIcon = '/assets/images/knet-icon.png'
+                                    %>
+                                    <span class="orderInfoElemLabel">Payment Method : </span>
+                                    <span class="orderInfoElemValue"><img src="<%= cardIcon %>"></span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Holder Name : </span>
+                                    <span class="orderInfoElemValue"><%=orderInfo.holderName%></span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Card Number : </span>
+                                    <span class="orderInfoElemValue"><%=orderInfo.cardNumber%></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Order Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="changeStatusResult" style="display: none; padding: 10px; text-align: center;">
+                                    <span> You should check in on some of those fields below.</span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel">Status : </span>
+                                    <span class="orderInfoElemValue">
+                                        <select class="form-control digits" id="orderStatusList">
+                                            <option <%= (orderInfo.status == 'pending')?'selected':'' %>
+                                                value="pending">Pending</option>
+                                            <option <%= (orderInfo.status == 'confirm')?'selected':'' %>
+                                                value="confirm">Confirm the order</option>
+                                            <option <%= (orderInfo.status == 'processing')?'selected':'' %>
+                                                value="processing">Processing in progress</option>
+                                            <option <%= (orderInfo.status == 'delivery')?'selected':'' %>
+                                                value="delivery">Delivery in progress</option>
+                                            <option <%= (orderInfo.status == 'readyreceipt')?'selected':'' %>
+                                                value="readyreceipt">Ready for receipt</option>
+                                            <option <%= (orderInfo.status == 'delivered')?'selected':'' %>
+                                                value="delivered">delivered</option>
+                                        </select>
+                                    </span>
+                                </div>
+                                <div class="orderInfoElem">
+                                    <span class="orderInfoElemLabel"></span>
+                                    <span class="orderInfoElemValue">
+                                        <button class="btn btn-primary" id="orderStatusBtn">Save</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- touchspin js-->
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+
+    <!-- form validation js-->
+    <script src="/assets/js/dashboard/form-validation-custom.js"></script>
+
+    <!-- ckeditor js-->
+    <script src="/assets/js/editor/ckeditor/ckeditor.js"></script>
+    <script src="/assets/js/editor/ckeditor/styles.js"></script>
+    <script src="/assets/js/editor/ckeditor/adapters/jquery.js"></script>
+    <script src="/assets/js/editor/ckeditor/ckeditor.custom.js"></script>
+
+    <!-- Zoom js-->
+    <script src="/assets/js/jquery.elevatezoom.js"></script>
+    <script src="/assets/js/zoom-scripts.js"></script>
+
+    <script>
+        (function ($) {
+            "use strict";
+
+            $(document).ready(function () {
+
+            })
+
+            $('#orderStatusBtn').click(function () {
+                var orderId = '<%= orderInfo._id %>';
+                var orderStatus = $('#orderStatusList').val();
+                console.log('-- orderStatus : ', orderStatus, orderId);
+
+
+                $.ajax({
+                    url: '/api/orders/changestatus',
+                    type: 'post',
+                    data: { orderId: orderId, status: orderStatus },
+                    dataType: 'json',
+                    async: false,
+                    headers: { "Authorization": "Bearer " + token },
+                    beforeSend: function (xhr) {
+                        // $('.category-info-list .loading-area').removeClass('im-hide');
+                    },
+                    success: function (res) {
+                        console.log('-- res : ', res)
+                        if (res.status == 'success') {
+                            location.reload();
+                            $('#changeStatusResult span').text('Order status is changed successfully.');
+                            $('#changeStatusResult').css({ color: '#0f0' });
+                            $('#changeStatusResult').show();
+                        } else {
+                            $('#changeStatusResult span').text(res.data);
+                            $('#changeStatusResult').css({ color: '#f00' });
+                            $('#changeStatusResult').show();
+                        }
+                        setTimeout(function () {
+                            $('#changeStatusResult').hide();
+                        }, 8000)
+                    },
+                    error: function (err) {
+                        console.log('-- err : ', err)
+                    }
+                });
+            })
+        })(jQuery);
+    </script>
+</body>
+
+</html>

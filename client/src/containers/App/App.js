@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import AnonymousRoute from '../../components/accessControl/AnonymousRoute';
 import ProtectedRoute from '../../components/accessControl/ProtectedRoute';
@@ -24,6 +24,9 @@ import {
 } from '../../store/selectors';
 
 class App extends React.Component {
+  state = {
+    isDidMound: false
+  }
   componentWillMount() {
     if (this.props.setting == null) {
       this.props.getSetting().then(() => {
@@ -35,10 +38,20 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.props.tryLocalSignIn();
+    this.props.tryLocalSignIn().then(() => {
+      console.log('-- tryLocalSignIn end')
+      this.setState({isDidMound: true})
+    });
   }
 
   render() {
+    var now = (new Date()).getTime();
+    console.log('-- isSignedIn : ', this.props.isSignedIn, now)
+
+    if( !this.state.isDidMound ){
+      return(<div></div>)
+    }
+
     return (
       <Switch>
         <AnonymousRoute path="/launch" component={Launch} />
@@ -63,13 +76,13 @@ class App extends React.Component {
         <ProtectedRoute path="/common" component={CommonPage} />
         <ProtectedRoute path="/profile" component={Profile} />
 
-        <Route path="/">
+        {<Route path="/">
           {this.props.isSignedIn ? (
             <Redirect to="/dashboard/home" />
           ) : (
             <Redirect to="/launch" />
           )}
-        </Route>
+        </Route>}
       </Switch>
     );
   }

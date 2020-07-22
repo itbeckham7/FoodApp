@@ -231,6 +231,9 @@ const theme = createMuiTheme({
     MuiButton: {
       containedPrimary: {
         backgroundColor: '#E5293E',
+        '&:hover': {
+          backgroundColor: '#E5293E !important',
+        }
       },
       containedSizeLarge: {
         padding: '10px 22px',
@@ -249,6 +252,7 @@ const theme = createMuiTheme({
         fontSize: '1rem',
         fontWeight: '300',
       },
+
     },
     MuiFormLabel: {
       root: {

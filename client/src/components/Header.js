@@ -1,26 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { push } from 'connected-react-router';
 import {
-  Account,
-  Bell,
-  Logout,
-  CartPlus,
   Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { connect } from 'react-redux';
@@ -67,7 +57,6 @@ const styles = (theme) => ({
 });
 
 class Header extends React.Component {
-  state = { anchorEl: null };
 
   constructor() {
     super();
@@ -76,21 +65,20 @@ class Header extends React.Component {
 
   componentWillMount() {
     const { me } = this.props;
-    this.props.getBags(me.id).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-    });
+    
+    var that = this;
+    setTimeout(function(){
+      console.log('-- Header componentWillMount 1');
+      if( that.props.bags ) return;
+      console.log('-- Header componentWillMount 2');
+      that.props.getBags(me.id).then(() => {
+        if (that.props.errorMessage) {
+          console.log('-- error : ', that.props.errorMessage);
+          return;
+        }
+      });
+    }, 2000)
   }
-
-  onMenuOpen = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  onMenuClose = () => {
-    this.setState({ anchorEl: null });
-  };
 
   onGotoBag = () => {
     window.location = '/dashboard/bag';
@@ -126,13 +114,8 @@ class Header extends React.Component {
     const {
       classes,
       onDrawerToggle,
-      me,
-      authProvider,
-      signOut,
       bags,
     } = this.props;
-
-    const { anchorEl } = this.state;
 
     return (
       <React.Fragment>

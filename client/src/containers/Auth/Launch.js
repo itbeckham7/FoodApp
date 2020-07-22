@@ -109,7 +109,7 @@ class Launch extends React.Component {
   };
 
   onClickLogin = () => {
-    window.location = '/signin';
+    this.props.history.push('/signin')
   };
 
   render() {
@@ -192,7 +192,7 @@ class Launch extends React.Component {
     );
   }
 }
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
@@ -201,7 +201,7 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, {
+  connect(mapStateToProps, {
     signIn,
     unloadAuthPage,
   }),

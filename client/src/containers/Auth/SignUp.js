@@ -320,7 +320,7 @@ class SignUp extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
@@ -337,7 +337,7 @@ const validate = (values) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { signUp, unloadAuthPage }),
+  connect(mapStateToProps, { signUp, unloadAuthPage }),
   reduxForm({ form: 'signUp', validate }),
   withStyles(styles)
 )(SignUp);

@@ -72,15 +72,15 @@ export const addAddress = (userId, formValue) => (dispatch, getState, { mernApi 
 
 
 export const updateAddress = (addressId, formValue) => (dispatch, getState, { mernApi }) => {
-  dispatch({ type: actionTypes.ADD_ADDRESS });
+  dispatch({ type: actionTypes.UPDATE_ADDRESS });
   return mernApi.put(`/api/addresses/update/${addressId}`, formValue).then(
     (response) => {
       var addresses = response.data;
-      dispatch({ type: actionTypes.ADD_ADDRESS_SUCCESS, payload: addresses });
+      dispatch({ type: actionTypes.UPDATE_ADDRESS_SUCCESS, payload: addresses });
     },
     (err) => {
       dispatch({
-        type: actionTypes.ADD_ADDRESS_FAIL,
+        type: actionTypes.UPDATE_ADDRESS_FAIL,
         payload: err.response.data.error.message,
       });
     }
@@ -106,7 +106,7 @@ export const updateActiveAddress = (userId, addressId) => (dispatch, getState, {
 
 
 export const deleteAddress = (userId, addressId) => (dispatch, getState, { mernApi }) => {
-  dispatch({ type: actionTypes.ADD_ADDRESS });
+  dispatch({ type: actionTypes.DELETE_ADDRESS });
   return mernApi.delete(`/api/addresses/delete/${userId}/${addressId}`, {}).then(
     (response) => {
       var addresses = response.data;

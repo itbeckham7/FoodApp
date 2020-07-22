@@ -4,19 +4,20 @@ export const getBags = (userId) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.GET_BAGS });
 
   const bags = JSON.parse(getBagsFromStorage(userId));
-  console.log('-- bags : ', bags, userId)
   if (bags) {
     return mernApi.post('/api/bags/detailBags', { bags }).then(
-      (response) => {        
+      (response) => {
         var bags = response.data.bags;
-        var newBags = []
-        bags.map((bag)=>{
+        var newBags = [];
+        bags.map((bag) => {
           newBags.push({
             foodId: bag.foodId,
+            price: bag.price,
+            currency: bag.currency,
             qty: bag.qty,
-            note: bag.note
-          })
-        })
+            note: bag.note,
+          });
+        });
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.GET_BAGS_SUCCESS, payload: bags });
       },
@@ -56,12 +57,12 @@ export const getBag = (userId, bagId) => (dispatch, getState, { mernApi }) => {
   });
 };
 
-export const addToBag = (userId, foodId, qty, nt) => (
+export const addToBag = (userId, foodId, price, currency, qty, nt) => (
   dispatch,
   getState,
   { mernApi }
 ) => {
-  console.log('-- addToBag start : ', userId, foodId, qty, nt)
+  console.log('-- addToBag start : ', userId, foodId, price, currency, qty, nt);
   dispatch({ type: actionTypes.ADD_TO_BAG });
 
   var note = nt ? nt : '';
@@ -71,6 +72,8 @@ export const addToBag = (userId, foodId, qty, nt) => (
     for (var i = 0; i < bags.length; i++) {
       if (bags[i].foodId == foodId) {
         isFind = true;
+        bags[i].price = price;
+        bags[i].currency = currency;
         bags[i].qty = qty;
         bags[i].note = note;
         break;
@@ -78,26 +81,28 @@ export const addToBag = (userId, foodId, qty, nt) => (
     }
 
     if (!isFind) {
-      bags.push({ foodId, qty, note });
+      bags.push({ foodId, qty, price, currency, note });
     }
   } else {
-    bags = [{ foodId, qty, note }];
+    bags = [{ foodId, qty, price, currency, note }];
   }
 
   if (bags) {
-    console.log('-- addToBag bags : ', bags)
+    console.log('-- addToBag bags : ', bags);
     return mernApi.post('/api/bags/detailBags', { bags }).then(
       (response) => {
         var bags = response.data.bags;
-        var newBags = []
-        bags.map((bag)=>{
+        var newBags = [];
+        bags.map((bag) => {
           newBags.push({
             foodId: bag.foodId,
+            price: bag.price,
+            currency: bag.currency,
             qty: bag.qty,
-            note: bag.note
-          })
-        })
-        console.log('-- addToBag newBags : ', newBags, userId)
+            note: bag.note,
+          });
+        });
+        console.log('-- addToBag newBags : ', newBags, userId);
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.ADD_TO_BAG_SUCCESS, payload: bags });
       },
@@ -137,14 +142,14 @@ export const deleteBag = (userId, foodId) => (
     return mernApi.post('/api/bags/detailBags', { bags }).then(
       (response) => {
         var bags = response.data.bags;
-        var newBags = []
-        bags.map((bag)=>{
+        var newBags = [];
+        bags.map((bag) => {
           newBags.push({
             foodId: bag.foodId,
             qty: bag.qty,
-            note: bag.note
-          })
-        })
+            note: bag.note,
+          });
+        });
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.DELETE_BAG_SUCCESS, payload: bags });
       },
@@ -161,6 +166,11 @@ export const deleteBag = (userId, foodId) => (
       payload: "Can't find bag",
     });
   }
+};
+
+export const clearBag = (userId) => (dispatch, getState, { mernApi }) => {
+  clearBagsStorage(userId);
+  dispatch({ type: actionTypes.CLEAR_BAG });
 };
 
 const getBagsFromStorage = (userId) => {

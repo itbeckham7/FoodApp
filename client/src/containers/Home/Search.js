@@ -6,7 +6,6 @@ import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getBags, deleteBag } from '../../store/actions';
 import {
   getBagBags,
   getBagProcessing,
@@ -181,7 +180,7 @@ const styles = (theme) => ({
     fontWeight: 'normal',
     color: '#20AB2C',
   },
-  delieveryBtn: {
+  deliveryBtn: {
     width: '41vw',
     margin: theme.spacing(1, 0, 1, 0),
   },
@@ -208,7 +207,6 @@ const styles = (theme) => ({
 
 class Search extends React.Component {
   state = {
-    bags: null,
   };
 
   constructor() {
@@ -216,36 +214,10 @@ class Search extends React.Component {
   }
 
   componentWillMount() {
-    this.props.getBags(this.props.me.id).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
-  }
-
-  onDeleteBag(bag) {
-    const { me } = this.props;
-
-    this.props.deleteBag(me.id, bag.foodId).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
   }
 
   renderFoods() {
     const { classes } = this.props;
-    const { bags } = this.state;
     var bagElems = [];
     for( var i=0; i<5; i++){
       bagElems.push(
@@ -310,27 +282,6 @@ class Search extends React.Component {
     const {
       classes,
     } = this.props;
-    const { bags } = this.state;
-
-    var totalPrice = 0;
-    var currency = '';
-    var itemCounts = 0;
-
-    if (bags && bags.length > 0) {
-      itemCounts = bags.length;
-      bags.map((bag) => {
-        currency = bag.food.trans[0].languageId.currency;
-        totalPrice += bag.food.trans[0].price * bag.qty;
-      });
-    }
-
-    var currentDate = new Date();
-    currentDate = currentDate.toString();
-    currentDate = currentDate.split(' ');
-    currentDate =
-      currentDate.length > 4
-        ? currentDate[1] + ' ' + currentDate[2] + ', ' + currentDate[3]
-        : '';
 
     return (
       <div className={classes.root}>
@@ -388,16 +339,15 @@ class Search extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
-    bags: getBagBags(state),
     me: getCurrentUser(state),
   };
 };
 
 export default compose(
-  connect(maptStateToProps, { getBags, deleteBag }),
+  connect(mapStateToProps, {}),
   withStyles(styles)
 )(Search);

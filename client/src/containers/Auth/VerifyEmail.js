@@ -80,7 +80,7 @@ class VerifyEmail extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     errorMessage: getError(state),
     isProcessed: getProcessed(state),
@@ -88,6 +88,6 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { verifyEmail, unloadAuthPage }),
+  connect(mapStateToProps, { verifyEmail, unloadAuthPage }),
   withStyles(styles)
 )(VerifyEmail);

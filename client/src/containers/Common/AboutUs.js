@@ -6,7 +6,6 @@ import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getBags, deleteBag } from '../../store/actions';
 import {
   getBagBags,
   getBagProcessing,
@@ -181,7 +180,7 @@ const styles = (theme) => ({
     fontWeight: 'normal',
     color: '#20AB2C',
   },
-  delieveryBtn: {
+  deliveryBtn: {
     width: '41vw',
     margin: theme.spacing(1, 0, 1, 0),
   },
@@ -208,7 +207,6 @@ const styles = (theme) => ({
 
 class AboutUs extends React.Component {
   state = {
-    bags: null,
   };
 
   constructor() {
@@ -216,118 +214,12 @@ class AboutUs extends React.Component {
   }
 
   componentWillMount() {
-    this.props.getBags(this.props.me.id).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
-  }
-
-  onDeleteBag(bag) {
-    const { me } = this.props;
-
-    this.props.deleteBag(me.id, bag.foodId).then(() => {
-      if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage);
-        return;
-      }
-      
-      this.setState({
-        bags: this.props.bags,
-      });
-    });
-  }
-
-  renderFoods() {
-    const { classes } = this.props;
-    const { bags } = this.state;
-    
-    var bagElems = [];
-    for (var i = 0; i < 5; i++) {
-      bagElems.push(
-        <Grid container className={classes.bagElem}>
-          <Grid xs={3} item>
-            <Box
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundImage:
-                  'url(' +
-                  config.serverUrl +
-                  '/uploads/food/foodbakery_special_pizza.jpg' +
-                  ')',
-                backgroundPosition: 'center',
-                backgroundSize: 'auto 100%',
-                backgroundRepeat: 'no-repeat',
-                height: '100%',
-                borderRadius: '5px',
-              }}
-            ></Box>
-          </Grid>
-          <Grid xs={9} item style={{ paddingLeft: '10px' }}>
-            <div className={classes.bagElemTitleSec}>
-              <span className={classes.bagElemTitleSpan}>
-                {textEllipsis('Foodbakery Special Pizza', 40, '...')}
-              </span>
-              <span className={classes.bagElemRatingSpan}>
-                <Rating
-                  name="read-only"
-                  max={1}
-                  value={1}
-                  readOnly
-                  size="small"
-                  className={classes.foodRating}
-                />
-                <Typography component="span" className={classes.foodRatingText}>
-                  4
-                </Typography>
-              </span>
-            </div>
-            <Typography
-              component="p"
-              variant="h6"
-              className={classes.foodDetailDesc}
-            >
-              Cheese, tomatoes, tuna fish, sweetcorn and italian herbs
-            </Typography>
-          </Grid>
-        </Grid>
-      );
-    }
-
-    return <div>{bagElems}</div>;
   }
 
   render() {
     const {
       classes,
     } = this.props;
-    const { bags } = this.state;
-
-    var totalPrice = 0;
-    var currency = '';
-    var itemCounts = 0;
-
-    if (bags && bags.length > 0) {
-      itemCounts = bags.length;
-      bags.map((bag) => {
-        currency = bag.food.trans[0].languageId.currency;
-        totalPrice += bag.food.trans[0].price * bag.qty;
-      });
-    }
-
-    var currentDate = new Date();
-    currentDate = currentDate.toString();
-    currentDate = currentDate.split(' ');
-    currentDate =
-      currentDate.length > 4
-        ? currentDate[1] + ' ' + currentDate[2] + ', ' + currentDate[3]
-        : '';
 
     return (
       <div className={classes.root}>
@@ -384,7 +276,7 @@ class AboutUs extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
@@ -394,6 +286,6 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { getBags, deleteBag }),
+  connect(mapStateToProps, {}),
   withStyles(styles)
 )(AboutUs);

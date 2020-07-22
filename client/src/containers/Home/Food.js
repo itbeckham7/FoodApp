@@ -27,6 +27,8 @@ import {
   addToBag,
   getComments,
   addComment,
+  getBags,
+  clearBag,
 } from '../../store/actions';
 import AddIcon from '@material-ui/icons/Add';
 import {
@@ -35,6 +37,8 @@ import {
   getFoodError,
   getCurrentUser,
   getBagBags,
+  getBagProcessing,
+  getBagError,
   getCommentComments,
 } from '../../store/selectors';
 import { required } from '../../utils/formValidator';
@@ -61,7 +65,7 @@ const styles = (theme) => ({
     backgroundRepeat: 'no-repeat',
   },
   topSecInner: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     width: '100%',
     height: '100%',
   },
@@ -135,6 +139,16 @@ const styles = (theme) => ({
     backgroundColor: '#E5293E',
     fontSize: '0.8rem',
     marginTop: '5px',
+  },
+  foodOldPrice: {
+    display: 'inline-block',
+    color: '#fff',
+    fontWeight: '300',
+    textAlign: 'right',
+    fontSize: '0.8rem',
+    padding: theme.spacing(0, 1.5),
+    marginTop: '5px',
+    textDecoration: 'line-through'
   },
   foodRatingSec: {
     textAlign: 'center',
@@ -308,6 +322,7 @@ class Food extends React.Component {
     this.openAddCommentDlg = this.openAddCommentDlg.bind(this);
     this.closeAddCommentDlg = this.closeAddCommentDlg.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onCheckOut = this.onCheckOut.bind(this);
   }
 
   componentWillMount() {
@@ -318,17 +333,25 @@ class Food extends React.Component {
           return;
         }
 
-        var bags = this.props.bags;
         var food = this.props.food;
+      });
 
+      this.props.getBags(this.props.me.id).then(() => {
+        if (this.props.errorMessage) {
+          console.log('-- error : ', this.props.errorMessage);
+          return;
+        }
+
+        var bags = this.props.bags;
         if (bags) {
           for (var i = 0; i < bags.length; i++) {
-            if (bags[i].foodId == food._id) {
+            if (bags[i].foodId == this.props.match.params.foodId) {
               this.setState({ qty: bags[i].qty });
             }
           }
         }
       });
+
       this.props.getComments(this.props.match.params.foodId).then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
@@ -336,7 +359,6 @@ class Food extends React.Component {
         }
 
         var comments = this.props.comments;
-
         if (comments) {
           this.setState({ comments });
         }
@@ -378,14 +400,42 @@ class Food extends React.Component {
     const { food, me, bags } = this.props;
     const { qty, note } = this.state;
 
-    this.props.addToBag(me.id, food._id, qty, note).then(() => {
+    var price = this.props.food.trans[0].price;
+    var currency = this.props.food.trans[0].languageId.currency;
+
+    this.props.addToBag(me.id, food._id, price, currency, qty, note).then(() => {
       if (this.props.errorMessage) {
         throw new SubmissionError({ _error: this.props.errorMessage });
       }
     });
   }
 
-  onCheckOut() {}
+  onCheckOut() {
+    this.props.clearBag();
+    
+    var price = this.props.food.trans[0].price;
+    var currency = this.props.food.trans[0].languageId.currency;
+
+    var that = this;
+    setTimeout(function () {
+      that.props
+        .addToBag(
+          that.props.me.id,
+          that.props.food._id,
+          price, 
+          currency,
+          that.state.qty,
+          that.state.note
+        )
+        .then(() => {
+          if (that.props.errorMessage) {
+            console.log('-- error : ', that.props.errorMessage);
+            return;
+          }
+          that.props.history.push('/bag/checkout');
+        });
+    }, 100);
+  }
 
   renderBook() {
     const { food, classes } = this.props;
@@ -533,29 +583,29 @@ class Food extends React.Component {
           />
         </div>
 
-        <div className={classes.actionSec}>
-          <Button
-            size="large"
-            className={classes.roundBtnOutline}
-            variant="outlined"
-            fullWidth
-            onClick={this.onAddToBag}
-          >
-            Add to bag
-          </Button>
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            fullWidth
-            className={classes.roundBtn}
-            onClick={() => {
-              window.location = '/bag/checkout';
-            }}
-          >
-            Check out
-          </Button>
-        </div>
+        {this.state.qty > 0 && (
+          <div className={classes.actionSec}>
+            <Button
+              size="large"
+              className={classes.roundBtnOutline}
+              variant="outlined"
+              fullWidth
+              onClick={this.onAddToBag}
+            >
+              Add to bag
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              fullWidth
+              className={classes.roundBtn}
+              onClick={this.onCheckOut}
+            >
+              Check out
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -821,6 +871,18 @@ class Food extends React.Component {
                     : ''}
                 </span>
               </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                className={classes.whiteTitle}
+                style={{bottom: '20px'}}
+              >
+                <span className={classes.foodOldPrice}>
+                  {food
+                    ? food.trans[0].languageId.currency + food.trans[0].oldPrice
+                    : ''}
+                </span>
+              </Typography>
             </div>
           </div>
           <div className={classes.mainSec}>
@@ -893,19 +955,28 @@ const validate = (values) => {
   return errors;
 };
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getFoodProcessing(state),
     errorMessage: getFoodError(state),
     food: getFoodFood(state),
     bags: getBagBags(state),
+    isProcessingBag: getBagProcessing(state),
+    errorMessageBag: getBagError(state),
     comments: getCommentComments(state),
     me: getCurrentUser(state),
   };
 };
 
 export default compose(
-  connect(maptStateToProps, { getFood, addToBag, getComments, addComment }),
+  connect(mapStateToProps, {
+    getFood,
+    getBags,
+    addToBag,
+    getComments,
+    addComment,
+    clearBag,
+  }),
   reduxForm({ form: 'addComment', validate }),
   withStyles(styles)
 )(Food);

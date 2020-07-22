@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -12,6 +13,7 @@ import {
   getFoods,
   getBags,
   addToBag,
+  clearBag,
 } from '../../store/actions';
 import { ChevronRight, ChevronDown } from 'mdi-material-ui';
 import {
@@ -45,6 +47,7 @@ const styles = (theme) => ({
   topSecHome1: {
     flex: 1,
     backgroundImage: 'url(../images/picturemessage_intra0vh.wzc@2x.png)',
+    backgroundColor: '#fff',
     backgroundPosition: 'bottom center',
     backgroundSize: '100% auto',
     width: '100%',
@@ -52,6 +55,7 @@ const styles = (theme) => ({
   topSecHome2: {
     flex: 1,
     backgroundImage: 'url(../../images/home-food-top.png)',
+    backgroundColor: '#fff',
     backgroundPosition: 'bottom center',
     backgroundSize: '100% 100%',
     backgroundRepeat: 'no-repeat',
@@ -76,10 +80,11 @@ const styles = (theme) => ({
     fontSize: '1.2rem',
   },
   blackTitle: {
-    color: '#000',
-    fontWeight: '300',
-    fontSize: '1.2rem',
-    padding: theme.spacing(0, 0, 2),
+    color: '#333',
+    fontWeight: 'normal',
+    fontSize: '1.15rem',
+    padding: theme.spacing(1, 0, 3),
+    textAlign: 'center'
   },
   categoryImage: {
     borderRadius: '8px',
@@ -145,17 +150,24 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '50%',
+    width: '100%',
     fontWeight: '300',
     fontSize: '0.75rem',
     lineHeight: '0.75rem',
+  },
+  checkoutBtn: {
+    backgroundColor: '#E5293E',
+    width: '20px',
+    height: '20px',
+    textAlign: 'center',
+    borderRadius: '15px',
+    marginLeft: '10px',
   },
 });
 
 class Home extends React.Component {
   state = {
-    category: null,
-    foods: null,
+    categories: null,
     bags: null,
   };
 
@@ -168,10 +180,13 @@ class Home extends React.Component {
   }
 
   componentWillMount() {
+    console.log('-- home componentWillMount props : ', this.props);
     this.props.getCategories().then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
       }
+
+      this.setState({ categories: this.props.categories });
     });
 
     this.props.getBags(this.props.me.id).then(() => {
@@ -186,19 +201,37 @@ class Home extends React.Component {
     });
   }
 
-  onClickCategory(category) {
+  async onClickCategory(category) {
     console.log('-- onClickCategory');
-    this.props.getFoods(category._id).then(() => {
-      if (this.props.errorMessageFoods) {
-        console.log('-- error : ', this.props.errorMessageFoods);
-      }
 
-      console.log('-- foods : ', this.props.foods);
-      this.setState({
-        category: category,
-        foods: this.props.foods,
-      });
-    });
+    var categories = this.state.categories;
+    for (var i = 0; i < categories.length; i++) {
+      if (categories[i]._id == category._id) {
+        console.log('-- category : ', category);
+        if (category.foods) {
+          if (category.open) category.open = false;
+          else category.open = true;
+          categories[i] = category;
+          await this.setState({ categories });
+          console.log('-- categories : ', i, this.state.categories);
+        } else {
+          this.props.getFoods(category._id).then(() => {
+            if (this.props.errorMessageFoods) {
+              console.log('-- error : ', this.props.errorMessageFoods);
+              return;
+            }
+
+            console.log('-- foods : ', this.props.foods);
+            category.foods = this.props.foods;
+            category.open = true;
+            categories[i] = category;
+            this.setState({ categories });
+          });
+        }
+
+        break;
+      }
+    }
   }
 
   getBagFromFood(foodId) {
@@ -216,12 +249,16 @@ class Home extends React.Component {
   onPlusQty(bag, food) {
     console.log('-- onPlusQty start : ', bag, food);
     const { me } = this.props;
+    
+    var price = food.trans[0].price;
+    var currency = food.trans[0].languageId.currency;
+
     if (bag) {
       console.log('-- onPlusQty 1');
       if (bag.qty > bag.food.qty) return;
       bag.qty++;
 
-      this.props.addToBag(me.id, bag.foodId, bag.qty).then(() => {
+      this.props.addToBag(me.id, bag.foodId, price, currency, bag.qty).then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
           return;
@@ -233,7 +270,7 @@ class Home extends React.Component {
       });
     } else {
       console.log('-- onPlusQty 2 : ', me, food);
-      this.props.addToBag(me.id, food._id, 1).then(() => {
+      this.props.addToBag(me.id, food._id, price, currency, 1).then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
           return;
@@ -247,14 +284,17 @@ class Home extends React.Component {
     }
   }
 
-  onMinusQty(bag) {
+  onMinusQty(bag, food) {
     const { me } = this.props;
+    
+    var price = food.trans[0].price;
+    var currency = food.trans[0].languageId.currency;
 
     if (bag) {
       if (bag.qty === 0) return;
       bag.qty--;
 
-      this.props.addToBag(me.id, bag.foodId, bag.qty).then(() => {
+      this.props.addToBag(me.id, bag.foodId, price, currency, bag.qty).then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
           return;
@@ -266,6 +306,29 @@ class Home extends React.Component {
       });
     } else {
     }
+  }
+
+  onCheckOut(bag, food) {
+    var qty = bag.qty;
+    var note = bag.note;
+    this.props.clearBag(this.props.me.id);
+
+    var price = food.trans[0].price;
+    var currency = food.trans[0].languageId.currency;
+
+    var that = this;
+    setTimeout(function () {
+      console.log('-- onCheckOut bags', that.props.bags);
+      that.props.addToBag(that.props.me.id, food._id, price, currency, qty, note).then(() => {
+        if (that.props.errorMessage) {
+          console.log('-- error : ', that.props.errorMessage);
+          return;
+        }
+
+        console.log('-- onCheckOut bags 1', that.props.bags);
+        that.props.history.push('/bag/checkout');
+      });
+    }, 100);
   }
 
   renderTopSecHome1() {
@@ -316,7 +379,11 @@ class Home extends React.Component {
 
   renderTopSecHome2() {
     const { classes } = this.props;
-    return <div className={classes.topSecHome2}></div>;
+    return (
+      <div className={classes.topSecHome2}>
+        {/* <div style={{width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.3'}}></div> */}
+      </div>
+    );
   }
 
   renderTopSec() {
@@ -343,9 +410,8 @@ class Home extends React.Component {
     );
   }
 
-  renderCategoryFoods() {
+  renderCategoryFoods(foods) {
     const { classes } = this.props;
-    const { foods } = this.state;
 
     var foodElems = [];
     if (foods && foods.length > 0) {
@@ -354,15 +420,15 @@ class Home extends React.Component {
         var qty = bag ? bag.qty : 0;
 
         foodElems.push(
-          <Grid
-            container
-            key={food._Id}
-            className={classes.foodElem}
-            onClick={() => {
-              window.location = '/dashboard/food/' + food._id;
-            }}
-          >
-            <Grid xs={3} item>
+          <Grid container key={food._Id} className={classes.foodElem}>
+            <Grid
+              xs={3}
+              item
+              onClick={() => {
+                console.log('-- click');
+                this.props.history.push('/dashboard/food/' + food._id);
+              }}
+            >
               <Box
                 style={{
                   width: '100%',
@@ -405,21 +471,36 @@ class Home extends React.Component {
                 {food ? textEllipsis(food.trans[0].desc, 60, '...') : ''}
               </Typography>
 
-              <div className={classes.qtyActionSec}>
-                <span
-                  className={classes.quentityBtn}
-                  onClick={this.onPlusQty.bind(this, bag, food)}
-                >
-                  +
-                </span>
-                <span>{qty}</span>
-                <span
-                  className={classes.quentityBtn}
-                  onClick={this.onMinusQty.bind(this, bag)}
-                >
-                  -
-                </span>
+              <div style={{ display: 'inline-block', width: '50%' }}>
+                <div className={classes.qtyActionSec}>
+                  <span
+                    className={classes.quentityBtn}
+                    onClick={this.onPlusQty.bind(this, bag, food)}
+                  >
+                    +
+                  </span>
+                  <span>{qty}</span>
+                  <span
+                    className={classes.quentityBtn}
+                    onClick={this.onMinusQty.bind(this, bag, food)}
+                  >
+                    -
+                  </span>
+                </div>
               </div>
+              {bag && bag.qty > 0 && (
+                <IconButton
+                  color="inherit"
+                  aria-label="check out"
+                  onClick={this.onCheckOut.bind(this, bag, food)}
+                  className={classes.checkoutBtn}
+                >
+                  <img
+                    src="/images/BASKET.png"
+                    style={{ width: '15px', height: '15px' }}
+                  />
+                </IconButton>
+              )}
             </Grid>
           </Grid>
         );
@@ -430,7 +511,8 @@ class Home extends React.Component {
   }
 
   renderCategories() {
-    const { categories, classes, setting } = this.props;
+    const { classes, setting } = this.props;
+    const { categories } = this.state;
 
     var categoryElems = [];
     if (categories && categories.length > 0) {
@@ -451,10 +533,9 @@ class Home extends React.Component {
           );
         } else {
           var foodElems = <div></div>;
-          var isActive = false;
-          if (this.state.category && this.state.category._id == category._id) {
-            isActive = true;
-            foodElems = this.renderCategoryFoods();
+
+          if (category.open && category.foods) {
+            foodElems = this.renderCategoryFoods(category.foods);
           }
           categoryElems.push(
             <Grid xs={12} item key={category._id}>
@@ -478,7 +559,7 @@ class Home extends React.Component {
                   className={classes.categoryText}
                 >
                   {category.trans[0].name}
-                  {isActive ? (
+                  {category.open ? (
                     <ChevronDown style={{ verticalAlign: 'middle' }} />
                   ) : (
                     <ChevronRight style={{ verticalAlign: 'middle' }} />
@@ -539,7 +620,7 @@ class Home extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getCategoryProcessing(state),
     errorMessage: getCategoryError(state),
@@ -556,6 +637,12 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { getCategories, getFoods, getBags, addToBag }),
+  connect(mapStateToProps, {
+    getCategories,
+    getFoods,
+    getBags,
+    addToBag,
+    clearBag,
+  }),
   withStyles(styles)
 )(Home);

@@ -3,6 +3,10 @@ import UserList from './containers/Users/UserList';
 import Profile from './containers/Profile/Profile';
 import ProfileGeneral from './containers/Profile/General';
 import ProfileAddress  from './containers/Profile/Address';
+import ProfileCard  from './containers/Profile/Card';
+import OrderHistory  from './containers/Profile/OrderHistory';
+import OrderDetail  from './containers/Profile/OrderDetail';
+import OrderTrack  from './containers/Profile/OrderTrack';
 import HomePage from './containers/Home/Home';
 import FoodsPage from './containers/Home/Foods';
 import FoodPage from './containers/Home/Food';
@@ -13,6 +17,7 @@ import CheckOutInfoPage from './containers/CheckOut/CheckOutInfo';
 import CheckOutResultPage from './containers/CheckOut/CheckOutResult';
 import AboutUs from './containers/Common/AboutUs';
 import ContactUs from './containers/Common/ContactUs';
+import Policy from './containers/Common/Policy';
 
 const routeCategories = [
   {
@@ -73,8 +78,8 @@ const routeCategories = [
         icon: '/images/home.png',
       },
       {
-        id: 'bag',
-        name: 'Bag',
+        id: 'search',
+        name: 'Search',
         title: '',
         path: '/common/search',
         component: SearchPage,
@@ -106,7 +111,7 @@ const routeCategories = [
       {
         id: 'checkoutresult',
         name: 'Check Out Result',
-        path: '/checkout/checkoutresult',
+        path: '/checkout/result/:result',
         component: CheckOutResultPage,
         isHidden: true,
         icon: '/images/BASKET.png',
@@ -120,9 +125,9 @@ const routeCategories = [
     routes: [
       {
         id: ' ',
-        name: 'Order Status',
-        path: '/dashboard/order',
-        component: Order,
+        name: 'Order History',
+        path: '/profile/orderhistory',
+        component: OrderHistory,
         icon: '/images/BASKET.png',
       },
     ],
@@ -156,6 +161,42 @@ const routeCategories = [
         isHidden: true,
         path: '/profile/address',
         component: ProfileAddress,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileCard',
+        name: 'Profile Card',
+        title: 'Cards',
+        isHidden: true,
+        path: '/profile/card',
+        component: ProfileCard,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileOrder',
+        name: 'Profile Order',
+        title: 'Order History',
+        isHidden: true,
+        path: '/profile/orderhistory',
+        component: OrderHistory,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileOrderDetail',
+        name: 'Profile Order Detail',
+        title: 'Order Detail',
+        isHidden: true,
+        path: '/profile/orderdetail/:orderId',
+        component: OrderDetail,
+        icon: '/images/Profile.png',
+      },
+      {
+        id: 'profileOrderTrack',
+        name: 'Profile Order Track',
+        title: 'Order Track',
+        isHidden: true,
+        path: '/profile/ordertrack/:orderId',
+        component: OrderTrack,
         icon: '/images/Profile.png',
       },
     ],
@@ -204,6 +245,20 @@ const routeCategories = [
         path: '/common/aboutUs',
         component: AboutUs,
         icon: '/images/Profile1.png',
+      },
+    ],
+  },
+  {
+    id: 'policy',
+    name: 'Policy Menu',
+    isHidden: false,
+    routes: [
+      {
+        id: 'policy',
+        name: 'Policy',
+        path: '/common/policy',
+        component: Policy,
+        icon: '/images/edit-white.png',
       },
     ],
   },

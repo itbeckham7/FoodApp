@@ -85,7 +85,7 @@ function Navigator(props) {
     authProvider,
     ...other
   } = props;
-  console.log('-- routeCategories : ', routeCategories)
+  
   return (
     <Drawer variant="permanent" onClose={onClose} {...other}>
       <List disablePadding onClick={onClose}>

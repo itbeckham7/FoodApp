@@ -1,28 +1,8 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Tabs from '@material-ui/core/Tab';
-import Tab from '@material-ui/core/Tab';
-import TabList from '@material-ui/lab/TabList';
-import TabPanel from '@material-ui/lab/TabPanel';
-import TabContext from '@material-ui/lab/TabContext';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import AddAddressModal from './AddAddressModal';
 import UpdateAddressModal from './UpdateAddressModal';
 import csc from 'country-state-city';
@@ -185,7 +165,7 @@ class Address extends React.Component {
 
     return this.props.updateActiveAddress(me.id, addressId).then(() => {
       if (this.props.errorMessage) {
-        console.log('-- error : ', this.props.errorMessage)
+        console.log('-- error : ', this.props.errorMessage);
         return;
       }
 
@@ -196,8 +176,14 @@ class Address extends React.Component {
   }
 
   onClickAddressElem(addressInfo) {
-    const {addressName, countryId, stateId, cityId, address} = addressInfo
-    this.props.changeAddressInitialValues({addressName, countryId, stateId, cityId, address});
+    const { addressName, countryId, stateId, cityId, address } = addressInfo;
+    this.props.changeAddressInitialValues({
+      addressName,
+      countryId,
+      stateId,
+      cityId,
+      address,
+    });
 
     this.setState({
       selectAddress: addressInfo,
@@ -220,12 +206,11 @@ class Address extends React.Component {
           ? '/images/Checkbox-1.png'
           : '/images/Checkbox.png';
         addressElems.push(
-          <div
-            className={classes.addressElem}
-            onClick={this.onClickAddressElem.bind(this, address)}
-            key={address._id}
-          >
-            <div className={classes.addressElemLeft}>
+          <div className={classes.addressElem} key={address._id}>
+            <div
+              className={classes.addressElemLeft}
+              onClick={this.onClickAddressElem.bind(this, address)}
+            >
               <div className={classes.addressElemTitle}>
                 {address.addressName}
               </div>
@@ -288,11 +273,11 @@ class Address extends React.Component {
             variant="contained"
             onClick={() => {
               this.props.changeAddressInitialValues({
-                addressName: '', 
-                countryId: '', 
-                stateId: '', 
-                cityId: '', 
-                address: ''
+                addressName: '',
+                countryId: '',
+                stateId: '',
+                cityId: '',
+                address: '',
               });
               this.setState({ isVisibleAddAddressDlg: true });
             }}

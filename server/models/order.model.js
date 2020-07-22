@@ -4,12 +4,29 @@ let Schema = mongoose.Schema;
 
 let OrderSchema = new Schema(
     {
+        orderId: String, 
         userId: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-        foods: String,
-        paymentType: String, // visa, master, knet, cash
+        firstName: String, 
+        lastName: String, 
+        phone: String, 
+        email: String, 
+        address: String, 
+        cardType: String, 
+        holderName: String, 
+        cardNumber: String, 
+        expireDate: String,
+        cvv: String,
+        deliveryStyle: String,
+        bags: String,
+        price: Number,
+        currency: String,
+        branchId: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+        deliveryTime: Date,
+        track: String,
         status: String,
-        discountCode: String,
-        client: [{ type: Schema.Types.ObjectId, ref: 'order_client' }]
+        
+        // discountCode: String,
+        // client: [{ type: Schema.Types.ObjectId, ref: 'order_client' }]
     },
     { timestamps: true }
 );

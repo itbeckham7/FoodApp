@@ -12,13 +12,8 @@ import Navigator from '../components/Navigator';
 import ProfileHeader from '../components/ProfileHeader';
 import BottomNavigator from '../components/BottomNavigator';
 import ProtectedRoute from '../components/accessControl/ProtectedRoute';
-import { getRouteCategories } from '../store/selectors';
-import {
-  Home,
-  CartPlus,
-  Menu,
-  SearchWeb
-} from 'mdi-material-ui';
+import { getRouteCategories, getCurrentUser } from '../store/selectors';
+import { Home, CartPlus, Menu, SearchWeb } from 'mdi-material-ui';
 
 const drawerWidth = 256;
 
@@ -40,9 +35,7 @@ const styles = (theme) => ({
   main: {
     height: 'calc( 100% - 56px )',
   },
-  bottomNav: {
-
-  }
+  bottomNav: {},
 });
 
 class Dashboard extends React.Component {
@@ -52,23 +45,27 @@ class Dashboard extends React.Component {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
 
-  renderSwitchRoutes = (routeCategories) => (
-    <Switch>
-      {routeCategories.map(({ routes }) =>
-        routes.map(({ path, permissions, requiresAny, component }) => (
-          <ProtectedRoute
-            path={path}
-            permissions={permissions}
-            requiresAny={requiresAny}
-            component={component}
-          />
-        ))
-      )}
-      <Route path="/">
-        <Redirect to="/dashboard/home" />
-      </Route>
-    </Switch>
-  );
+  renderSwitchRoutes = (routeCategories) => {
+    const { me } = this.props;
+    return (
+      <Switch>
+        {me.role != 'guest' &&
+          routeCategories.map(({ routes }) =>
+            routes.map(({ path, permissions, requiresAny, component }) => (
+              <ProtectedRoute
+                path={path}
+                permissions={permissions}
+                requiresAny={requiresAny}
+                component={component}
+              />
+            ))
+          )}
+        <Route path="/">
+          <Redirect to="/dashboard/home" />
+        </Route>
+      </Switch>
+    );
+  };
 
   render() {
     const { classes, routeCategories } = this.props;
@@ -107,6 +104,7 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = (state) => ({
   routeCategories: getRouteCategories(state),
+  me: getCurrentUser(state),
 });
 
 Dashboard.propTypes = {

@@ -4,4 +4,7 @@ export * from './food.actions';
 export * from './bag.actions';
 export * from './comment.actions';
 export * from './address.actions';
+export * from './card.actions';
+export * from './order.actions';
+export * from './branch.actions';
 export * from './setting.actions';

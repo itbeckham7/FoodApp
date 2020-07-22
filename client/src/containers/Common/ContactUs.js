@@ -179,7 +179,7 @@ class AboutUs extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
@@ -188,6 +188,6 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, {}),
+  connect(mapStateToProps, {}),
   withStyles(styles)
 )(AboutUs);

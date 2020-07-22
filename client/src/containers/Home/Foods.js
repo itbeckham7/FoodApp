@@ -34,6 +34,11 @@ const styles = (theme) => ({
     width: '100%',
     position: 'relative',
   },
+  topSecInner: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    width: '100%',
+    height: '100%',
+  },
   mainSec: {
     flex: 2.5,
     overflowY: 'auto',
@@ -93,7 +98,7 @@ const styles = (theme) => ({
     textOverflow: 'ellipsis',
     fontSize: '0.7rem',
     lineHeight: '0.9rem',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   foodPrice: {
     color: '#000',
@@ -118,7 +123,7 @@ class Foods extends React.Component {
     if (this.props.match.params && this.props.match.params.categoryId) {
       this.props.getFoods(this.props.match.params.categoryId).then(() => {
         if (this.props.errorMessage) {
-          console.log('-- error : ', this.props.errorMessage)
+          console.log('-- error : ', this.props.errorMessage);
         }
 
         var foods = this.props.foods;
@@ -137,7 +142,10 @@ class Foods extends React.Component {
       foods.map((food) => {
         foodElems.push(
           <Grid xs={6} item key={food._id} style={{ padding: '5px' }}>
-            <Link className={classes.foodElem} href={'/dashboard/food/' + food._id}>
+            <Link
+              className={classes.foodElem}
+              href={'/dashboard/food/' + food._id}
+            >
               <div
                 className={classes.foodImage}
                 style={{
@@ -154,8 +162,13 @@ class Foods extends React.Component {
                 {food ? textEllipsis(food.trans[0].title, 15, '...') : ''}
               </Typography>
 
-              <div style={{verticalAlign: 'middle'}}>
-                <Rating name="read-only" value={food.rating} readOnly size="small" />
+              <div style={{ verticalAlign: 'middle' }}>
+                <Rating
+                  name="read-only"
+                  value={food.rating}
+                  readOnly
+                  size="small"
+                />
                 <Typography component="span" className={classes.foodRating}>
                   {food.rating}
                 </Typography>
@@ -174,9 +187,16 @@ class Foods extends React.Component {
                 variant="body2"
                 className={classes.foodPrice}
               >
-                {food
-                  ? food.trans[0].languageId.currency + food.trans[0].price
-                  : ''}
+                {food && (
+                  <span style={{textDecoration: 'line-through', paddingRight: '10px', fontSize: '0.8rem', color: '#666'}}>
+                    {food.trans[0].languageId.currency + food.trans[0].oldPrice}
+                  </span>
+                )}
+                {food && (
+                  <span style={{fontWeight: 'normal'}}>
+                    {food.trans[0].languageId.currency + food.trans[0].price}
+                  </span>
+                )}
               </Typography>
             </Link>
           </Grid>
@@ -192,9 +212,7 @@ class Foods extends React.Component {
   }
 
   render() {
-    const {
-      classes,
-    } = this.props;
+    const { classes } = this.props;
 
     const { category } = this.state;
 
@@ -209,15 +227,17 @@ class Foods extends React.Component {
                 : 'none',
             }}
           >
-            <Typography
-              component="p"
-              variant="h6"
-              className={classes.whiteTitle}
-            >
-              {category ? category.trans[0].name : ''}
-            </Typography>
+            <div className={classes.topSecInner}>
+              <Typography
+                component="p"
+                variant="h6"
+                className={classes.whiteTitle}
+              >
+                {category ? category.trans[0].name : ''}
+              </Typography>
+            </div>
           </div>
-          <div  className={classes.mainSec}>
+          <div className={classes.mainSec}>
             <div>{this.renderFoods()}</div>
           </div>
         </div>
@@ -226,7 +246,7 @@ class Foods extends React.Component {
   }
 }
 
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getFoodProcessing(state),
     errorMessage: getFoodError(state),
@@ -235,6 +255,6 @@ const maptStateToProps = (state) => {
 };
 
 export default compose(
-  connect(maptStateToProps, { getFoods }),
+  connect(mapStateToProps, { getFoods }),
   withStyles(styles)
 )(Foods);

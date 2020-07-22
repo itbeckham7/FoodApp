@@ -240,7 +240,7 @@ class SignIn extends React.Component {
     );
   }
 }
-const maptStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
@@ -255,7 +255,7 @@ const validate = (values) => {
 };
 
 export default compose(
-  connect(maptStateToProps, {
+  connect(mapStateToProps, {
     signIn,
     facebookSignIn,
     googleSignIn,

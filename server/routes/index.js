@@ -14,6 +14,7 @@ const foodsRoutes = require('./foods.route');
 const ordersRoutes = require('./orders.route');
 const transactionsRoutes = require('./transactions.route');
 const discountsRoutes = require('./discounts.route');
+const branchesRoutes = require('./branches.route');
 const settingsRoutes = require('./settings.route');
 
 const dashboard_controller = require('../controllers/DashboardController');
@@ -33,6 +34,7 @@ router.use('/foods', foodsRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/transactions', transactionsRoutes);
 router.use('/discounts', discountsRoutes);
+router.use('/branches', branchesRoutes);
 router.use('/settings', settingsRoutes);
 
 module.exports = router;

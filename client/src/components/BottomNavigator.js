@@ -31,6 +31,7 @@ const styles = (theme) => ({
     height: '50px',
     backgroundColor: '#fff',
     boxShadow: '0 0 15px 1px rgba(0,0,0,0.2)',
+    zIndex: '100'
   },
   navElem: {
     textAlign: 'center',
@@ -50,7 +51,7 @@ class BottomNavigator extends React.Component {
       authProvider,
       ...other
     } = this.props;
-    console.log('-- routeCategories : ', routeCategories);
+    
     return (
       <div className={classes.bottomNavSec}>
         <Grid container>
@@ -68,7 +69,7 @@ class BottomNavigator extends React.Component {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={()=>{}}
+              onClick={()=>{window.location='/bag/checkout'}}
               className={classes.menuButton}
             >
               <img src="/images/shopping-bag-solid.png" />

@@ -28,6 +28,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.FACEBOOK_SIGN_IN_SUCCESS:
     case actionTypes.GOOGLE_SIGN_IN_SUCCESS:
     case actionTypes.TRY_LOCAL_SIGN_IN_SUCCESS:
+      console.log('-- isSignedIn : true', action.type)
       return {
         ...state,
         processing: false,
@@ -70,6 +71,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
         error: action.payload,
       };
     case actionTypes.SIGN_OUT_SUCCESS:
+      console.log('-- isSignedIn : false 1')
       return {
         ...state,
         processing: false,
@@ -79,6 +81,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
         expiresAt: null,
       };
     case actionTypes.TRY_LOCAL_SIGN_IN_FAIL:
+      console.log('-- isSignedIn : false 2')
       return {
         ...state,
         isSignedIn: false,

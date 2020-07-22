@@ -348,6 +348,7 @@ class UpdateAddressModal extends React.Component {
                   name="address"
                   label="Address"
                   id="address"
+                  required
                   autoComplete="address"
                   component={this.renderTextAreaField}
                 />
@@ -355,7 +356,7 @@ class UpdateAddressModal extends React.Component {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.closeAddCommentDlg} variant="outlined">
+            <Button onClick={this.closeUpdateAddressDlg} variant="outlined">
               Cancel
             </Button>
             <Button color="primary" variant="contained" type="submit">
