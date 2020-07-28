@@ -56,6 +56,10 @@ export const GET_FOODS = '[Food] Get Foods';
 export const GET_FOODS_SUCCESS = '[Food] Get Foods Success';
 export const GET_FOODS_FAIL = '[Food] Get Foods Fail';
 
+export const GET_SLIDER_FOODS = '[Food] Get Slider Foods';
+export const GET_SLIDER_FOODS_SUCCESS = '[Food] Get Slider Foods Success';
+export const GET_SLIDER_FOODS_FAIL = '[Food] Get Slider Foods Fail';
+
 export const GET_FOOD = '[Food] Get Food';
 export const GET_FOOD_SUCCESS = '[Food] Get Food Success';
 export const GET_FOOD_FAIL = '[Food] Get Food Fail';

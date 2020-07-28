@@ -246,7 +246,6 @@ class AddCardModal extends React.Component {
 }
 
 const validate = (values) => {
-  console.log('-- values : ', values);
   const errors = {};
   errors.cardType = required(values.cardType);
   errors.holderName = required(values.holderName);
@@ -257,7 +256,6 @@ const validate = (values) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log('-- mapStateToProps state : ', state);
   return {
     me: getCurrentUser(state),
     authProvider: getSignedInWith(state),

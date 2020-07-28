@@ -27,7 +27,7 @@
 
 <script>
     var token = '';
-    var isLogin = '<%= (session.login && session.user.role != 'SuperAdmin' )? '1':'0' %>';
+    var isLogin = '<%= (session.login && session.user.role != 'root' )? '1':'0' %>';
     $(document).ready(function () {
         setTimeout(function () {
             hideNotifications();
@@ -50,9 +50,9 @@
                 })
             }
         }
-        setInterval(function () {
-            checkStatus();
-        }, 3000);
+        // setInterval(function () {
+        //     checkStatus();
+        // }, 3000);
         checkStatus();
     })
 

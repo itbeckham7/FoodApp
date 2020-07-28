@@ -202,7 +202,6 @@ const createSignInResponse = (user, provider) => {
  */
 module.exports.localSignIn = (req, res, next) => {
   if (req.user) {
-    console.log('-- localSignIn : ', createSignInResponse(req.user, 'local'));
     res.json(createSignInResponse(req.user, 'local'));
   }
 };

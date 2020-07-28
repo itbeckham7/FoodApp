@@ -3,6 +3,9 @@
 
 <head>
     <%- include('../layouts/header.ejs')  %>
+    
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsgrid.css">
 
 </head>
 
@@ -42,28 +45,47 @@
                     <div class="card">
                         <div class="card-body">
                             <% if(error && error.length > 0){ %>
-                                <div class="alert alert-danger">
-                                    <%= error %>
-                                </div>
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
                             <% } else if(success && success.length > 0 ){ %>
-                                <div class="alert alert-success">
-                                    <%= success %>
-                                </div>
+                            <div class="alert alert-success">
+                                <%= success %>
+                            </div>
                             <% } %>
-                            <form class="needs-validation add-product-form" novalidate=""
-                                method="post" action="/foods/<%= (pg_mode=='add')?'add':'update' %><%= (pg_mode=='edit')?'/' + food_info._id:'' %>" 
+                            <form class="needs-validation add-product-form" novalidate="" method="post"
+                                action="/foods/<%= (pg_mode=='add')?'add':'update' %><%= (pg_mode=='edit')?'/' + food_info._id:'' %>"
                                 enctype="multipart/form-data">
                                 <div class="row product-adding">
                                     <div class="col-xl-5">
                                         <div class="add-product">
                                             <div class="row">
                                                 <div class="col-xl-9 xl-50 col-sm-6 col-9">
-                                                    <img src="<%= (pg_mode=='edit') ? food_info.image : '/assets/images/pro3/1.jpg' %>" alt="" class="img-fluid image_zoom_1 blur-up lazyloaded"  id="food-image-preview">
-                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Image.</div>
+                                                    <img src="<%= (pg_mode=='edit') ? food_info.image : '/assets/images/pro3/1.jpg' %>"
+                                                        alt="" class="img-fluid image_zoom_1 blur-up lazyloaded"
+                                                        id="food-image-preview">
+                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input
+                                                        Image.</div>
+
+                                                    <div class="form-group row" style="margin-top: 40px;">
+                                                        <label class="col-xl-3 col-md-4"></label>
+                                                        <div class="checkbox checkbox-primary col-md-7">
+                                                            <input id="food-inSlider" type="checkbox"
+                                                                name="food-inSlider"
+                                                                <%= (pg_mode=='edit' && food_info.inSlider==true)?'checked':'' %>>
+                                                            <label for="food-inSlider">Most Popular</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="col-xl-3 xl-50 col-sm-6 col-3">
                                                     <ul class="file-upload-product">
-                                                        <li><div class="box-input-file"><input class="upload form-control" type="file" id="food-image" name="food-image" <%= (pg_mode=='edit') ? '' : 'required' %>><i class="fa fa-plus"></i></div></li>
+                                                        <li>
+                                                            <div class="box-input-file"><input
+                                                                    class="upload form-control" type="file"
+                                                                    id="food-image" name="food-image"
+                                                                    <%= (pg_mode=='edit') ? '' : 'required' %>><i
+                                                                    class="fa fa-plus"></i></div>
+                                                        </li>
                                                         <!-- <li><div class="box-input-file"><input class="upload" type="file" name="food-gallery-image[]"><i class="fa fa-plus"></i></div></li>
                                                         <li><div class="box-input-file"><input class="upload" type="file" name="food-gallery-image[]"><i class="fa fa-plus"></i></div></li>
                                                         <li><div class="box-input-file"><input class="upload" type="file" name="food-gallery-image[]"><i class="fa fa-plus"></i></div></li>
@@ -74,109 +96,155 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xl-7">                                    
-                                        <div class="form">
-                                            <% for(var i = 0; i<languages.length; i++) {  
-                                                var title = ''
-                                                if( pg_mode=='edit' ){
-                                                    var trans = food_info.trans;
-                                                    trans = trans.filter(function( t ){
-                                                        return t.abbr == languages[i].abbr
-                                                    })
-                                                    
-                                                    title = trans[0].title;
-                                                }
-                                            %>
-                                                <div class="form-group mb-3 row">
-                                                    <label for="food-title-<%= languages[i].abbr%>" class="col-xl-3 col-sm-4 mb-0">Title(<%= languages[i].abbr%>) :</label>
-                                                    <input class="form-control col-xl-8 col-sm-7" id="food-title-<%= languages[i].abbr%>" type="text" required
-                                                        name="food-title-<%= languages[i].abbr%>" value="<%= title %>">
-                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Title.</div>
-                                                </div>
-                                            <% } %>
-                                            
-                                            <div class="form-group mb-3 row">
-                                                <label for="food-sku" class="col-xl-3 col-sm-4 mb-0">SKU :</label>
-                                                <input class="form-control col-xl-8 col-sm-7" id="food-sku" type="text" required
-                                                    name="food-sku" value="<%= (pg_mode=='edit')? food_info.sku : ''%>">
-                                                <div class="invalid-feedback offset-sm-4 offset-xl-3">Please choose Valid SKU.</div>
-                                            </div>
-                                            <% for(var i = 0; i<languages.length; i++) {  
-                                                var price = 0, oldPrice = 0;
-                                                if( pg_mode=='edit' ){
-                                                    var trans = food_info.trans;                                                    
-                                                    trans = trans.filter(function( t ){
-                                                        return t.abbr == languages[i].abbr
-                                                    })
-                                                    
-                                                    price = trans[0].price;
-                                                    oldPrice = trans[0].oldPrice;
-                                                }
-                                            %>
-                                                <div class="form-group mb-3 row">
-                                                    <label for="food-price-<%= languages[i].abbr%>" class="col-xl-3 col-sm-4 mb-0">Price(<%= languages[i].currency%>) :</label>
-                                                    <input class="form-control col-xl-8 col-sm-7" id="food-price-<%= languages[i].abbr%>" type="text" required
-                                                        name="food-price-<%= languages[i].abbr%>" value="<%= price %>">
-                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Price.</div>
-                                                </div>
-                                                <div class="form-group mb-3 row">
-                                                    <label for="food-oldPrice-<%= languages[i].abbr%>" class="col-xl-3 col-sm-4 mb-0">Old Price(<%= languages[i].currency%>) :</label>
-                                                    <input class="form-control col-xl-8 col-sm-7" id="food-oldPrice-<%= languages[i].abbr%>" type="text" required
-                                                        name="food-oldPrice-<%= languages[i].abbr%>" value="<%= oldPrice %>">
-                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Old Price.</div>
-                                                </div>
-                                            <% } %>
-                                            
-                                        </div>
-                                        <div class="form">
-                                            <div class="form-group row">
-                                                <label for="food-categoryId" class="col-xl-3 col-sm-4 mb-0">Category :</label>
-                                                <select class="form-control digits col-xl-8 col-sm-7" id="food-categoryId" name="food-categoryId">
-                                                    <option value=''>None</option>
-                                                    <% for(var i = 0; i<categories.length; i++) {  
-                                                        var trans = categories[i].trans;
-                                                        trans = trans.filter(function(t){
-                                                            return t.abbr == 'EN'
-                                                        })
-                                                        var catName = trans[0].name;
-                                                    %>
-                                                        <option <%= (pg_mode=='edit' && food_info.categoryId && food_info.categoryId.length>0 && food_info.categoryId[0]+''==categories[i]._id+'')?'selected':'' %> value="<%= categories[i]._id %>"><%= catName %></option>
+                                    <div class="col-xl-7">
+                                        <div class="form" style="margin-bottom: 40px;">
+                                            <div class="form-group row" style="align-items: center;">
+                                                <label for="food-categoryId" class="col-xl-3 col-sm-4 mb-0">Languange
+                                                    :</label>
+                                                <select class="form-control digits col-xl-8 col-sm-7" id="food-lang"
+                                                    name="food-lang">
+                                                    <% for(var i = 0; i<languages.length; i++) { %>
+                                                    <option value="<%= languages[i].abbr %>"><%= languages[i].name %>
+                                                    </option>
                                                     <% } %>
                                                 </select>
+                                                <img id="lang-flag" src="/assets/images/en.png"
+                                                    style="margin-left: 10px;" />
                                             </div>
-                                            <div class="form-group row">
-                                                <label for="food-qty" class="col-xl-3 col-sm-4 mb-0">Qty :</label>
-                                                <fieldset class="qty-box col-xl-9 col-xl-8 col-sm-7 pl-0">
-                                                    <div class="input-group">
-                                                        <input class="touchspin" id="food-qty"  type="text" required
-                                                            name="food-qty" value="<%= (pg_mode=='edit')? food_info.qty : 0%>">
+                                        </div>
+                                        <ul class="nav nav-tabs tab-coupon" id="myTab" role="tablist">
+                                            <li class="nav-item"><a class="nav-link active show" id="general-tab"
+                                                    data-toggle="tab" href="#general" role="tab" aria-controls="general"
+                                                    aria-selected="true" data-original-title="" title="">General</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link" id="extras-tabs"
+                                                    data-toggle="tab" href="#extras" role="tab"
+                                                    aria-controls="extras" aria-selected="false"
+                                                    data-original-title="" title="">Extras</a></li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade active show" id="general" role="tabpanel"
+                                                aria-labelledby="general-tab">
+                                                <h4>General</h4>
+                                                <div class="form">
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="food-title" class="col-xl-3 col-sm-4 mb-0">Title :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="food-title"
+                                                            type="text" required name="food-title">
+                                                        <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input
+                                                            Title.</div>
                                                     </div>
-                                                </fieldset>
-                                                <div class="invalid-feedback offset-sm-4 offset-xl-3">Please enter Qty.</div>
-                                            </div>
-                                            <% for(var i = 0; i<languages.length; i++) {  
-                                                var desc = ''
-                                                if( pg_mode=='edit' ){
-                                                    var trans = food_info.trans;                                                    
-                                                    trans = trans.filter(function( t ){
-                                                        return t.abbr == languages[i].abbr
-                                                    })
-                                                    
-                                                    desc = trans[0].desc;
-                                                }
-                                            %>
-                                            <div class="form-group row" style="align-items: start;">
-                                                <label class="col-xl-3 col-sm-4" for="food-description-<%= languages[i].abbr%>">Description(<%= languages[i].abbr %>) :</label>
-                                                <div class="col-xl-8 col-sm-7 pl-0 description-sm">
-                                                    <textarea id="food-description-<%= languages[i].abbr%>" name="food-description-<%= languages[i].abbr %>" cols="10" rows="4">
-                                                        <%= desc %>
-                                                    </textarea>
+        
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="food-sku" class="col-xl-3 col-sm-4 mb-0">SKU :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="food-sku" type="text"
+                                                            required name="food-sku"
+                                                            value="<%= (pg_mode=='edit')? food_info.sku : ''%>">
+                                                        <div class="invalid-feedback offset-sm-4 offset-xl-3">Please choose
+                                                            Valid SKU.</div>
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="food-price" class="col-xl-3 col-sm-4 mb-0">Price :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="food-price"
+                                                            type="text" required name="food-price">
+                                                        <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input
+                                                            Price.</div>
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="food-oldPrice" class="col-xl-3 col-sm-4 mb-0">Old Price
+                                                            :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="food-oldPrice"
+                                                            type="text" required name="food-oldPrice">
+                                                        <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input Old
+                                                            Price.</div>
+                                                    </div>
+        
+                                                </div>
+                                                <div class="form">
+                                                    <div class="form-group row">
+                                                        <label for="food-categoryId" class="col-xl-3 col-sm-4 mb-0">Category
+                                                            :</label>
+                                                        <select class="form-control digits col-xl-8 col-sm-7"
+                                                            id="food-categoryId" name="food-categoryId">
+                                                            <option value=''>None</option>
+                                                            <% for(var i = 0; i<categories.length; i++) {  
+                                                                var trans = categories[i].trans;
+                                                                trans = trans.filter(function(t){
+                                                                    return t.abbr == 'EN'
+                                                                })
+                                                                var catName = trans[0].name;
+                                                            %>
+                                                            <option
+                                                                <%= (pg_mode=='edit' && food_info.categoryId && food_info.categoryId.length>0 && food_info.categoryId[0]+''==categories[i]._id+'')?'selected':'' %>
+                                                                value="<%= categories[i]._id %>"><%= catName %></option>
+                                                            <% } %>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="food-qty" class="col-xl-3 col-sm-4 mb-0">Qty :</label>
+                                                        <fieldset class="qty-box col-xl-9 col-xl-8 col-sm-7 pl-0">
+                                                            <div class="input-group">
+                                                                <input class="touchspin" id="food-qty" type="text" required
+                                                                    name="food-qty"
+                                                                    value="<%= (pg_mode=='edit')? food_info.qty : 0%>">
+                                                            </div>
+                                                        </fieldset>
+                                                        <div class="invalid-feedback offset-sm-4 offset-xl-3">Please enter Qty.
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row" style="align-items: start;">
+                                                        <label class="col-xl-3 col-sm-4" for="food-description">Description
+                                                            :</label>
+                                                        <div class="col-xl-8 col-sm-7 pl-0 description-sm">
+                                                            <textarea id="food-description" name="food-description" cols="10"
+                                                                rows="4">
+        
+                                                            </textarea>
+                                                        </div>
+                                                    </div>
+                                                    <% for(var i = 0; i<languages.length; i++) {  
+                                                        var desc = ''
+                                                        if( pg_mode=='edit' ){
+                                                            var trans = food_info.trans;                                                    
+                                                            trans = trans.filter(function( t ){
+                                                                return t.abbr == languages[i].abbr
+                                                            })
+                                                            
+                                                            if( trans.length > 0 ) desc = trans[0].desc;
+                                                        }
+                                                    %>
+        
+                                                    <% } %>
                                                 </div>
                                             </div>
-                                            <% } %>
+                                            <div class="tab-pane fade" id="extras" role="tabpanel"
+                                                aria-labelledby="extras-tabs">
+                                                <h4>Extras</h4>
+                                                <div style="min-height: 200px;">
+                                                    <% 
+                                                    var extras = '[]';
+                                                    for(var i = 0; i<languages.length; i++) {  
+                                                        if( pg_mode=='edit' ){
+                                                            var trans = food_info.trans;     
+                                                            console.log                                               
+                                                            trans = trans.filter(function( t ){
+                                                                return t.abbr == languages[i].abbr
+                                                            })
+                                                            
+                                                            if( trans.length > 0 ) extras = trans[0].extras;
+                                                        }
+                                                    %>
+        
+                                                    <% } %>
+                                                    <input type="hidden" value="<%= pg_mode == 'edit' ? extras : ''%>" name="food-extras" id="food-extras"/>
+                                                    <div id="extra-list" class="product-physical"></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="offset-xl-3 offset-sm-4">
-                                            <button type="submit" class="btn btn-primary"><%= (pg_mode=='edit')? 'Edit' : 'Add' %></button>
+
+                                        <div class="offset-xl-3 offset-sm-4" style="margin-top: 40px">
+                                            <button type="submit"
+                                                class="btn btn-primary"><%= (pg_mode=='edit')? 'Edit Food' : 'Add Food' %></button>
                                             <a class="btn btn-light" href="/categories">Discard</a>
                                         </div>
                                     </div>
@@ -199,6 +267,9 @@
     <script src="/assets/js/touchspin/touchspin.js"></script>
     <script src="/assets/js/touchspin/input-groups.min.js"></script>
 
+    <!--right sidebar js-->
+    <script src="/assets/js/chat-menu.js"></script>
+
     <!-- form validation js-->
     <script src="/assets/js/dashboard/form-validation-custom.js"></script>
 
@@ -211,46 +282,113 @@
     <script src="/assets/js/jquery.elevatezoom.js"></script>
     <script src="/assets/js/zoom-scripts.js"></script>
 
-    <script>
-        (function($) {
-            "use strict";
+    <!-- Jsgrid js-->
+    <script src="/assets/js/jsgrid/jsgrid.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script> -->
 
-            $(document).ready(function(){
+<!--script admin-->
+<script src="/assets/js/admin-script.js"></script>
+
+    <script>
+        (function ($) {
+            "use strict";
+            var extrasDb = {
+                loadData: function(filter) {
+                    return this.extras
+                },
+                insertItem: function(insertingExtra) {
+                    
+                },
+                updateItem: function(updatingExtra) { 
+                    
+                },
+
+                deleteItem: function(deletingExtra) {
+                    var clientIndex = $.inArray(deletingExtra, this.extras);
+                    this.extras.splice(clientIndex, 1);
+                }
+            };
+            window.extrasDb = extrasDb;
+            
+            extrasDb.extras = [];
+            <% if( pg_mode == 'edit' ) { %>
+                extrasDb.extras = <%- extras %>
+                if( !extrasDb.extras ) extrasDb.extras = [];
+            <% } %>
+
+            $("#extra-list").jsGrid({
+                width: "100%",
+                filtering: false,
+                editing: true,
+                inserting: true,
+                sorting: true,
+                paging: true,
+                autoload: true,
+                pActionSize: 15,
+                pActionButtonCount: 5,
+                deleteConfirm: "Do you really want to delete the extra?",
+                controller: extrasDb,
+                fields: [
+                    { name: "Name", type: "text", width: 50, sorting: true, sorter: "string"},
+                    { name: "Value", type: "text", width: 50},
+                    { name: "Extra Price", type: "number", width: 50},
+                    { type: "control" }
+                ],
+                onItemInserted: function(){
+                    $('#food-extras').val(JSON.stringify(extrasDb.extras))
+                },
+                onItemUpdated: function(){
+                    $('#food-extras').val(JSON.stringify(extrasDb.extras))
+                }
+            });
+            $("#extra-list").jsGrid("sort", 0);
+
+            
+
+
+
+            var descInstance;
+            var language;
+            var food = null;
+
+            $(document).ready(function () {
                 $('#food-image-preview').elevateZoom({
                     zoomType: "inner",
                     cursor: "crosshair"
                 });
 
-                var editors = $('[id^=food-description-]');
+                descInstance = CKEDITOR.replace('food-description', {
+                    on: {
+                        contentDom: function (evt) {
+                            // Allow custom context menu only with table elemnts.
+                            evt.editor.editable().on('contextmenu', function (contextEvent) {
+                                var path = evt.editor.elementPath();
 
-                for( var i=0; i<editors.length; i++ ){
-                    var id = $(editors[i]).attr('id');
-                    
-                    CKEDITOR.replace( id, {
-                        on: {
-                            contentDom: function( evt ) {
-                                // Allow custom context menu only with table elemnts.
-                                evt.editor.editable().on( 'contextmenu', function( contextEvent ) {
-                                    var path = evt.editor.elementPath();
-
-                                    if ( !path.contains( 'table' ) ) {
-                                        contextEvent.cancel();
-                                    }
-                                }, null, null, 5 );
-                            }
+                                if (!path.contains('table')) {
+                                    contextEvent.cancel();
+                                }
+                            }, null, null, 5);
                         }
-                    });
-                }
+                    }
+                });
+
                 
+
+                <% if (pg_mode == 'edit') { %>
+                    food = <%- JSON.stringify(food_info) %>
+                    language = <%- JSON.stringify(languages) %>
+
+                    setValueFromLang(language[0].abbr);
+                <% } %>
             })
 
 
-            $('#food-image').change(function(){
+            
+            $('#food-image').change(function () {
                 var input = this;
                 var url = $(this).val();
                 var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
-                if (input.files && input.files[0]&& (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) 
-                {
+                if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
                     var reader = new FileReader();
 
                     reader.onload = function (e) {
@@ -261,13 +399,55 @@
                         });
                     }
                     reader.readAsDataURL(input.files[0]);
-                } 
+                }
             });
 
+
+            $('#food-lang').change(function () {
+                var lang = $('#food-lang').val();
+                $('#lang-flag').attr('src', `/assets/images/${lang}.png`)
+
+                <% if (pg_mode == 'edit') { %>
+                    setValueFromLang(lang)
+                <% } %>
+            })
+
+
+            function setValueFromLang(lang) {
+                var trans = food.trans;
+                trans = trans.filter(function (t) {
+                    return t.abbr == lang
+                })
+
+                var title = '';
+                var desc = '';
+                var price = '';
+                var oldPrice = '';
+                var extras = '[]';
+                if (trans.length > 0) {
+                    title = trans[0].title;
+                    desc = trans[0].desc
+                    price = trans[0].price;
+                    oldPrice = trans[0].oldPrice;
+                    extras = trans[0].extras;
+                }
+
+                $('#food-title').val(title)
+                $('#food-price').val(price)
+                $('#food-oldPrice').val(oldPrice)
+                $('#food-description').val(desc)
+                $('#food-extras').val(extras)
+
+                extrasDb.extras = JSON.parse(extras);
+                $('#extra-list').jsGrid("option", "data", extrasDb.extras);
+                $('#extra-list').jsGrid("refresh");
+
+                descInstance.setData(desc)
+            }
+
+            
         })(jQuery);
     </script>
 </body>
+
 </html>
-
-
-

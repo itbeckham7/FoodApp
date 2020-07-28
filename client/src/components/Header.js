@@ -68,9 +68,7 @@ class Header extends React.Component {
     
     var that = this;
     setTimeout(function(){
-      console.log('-- Header componentWillMount 1');
       if( that.props.bags ) return;
-      console.log('-- Header componentWillMount 2');
       that.props.getBags(me.id).then(() => {
         if (that.props.errorMessage) {
           console.log('-- error : ', that.props.errorMessage);

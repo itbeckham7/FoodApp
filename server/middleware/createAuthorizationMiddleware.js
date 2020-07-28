@@ -28,7 +28,7 @@ const createAuthorizationMiddleware = (modelName, action) => {
       return next();
     }
 
-    if (action === 'modify' && config.allowCreatorModify[modelName]) {
+    if ((action === 'update' || action === 'delete') && config.allowCreatorModify[modelName]) {
       const target = res.locals[instanceName];
       if (!target) {
         return next(

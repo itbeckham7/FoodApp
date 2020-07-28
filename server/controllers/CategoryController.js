@@ -21,8 +21,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryRead) {
+            return res.redirect('/dashboard');
         }
 
         categories = await CategoryModel.find().sort({createdAt: 1});
@@ -43,8 +43,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/categories/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryInsert) {
+            return res.redirect('/dashboard');
         }
 
         categories = await CategoryModel.find().populate('trans').sort({createdAt: 1}).exec();
@@ -69,8 +69,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryInsert) {
+            return res.redirect('/dashboard');
         }
         
         // Check same category with sku address
@@ -132,8 +132,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryUpdate) {
+            return res.redirect('/dashboard');
         }
 
         categories = await CategoryModel.find().populate('trans').sort({createdAt: 1}).exec();
@@ -142,7 +142,7 @@ module.exports = BaseController.extend({
         categoryId = req.params.categoryId;        
         categoryInfo = await CategoryModel.findOne({_id: categoryId}).populate('trans').exec();
         if (!categoryInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'categories/edit');
@@ -166,7 +166,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryUpdate) {
             return res.redirect('/dashboard');
         }
 
@@ -220,13 +220,13 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/categories';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.categoryDelete) {
             return res.redirect('/dashboard');
         }
 
         categoryInfo = await CategoryModel.findOne({_id: categoryId                                                                             });
         if (!categoryInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
         
         CategoryModel.deleteOne({_id: categoryId}, function (err, result) {

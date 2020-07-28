@@ -224,7 +224,7 @@ class Card extends React.Component {
   renderCards() {
     const { classes } = this.props;
     const { cards } = this.state;
-    console.log('-- cards : ', cards);
+    
     if (cards && cards.length > 0) {
       var cardElems = [];
       cards.map((card) => {
@@ -247,7 +247,7 @@ class Card extends React.Component {
             : card.cardType == 'visa'
             ? 'url(/images/Visa.png)'
             : 'url(/images/Knet.png)';
-        console.log('-- cardImage : ', cardImage, card.cardType);
+        
         cardElems.push(
           <div
             className={classes.cardElem}

@@ -44,7 +44,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="btn-popup pull-right">
+                                <% if(session.user.role == 'root' || session.user.permissions.foodInsert) { %>
                                 <a href="/foods/add" class="btn btn-primary">Add Food</a>
+                                <% } %>
                             </div>
                             <div class="table-responsive">
                                 <div id="basicScenario" class="product-physical"></div>
@@ -200,9 +202,16 @@
                             name: '_id', 
                             title: 'Action', 
                             itemTemplate: function(val, item) {
-                                var editNode = $(`<a href="/foods/edit/${val}" class="btn btn-warning btn-sm">Edit</a>`).css({padding: '0.25rem 0.5rem', marginRight: '5px'});
-                                var delNode = $(`<a href="/foods/delete/${val}" class="btn btn-danger btn-sm">Delete</a>`).css({padding: '0.25rem 0.5rem'});
-                                var actionNode = $('<div></div>').append(editNode).append(delNode)
+                                var actionNode = $('<div></div>')
+                                <% if(session.user.role == 'root' || session.user.permissions.foodUpdate) { %>
+                                    var editNode = $(`<a href="/foods/edit/${val}" class="btn btn-warning btn-sm">Edit</a>`).css({padding: '0.25rem 0.5rem', marginRight: '5px'});
+                                    actionNode = actionNode.append(editNode)
+                                <% } %>
+                                <% if(session.user.role == 'root' || session.user.permissions.foodDelete) { %>
+                                    var delNode = $(`<a href="/foods/delete/${val}" class="btn btn-danger btn-sm">Delete</a>`).css({padding: '0.25rem 0.5rem'});
+                                    actionNode = actionNode.append(delNode)
+                                <% } %>
+
                                 return actionNode
                             },
                             width: 100 }

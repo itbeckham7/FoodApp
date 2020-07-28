@@ -65,10 +65,8 @@ const cardReducer = (state = INITIAL_STATE, action) => {
         error: action.payload,
       };
     case actionTypes.CARD_INITIAL_VALUES:
-      console.log('-- CARD_INITIAL_VALUES : ', action.payload)
       var cardInitialValues = state.cardInitialValues;
       var newCardInitialValues = {...cardInitialValues, ...action.payload}
-      console.log('-- CARD_INITIAL_VALUES1 : ', newCardInitialValues)
       return {
         ...state,
         cardInitialValues: newCardInitialValues

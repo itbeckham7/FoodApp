@@ -65,10 +65,8 @@ const addressReducer = (state = INITIAL_STATE, action) => {
         error: action.payload,
       };
     case actionTypes.ADDRESS_INITIAL_VALUES:
-      console.log('-- ADDRESS_INITIAL_VALUES : ', action.payload)
       var addressInitialValues = state.addressInitialValues;
       var newAddressInitialValues = {...addressInitialValues, ...action.payload}
-      console.log('-- ADDRESS_INITIAL_VALUES1 : ', newAddressInitialValues)
       return {
         ...state,
         addressInitialValues: newAddressInitialValues

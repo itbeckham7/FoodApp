@@ -80,7 +80,7 @@ module.exports = {
         .validateAsync(req.body, { stripUnknown: true })
         .then((payload) => {
           req.body = payload;
-console.log('-- apiAddCard req.body : ', req.params.userId, req.body)
+          
           newCard = new CardModel(req.body);
           newCard.userId = req.params.userId;
 
@@ -91,7 +91,6 @@ console.log('-- apiAddCard req.body : ', req.params.userId, req.body)
           .then((cards) => {return cards});
         })
         .then((cards) => {
-          console.log('-- apiAddCard cards : ', cards)
           if (!cards) {
             throw createError(422, 'User have no cards');
           }
@@ -105,7 +104,6 @@ console.log('-- apiAddCard req.body : ', req.params.userId, req.body)
 
   apiUpdateCard: (req, res, next) => {    
     var cardId = req.params.cardId;
-    console.log('-- apiUpdateCard start : ', cardId )
 
     if (req.user) {
       if (_.isEmpty(req.body)) {
@@ -119,7 +117,6 @@ console.log('-- apiAddCard req.body : ', req.params.userId, req.body)
           return CardModel.findOne({_id: cardId})
         })
         .then((card) => {
-          console.log('-- apiUpdateCard card : ', card)
           _.merge(card, req.body);
           return card.save();
         })
@@ -128,7 +125,6 @@ console.log('-- apiAddCard req.body : ', req.params.userId, req.body)
           .then((cards) => {return cards});
         })
         .then((cards) => {
-          console.log('-- apiUpdateCard cards : ', cards)
           if (!cards) {
             throw createError(422, 'User have no cards');
           }

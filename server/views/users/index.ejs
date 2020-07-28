@@ -46,7 +46,9 @@
                     <div class="card">
                         <div class="card-body order-datatable">
                             <div class="btn-popup pull-right">
+                                <% if(session.user.role == 'root' || session.user.permissions.userInsert) { %>
                                 <a href="/users/add" class="btn btn-primary">Add User</a>
+                                <% } %>
                             </div>
                             <table class="display" id="users_list">
                                 <thead>
@@ -161,10 +163,15 @@
                             "targets": 8,
                             "data": '_id',
                             "render": function (data, type, row) {
-                                return `
-                                    <a href="/users/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a>
-                                    <a href="/users/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>
-                                `
+                                var ret = ''
+                                <% if(session.user.role == 'root' || session.user.permissions.userUpdate) { %>
+                                    ret += `<a href="/users/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a> `
+                                <% } %>
+                                <% if(session.user.role == 'root' || session.user.permissions.userDelete) { %>
+                                    ret += `<a href="/users/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>`
+                                <% } %>
+
+                                return ret;
                             }
                         } 
                     ],

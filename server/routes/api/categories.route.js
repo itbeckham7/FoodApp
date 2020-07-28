@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadCategory = createAuthorizationMiddleware('category', 'read');
-const canModifyCategory = createAuthorizationMiddleware('category', 'modify');
+const canUpdateCategory = createAuthorizationMiddleware('category', 'update');
+const canDeleteCategory = createAuthorizationMiddleware('category', 'delete');
+const canInsertCategory = createAuthorizationMiddleware('category', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -15,10 +17,10 @@ router.param('categoryId', categoryCtr.preloadTargetCategory);
 
 router.get('/', canReadCategory, categoryCtr.apiGetCategories);
 
-// router.get('/:categoryId', canReadUser, categoryCtr.apiGetCategory);
+// router.get('/:categoryId', canReadCategory, categoryCtr.apiGetCategory);
 
-// router.put('/:categoryId', canModifyUser, categoryCtr.updateCategory);
+// router.put('/:categoryId', canUpdateCategory, categoryCtr.updateCategory);
 
-// router.delete('/:categoryId', canModifyUser, categoryCtr.deleteCategory);
+// router.delete('/:categoryId', canDeleteCategory, categoryCtr.deleteCategory);
 
 module.exports = router;

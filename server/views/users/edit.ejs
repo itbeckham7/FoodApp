@@ -60,7 +60,7 @@
                                         <div class="add-product">
                                             <div class="row">
                                                 <div class="col-xl-9 xl-50 col-sm-6 col-9">
-                                                    <img src="<%= (pg_mode=='edit' && user_info.picture && user_info.picture != '') ? user_info.picture : '/assets/images/pro3/1.jpg' %>" alt="" class="img-fluid image_zoom_1 blur-up lazyloaded" id="user-picture-preview">
+                                                    <img src="<%= (pg_mode=='edit' && user_info.provider && user_info.provider.local.picture && user_info.provider.local.picture != '') ? user_info.provider.local.picture : '/assets/images/pro3/1.jpg' %>" alt="" class="img-fluid image_zoom_1 blur-up lazyloaded" id="user-picture-preview">
                                                     <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input your photo.</div>
                                                 </div>
                                                 <div class="col-xl-3 xl-50 col-sm-6 col-3">
@@ -101,18 +101,11 @@
                                                 <input class="form-control col-xl-8 col-sm-7" id="user-phone" type="text"
                                                     name="user-phone" value="<%= (pg_mode=='edit')?user_info.phone:'' %>">
                                             </div>
-                                            <div class="form-group row">
-                                                <label class="col-xl-3 col-md-4 mb-0">User Role</label>
-                                                <select class="custom-select col-md-7" required id="user-role" name="user-role">
-                                                    <option value="Admin" <%= (pg_mode=='edit' && user_info.role == 'Admin')?'selected':'' %>>Admin</option>
-                                                    <option value="User" <%= (pg_mode=='edit' && user_info.role == 'User')?'selected':'' %>>User</option>
-                                                </select>
-                                            </div>
                                             <div class="form-group mb-3 row">
                                                 <label class="col-xl-3 col-md-4 mb-0">Status</label>
                                                 <div class="checkbox checkbox-primary col-md-7">
                                                     <input id="user-status" type="checkbox" name="user-status" 
-                                                        <%= (pg_mode=='edit' && user_info.status==true)?'checked':'' %>>
+                                                        <%= (pg_mode=='edit' && user_info.status=='active')?'checked':'' %>>
                                                     <label for="user-status" style="font-weight: normal;">Enable</label>
                                                 </div>
                                             </div>

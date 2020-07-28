@@ -42,7 +42,7 @@ import {
   getCommentComments,
 } from '../../store/selectors';
 import { required } from '../../utils/formValidator';
-import { textEllipsis } from '../../utils/textUtils';
+import { textEllipsis, getTrans, getExtraPrice } from '../../utils';
 import config from '../../config';
 
 const styles = (theme) => ({
@@ -148,7 +148,7 @@ const styles = (theme) => ({
     fontSize: '0.8rem',
     padding: theme.spacing(0, 1.5),
     marginTop: '5px',
-    textDecoration: 'line-through'
+    textDecoration: 'line-through',
   },
   foodRatingSec: {
     textAlign: 'center',
@@ -203,6 +203,7 @@ const styles = (theme) => ({
     height: '10px',
     borderBottom: '1px solid rgba(0,0,0,0.2)',
     margin: theme.spacing(0, 1),
+    flex: 'auto'
   },
   quentityBtn: {
     fontSize: '1.5rem',
@@ -305,11 +306,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 class Food extends React.Component {
   state = {
     tabValue: 'book',
-    qty: 0,
+    qty: 1,
     note: '',
     rating: 0,
     isVisibleAddCommentDlg: false,
     comments: [],
+    bag: null,
+    bagExtras: [],
   };
 
   constructor() {
@@ -346,7 +349,11 @@ class Food extends React.Component {
         if (bags) {
           for (var i = 0; i < bags.length; i++) {
             if (bags[i].foodId == this.props.match.params.foodId) {
-              this.setState({ qty: bags[i].qty });
+              this.setState({ 
+                qty: bags[i].qty,
+                bag: bags[i],
+                bagExtras: bags[i].bagExtras
+              });
             }
           }
         }
@@ -398,23 +405,27 @@ class Food extends React.Component {
 
   onAddToBag() {
     const { food, me, bags } = this.props;
-    const { qty, note } = this.state;
+    const { qty, note, bagExtras } = this.state;
 
-    var price = this.props.food.trans[0].price;
-    var currency = this.props.food.trans[0].languageId.currency;
+    var trans = getTrans(food, 'EN');
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
-    this.props.addToBag(me.id, food._id, price, currency, qty, note).then(() => {
-      if (this.props.errorMessage) {
-        throw new SubmissionError({ _error: this.props.errorMessage });
-      }
-    });
+    this.props
+      .addToBag(me.id, food._id, price, currency, qty, note, bagExtras)
+      .then(() => {
+        if (this.props.errorMessage) {
+          throw new SubmissionError({ _error: this.props.errorMessage });
+        }
+      });
   }
 
   onCheckOut() {
     this.props.clearBag();
-    
-    var price = this.props.food.trans[0].price;
-    var currency = this.props.food.trans[0].languageId.currency;
+
+    var trans = getTrans(this.props.food, 'EN');
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     var that = this;
     setTimeout(function () {
@@ -422,7 +433,7 @@ class Food extends React.Component {
         .addToBag(
           that.props.me.id,
           that.props.food._id,
-          price, 
+          price,
           currency,
           that.state.qty,
           that.state.note
@@ -437,107 +448,110 @@ class Food extends React.Component {
     }, 100);
   }
 
-  renderBook() {
+  addExtra(Name, Value, Price, event){
+    var {bagExtras} = this.state;
+
+    var addExtra = Name + '-' + Value + '-' + Price;
+    
+    var isExist = false;
+    for( var i=0; i<bagExtras.length; i++ ){
+      var extra = bagExtras[i];
+      if( extra == addExtra ){
+        bagExtras.splice(i, 1);
+        isExist = true;
+        break;
+      }
+    }
+
+    if( !isExist ){
+      bagExtras.push( addExtra );
+    }
+
+    this.setState({bagExtras: bagExtras});
+  }
+
+  renderExtras() {
     const { food, classes } = this.props;
-    const { qty } = this.state;
+    const { qty, bagExtras, bag } = this.state;
+
+    var extras = [];
+    var newExtras = [];
+    var extrasElem = [];
+    var trans = getTrans(food, 'EN');
+    if (food && trans && trans.extras) extras = JSON.parse(trans.extras);
+
+    extras.map((extra) => {
+      if (!newExtras[extra.Name]) {
+        newExtras[extra.Name] = [];
+      }
+      newExtras[extra.Name].push({
+        Value: extra.Value,
+        Price: extra['Extra Price'],
+      });
+    });
+
+    if( extras.length > 0 ){
+      var extraNames = Object.keys(newExtras);
+  
+      extraNames.map((Name) => {
+        var extraValues = newExtras[Name];
+        var extraValuesElem = [];
+        extraValues.map((extraValue) => {          
+          var isExist = bagExtras.filter((extra)=>{
+            return extra == Name+'-'+extraValue.Value+'-'+extraValue.Price
+          }).length;
+          
+
+          extraValuesElem.push(
+            <FormGroup row key={extraValue.Value}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isExist>0}
+                    onChange={this.addExtra.bind(this, Name, extraValue.Value, extraValue.Price)}
+                    color="primary"
+                  />
+                }
+                label={
+                  <div style={{ marign: 0, display: 'flex', justifyContent: 'space-between', width: '75vw' }}>
+                    <span className={classes.inputLabel} style={{display: 'inline-block'}}>
+                      {extraValue.Value}
+                    </span>
+                    <span className={classes.inputLabelMargin} style={{display: 'inline-block'}}></span>
+                    <span className={classes.inputLabel} style={{display: 'inline-block'}}>
+                      +{extraValue.Price}
+                    </span>
+                  </div>
+                }
+                style={{width: '100%'}}
+              />
+            </FormGroup>
+          );
+        });
+
+        extrasElem.push(
+          <div key={'extras-' + Name}>
+            <Typography
+              component="h1"
+              variant="h6"
+              className={classes.foodBookTitle}
+            >
+              {Name}
+            </Typography>
+            <div style={{ marginBottom: '20px' }}>
+              {extraValuesElem}
+            </div>
+          </div>
+        );
+      });
+    }
+    
+    var price = trans ? trans.price : 0;
+    if( bag ) price += getExtraPrice(bag.bagExtras);
 
     return (
       <div style={{ padding: '16px 16px' }}>
-        <Typography
-          component="h1"
-          variant="h6"
-          className={classes.foodBookTitle}
-        >
-          Size
-        </Typography>
-        <div style={{ marginBottom: '20px' }}>
-          <FormGroup row>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={true}
-                  onChange={() => {}}
-                  name="sizeM"
-                  color="primary"
-                />
-              }
-              label={
-                <div style={{ marign: 0 }}>
-                  <span className={classes.inputLabel}>Size M</span>
-                  <span className={classes.inputLabelMargin}></span>
-                  <span className={classes.inputLabel}>+0.250</span>
-                </div>
-              }
-            />
-          </FormGroup>
-          <FormGroup row>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={true}
-                  onChange={() => {}}
-                  name="sizeL"
-                  color="primary"
-                />
-              }
-              label={
-                <div style={{ marign: 0 }}>
-                  <span className={classes.inputLabel}>Size L</span>
-                  <span className={classes.inputLabelMargin}></span>
-                  <span className={classes.inputLabel}>+0.500</span>
-                </div>
-              }
-            />
-          </FormGroup>
-        </div>
-
-        <Typography
-          component="p"
-          variant="h6"
-          className={classes.foodBookTitle}
-        >
-          Style of Packet
-        </Typography>
-        <div style={{ marginBottom: '20px' }}>
-          <FormGroup row>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={true}
-                  onChange={() => {}}
-                  name="thin"
-                  color="primary"
-                />
-              }
-              label={
-                <div style={{ marign: 0 }}>
-                  <span className={classes.inputLabel}>Thin</span>
-                  <span className={classes.inputLabelMargin}></span>
-                  <span className={classes.inputLabel}>+0.000</span>
-                </div>
-              }
-            />
-          </FormGroup>
-          <FormGroup row>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={true}
-                  onChange={() => {}}
-                  name="thick"
-                  color="primary"
-                />
-              }
-              label={
-                <div style={{ marign: 0 }}>
-                  <span className={classes.inputLabel}>Thick</span>
-                  <span className={classes.inputLabelMargin}></span>
-                  <span className={classes.inputLabel}>+0.000</span>
-                </div>
-              }
-            />
-          </FormGroup>
-        </div>
+        {extrasElem}
 
         <Typography
           component="p"
@@ -560,7 +574,7 @@ class Food extends React.Component {
           <span className={classes.totalPriceText}>Total</span>
           <span className={classes.totalPriceText}>
             {food
-              ? food.trans[0].languageId.currency + food.trans[0].price * qty
+              ? trans.languageId.currency + price * qty
               : ''}
           </span>
         </div>
@@ -612,6 +626,7 @@ class Food extends React.Component {
 
   renderDesc() {
     const { food, classes } = this.props;
+    var trans = getTrans(food, 'EN');
 
     return (
       <div style={{ padding: '16px 16px' }}>
@@ -626,8 +641,8 @@ class Food extends React.Component {
           component="p"
           variant="h6"
           className={classes.foodDetailDesc}
+          dangerouslySetInnerHTML={{__html: food ? trans.desc : ''}}
         >
-          {food ? food.trans[0].desc : ''}
         </Typography>
       </div>
     );
@@ -836,8 +851,9 @@ class Food extends React.Component {
 
   render() {
     const { classes, food } = this.props;
-
     const { tabValue, comments } = this.state;
+
+    var trans = getTrans(food, 'EN');
 
     var totalRating = 0;
     if (comments && comments.length > 0) {
@@ -864,10 +880,10 @@ class Food extends React.Component {
                 variant="h6"
                 className={classes.whiteTitle}
               >
-                <span>{food ? food.trans[0].title : ''}</span>
+                <span>{food ? trans.title : ''}</span>
                 <span className={classes.foodPrice}>
                   {food
-                    ? food.trans[0].languageId.currency + food.trans[0].price
+                    ? trans.languageId.currency + trans.price
                     : ''}
                 </span>
               </Typography>
@@ -875,11 +891,11 @@ class Food extends React.Component {
                 component="p"
                 variant="h6"
                 className={classes.whiteTitle}
-                style={{bottom: '20px'}}
+                style={{ bottom: '20px' }}
               >
                 <span className={classes.foodOldPrice}>
                   {food
-                    ? food.trans[0].languageId.currency + food.trans[0].oldPrice
+                    ? trans.languageId.currency + trans.oldPrice
                     : ''}
                 </span>
               </Typography>
@@ -892,14 +908,14 @@ class Food extends React.Component {
                 variant="h6"
                 className={classes.foodDetailTitle}
               >
-                {food ? food.trans[0].title : ''}
+                {food ? trans.title : ''}
               </Typography>
               <Typography
                 component="p"
                 variant="h6"
                 className={classes.foodDetailDesc}
+                dangerouslySetInnerHTML={{__html: food ? trans.desc : ''}}
               >
-                {food ? food.trans[0].desc : ''}
               </Typography>
               <div className={classes.foodRatingSec}>
                 <Rating
@@ -937,7 +953,7 @@ class Food extends React.Component {
                   />
                 </TabList>
               </div>
-              <TabPanel value={'book'}>{this.renderBook()}</TabPanel>
+              <TabPanel value={'book'}>{this.renderExtras()}</TabPanel>
               <TabPanel value={'description'}>{this.renderDesc()}</TabPanel>
               <TabPanel value={'comment'}>{this.renderComment()}</TabPanel>
             </TabContext>

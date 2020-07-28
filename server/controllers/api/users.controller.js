@@ -163,35 +163,6 @@ module.exports.updateUser = (req, res, next) => {
     .catch(next);
 };
 
-const addAddressSchema = Joi.object({
-  country: Joi.string(),
-  state: Joi.string(),
-  city: Joi.string(),
-  address: Joi.string(),
-});
-
-module.exports.addAddress = (req, res, next) => {
-  addAddressSchema
-    .validateAsync(req.body, { stripUnknown: true })
-    .then((payload) => {
-      req.body = payload;
-      if (req.body.role) {
-        if (
-          (req.user.role === 'admin' && req.body.role !== 'user') ||
-          (req.user.role === 'user' && req.body.role !== 'user')
-        ) {
-          throw createError(403, 'Forbidden action');
-        }
-      }
-      _.merge(res.locals.targetUser, req.body);
-      return res.locals.targetUser.save();
-    })
-    .then((updatedUser) => {
-      res.status(200).json({ updatedFields: _.keys(req.body) });
-    })
-    .catch(next);
-};
-
 module.exports.apiGetUsers = async (req, res, next) => {
   let ret = { status: 'fail', data: '' };
 
@@ -220,11 +191,7 @@ module.exports.apiGetUsers = async (req, res, next) => {
       ],
     };
 
-    if (req.session.user.role == 'root') {
-      query.role = { $nin: ['root', 'guest'] };
-    } else if (req.session.user.role == 'admin') {
-      query.role = { $nin: ['root', 'admin', 'guest'] };
-    }
+    query.role = { $in: ['user'] };
 
     var totalItems = await UserModel.find(query).select('_id');
     totalItems = totalItems.length;

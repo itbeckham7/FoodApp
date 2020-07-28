@@ -18,7 +18,7 @@ import {
 } from '../../store/selectors';
 import { getOrder } from '../../store/actions';
 import config from '../../config';
-import { getTimeString } from '../../utils/textUtils';
+import { getTimeString, getTrans, getExtraPrice } from '../../utils';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -210,7 +210,7 @@ class OrderDetail extends React.Component {
     if (order && order.bags && order.bags.length > 0) {
       const bags = order.bags;
       bags.map((bag) => {
-        console.log('-- bag : ', bag);
+        var trans = getTrans(bag.food, 'EN');
         bagElems.push(
           <Grid container className={classes.bagElem} key={bag.foodId}>
             <div className={classes.bagElemImageSec}>
@@ -229,7 +229,7 @@ class OrderDetail extends React.Component {
                 variant="h6"
                 className={classes.bagElemTitleSpan}
               >
-                {bag.food.trans[0].title}
+                {trans.title}
               </Typography>
               <Typography
                 component="p"
@@ -253,7 +253,7 @@ class OrderDetail extends React.Component {
                 variant="h6"
                 className={classes.bagElemPrice}
               >
-                {bag.food ? bag.currency + bag.price * bag.qty : ''}
+                {bag.food ? bag.currency + (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty : ''}
               </Typography>
             </div>
           </Grid>

@@ -93,18 +93,13 @@ class Launch extends React.Component {
   );
 
   onClickGuest = () => {
-    console.log('-- onClickGuest : ', config)
     var formValues = new FormData();
-    console.log('-- onClickGuest 1 : ', config.guestEmail, config.guestPassword)
     formValues.append('email', config.guestEmail);
     formValues.append('password', config.guestPassword);
-    console.log('-- onClickGuest formValues : ', formValues)
     return this.props.signIn(formValues).then((ret) => {
-      console.log('-- ret : ', ret)
       if (this.props.errorMessage) {
         throw new SubmissionError({ _error: this.props.errorMessage });
       }
-      console.log('-- me: ', this.props.me)
     });
   };
 

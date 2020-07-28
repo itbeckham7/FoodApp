@@ -5,13 +5,13 @@ module.exports = {
             name: 'English',
             currency: '$',
             currencyKey: 'USD',
-            flag: 'en.jpg',
+            flag: 'en.png',
         }, {
             abbr: 'AR',
             name: 'Arab',
             currency: 'د.إ',
             currencyKey: 'AED',
-            flag: 'ar.jpg',
+            flag: 'ar.png',
         }
     ]
 }

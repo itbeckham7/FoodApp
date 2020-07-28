@@ -4,7 +4,6 @@ export const getAddresses = (userId) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.GET_ADDRESSES });
   return mernApi.get(`/api/addresses/${userId}`, {}).then(
     (response) => {
-      console.log('-- getAddresses response : ', response.data)
       var addresses = response.data;
       dispatch({ type: actionTypes.GET_ADDRESSES_SUCCESS, payload: addresses });
     },
@@ -54,10 +53,9 @@ export const getActiveAddress = (userId) => (dispatch, getState, { mernApi }) =>
 
 export const addAddress = (userId, formValue) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.ADD_ADDRESS });
-  console.log('-- addAddress formValue : ', formValue)
+  
   return mernApi.post(`/api/addresses/add/${userId}`, formValue).then(
     (response) => {
-      console.log('-- addAddress response : ', response.data)
       var addresses = response.data;
       dispatch({ type: actionTypes.ADD_ADDRESS_SUCCESS, payload: addresses });
     },

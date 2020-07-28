@@ -82,6 +82,106 @@ let defaultConfig = {
     logging: true,
     users: [],
   },
+  default_password: 'password',
+  permissions: [
+    {
+      model: 'food',
+      title: 'Food Permission',
+      actions: [
+        {action: 'Insert', title: 'Add Food'},
+        {action: 'Update', title: 'Edit Food'},
+        {action: 'Delete', title: 'Delete Food'},
+        {action: 'Read', title: 'Read Food'},
+      ]
+    },
+    {
+      model: 'category',
+      title: 'Category Permission',
+      actions: [
+        {action: 'Insert', title: 'Add Category'},
+        {action: 'Update', title: 'Edit Category'},
+        {action: 'Delete', title: 'Delete Category'},
+        {action: 'Read', title: 'Read Category'},
+      ]
+    },
+    {
+      model: 'order',
+      title: 'Order Permission',
+      actions: [
+        {action: 'Update', title: 'Edit Order'},
+        {action: 'Delete', title: 'Delete Order'},
+        {action: 'Read', title: 'Read Order'},
+      ]
+    },
+    {
+      model: 'discount',
+      title: 'Discount Permission',
+      actions: [
+        {action: 'Insert', title: 'Add Discount'},
+        {action: 'Update', title: 'Edit Discount'},
+        {action: 'Delete', title: 'Delete Discount'},
+        {action: 'Read', title: 'Read Discount'},
+      ]
+    },
+    {
+      model: 'branch',
+      title: 'Branch Permission',
+      actions: [
+        {action: 'Insert', title: 'Add Branch'},
+        {action: 'Update', title: 'Edit Branch'},
+        {action: 'Delete', title: 'Delete Branch'},
+        {action: 'Read', title: 'Read Branch'},
+      ]
+    },
+    {
+      model: 'user',
+      title: 'User Permission',
+      actions: [
+        {action: 'Insert', title: 'Add User'},
+        {action: 'Update', title: 'Edit User'},
+        {action: 'Delete', title: 'Delete User'},
+        {action: 'Read', title: 'Read User'},
+      ]
+    },
+  ],
+  defaultPermissions: {
+    user:           { Insert: false, Update: false, Delete: false, Read: false },
+    category:       { Insert: false, Update: false, Delete: false, Read: true },
+    category_trans: { Insert: false, Update: false, Delete: false, Read: true },
+    discount:       { Insert: false, Update: false, Delete: false, Read: true },
+    branch:         { Insert: false, Update: false, Delete: false, Read: true },
+    food:           { Insert: false, Update: false, Delete: false, Read: true },
+    food_trans:     { Insert: false, Update: false, Delete: false, Read: true },
+    history:        { Insert: false, Update: false, Delete: false, Read: true },
+    language:       { Insert: false, Update: false, Delete: false, Read: true },
+    order:          { Insert: true, Update: false, Delete: false, Read: true },
+    order_client:   { Insert: false, Update: false, Delete: false, Read: true },
+    subscribe:      { Insert: false, Update: false, Delete: false, Read: true },
+    transaction:    { Insert: false, Update: false, Delete: false, Read: true },
+    comment:        { Insert: true, Update: true, Delete: true, Read: true },
+    address:        { Insert: true, Update: true, Delete: true, Read: true },
+    card:           { Insert: true, Update: true, Delete: true, Read: true },
+    setting:        { Insert: false, Update: false, Delete: false, Read: true },
+  },
+  defaultAdminPermissions: {
+    user:           { Insert: false, Update: false, Delete: false, Read: false },
+    category:       { Insert: false, Update: false, Delete: false, Read: true },
+    category_trans: { Insert: true, Update: true, Delete: true, Read: true },
+    discount:       { Insert: false, Update: false, Delete: false, Read: true },
+    branch:         { Insert: false, Update: false, Delete: false, Read: true },
+    food:           { Insert: false, Update: false, Delete: false, Read: true },
+    food_trans:     { Insert: true, Update: true, Delete: true, Read: true },
+    history:        { Insert: false, Update: false, Delete: false, Read: true },
+    language:       { Insert: false, Update: false, Delete: false, Read: true },
+    order:          { Insert: true, Update: false, Delete: false, Read: true },
+    order_client:   { Insert: false, Update: false, Delete: false, Read: true },
+    subscribe:      { Insert: false, Update: false, Delete: false, Read: true },
+    transaction:    { Insert: false, Update: false, Delete: false, Read: true },
+    comment:        { Insert: true, Update: true, Delete: true, Read: true },
+    address:        { Insert: true, Update: true, Delete: true, Read: true },
+    card:           { Insert: true, Update: true, Delete: true, Read: true },
+    setting:        { Insert: false, Update: false, Delete: false, Read: true },
+  }
 };
 
 module.exports = defaultConfig;

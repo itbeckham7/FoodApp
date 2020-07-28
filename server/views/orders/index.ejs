@@ -107,7 +107,7 @@
                         headers: {"Authorization": "Bearer " + token},
                         dataFilter: function(data){
                             var json = jQuery.parseJSON( data );
-                            console.log('-- json : ', json)
+                            
                             var ret;
                             if( json.status == 'fail' ){
                                 ret = {
@@ -137,7 +137,6 @@
                             "targets": 1,
                             "data": 'bags',
                             "render": function (data, type, row) {
-                                console.log('-- data : ', data)
 
                                 var foodsElem = ''
                                 data.map(function(bag){
@@ -169,9 +168,7 @@
                             "data": 'createdAt',
                             "render": function (data, type, row) {
                                 var dateStr = (new Date(data)).toString();
-                                console.log('-- dateStr : ', dateStr);
                                 dateStr = dateStr.split(' ');
-                                console.log('-- dateStr1 : ', dateStr);
                                 var newDateStr = ''
                                 for( var i=0; i<dateStr.length; i++ ){
                                     if(i > 3) break;
@@ -183,7 +180,6 @@
                             "targets": 5,
                             "data": 'price',
                             "render": function (data, type, row) {
-                                console.log('-- data : ', data, row)
 
                                 return `
                                     <div class="d-flex">
@@ -195,10 +191,15 @@
                             "targets": 6,
                             "data": '_id',
                             "render": function (data, type, row) {
-                                return `
-                                    <a href="/orders/detail/${data}" class="btn btn-warning btn-sm datatable-action-btn">Detail</a>
-                                    <a href="/orders/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>
-                                `
+                                var ret = ''
+                                <% if(session.user.role == 'root' || session.user.permissions.orderUpdate) { %>
+                                    ret += `<a href="/orders/detail/${data}" class="btn btn-warning btn-sm datatable-action-btn">Detail</a> `
+                                <% } %>
+                                <% if(session.user.role == 'root' || session.user.permissions.orderDelete) { %>
+                                    ret += `<a href="/orders/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>`
+                                <% } %>
+
+                                return ret;
                             }
                         } 
                     ],

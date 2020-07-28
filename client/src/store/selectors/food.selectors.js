@@ -7,6 +7,11 @@ export const getFoodFoods = createSelector(
   (food) => food.foods
 );
 
+export const getFoodSliderFoods = createSelector(
+  getFoodState,
+  (food) => food.sliderfoods
+);
+
 export const getFoodFood = createSelector(
   getFoodState,
   (food) => food.food

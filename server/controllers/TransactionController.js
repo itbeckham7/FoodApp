@@ -21,8 +21,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionRead) {
+            return res.redirect('/dashboard');
         }
 
         transactions = await TransactionModel.find().sort({createdAt: 1});
@@ -43,8 +43,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/transactions/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionInsert) {
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'transactions/edit');
@@ -64,8 +64,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionInsert) {
+            return res.redirect('/dashboard');
         }
         
         // Check same transaction with sku address
@@ -96,14 +96,14 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionUpdate) {
+            return res.redirect('/dashboard');
         }
 
         transactionId = req.params.transactionId;        
         transactionInfo = await TransactionModel.findOne({_id: transactionId});
         if (!transactionInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'transactions/edit');
@@ -125,13 +125,13 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionUpdate) {
+            return res.redirect('/dashboard');
         }
 
         transactionInfo = await TransactionModel.findOne({_id: transactionId});
         if (!transactionInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         prevTransaction = await TransactionModel.findOne({_id: {$ne: transactionInfo._id}, sku: req.body.sku});
@@ -153,13 +153,13 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/transactions';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.transactionDelete) {
+            return res.redirect('/dashboard');
         }
 
         transactionInfo = await TransactionModel.findOne({_id: transactionId});
         if (!transactionInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
         
         TransactionModel.deleteOne({_id: transactionId}, function (err, result) {

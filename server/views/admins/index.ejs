@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- Datatables css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/datatables.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom/data-table.css">
+    
+</head>
+
+<body>
+
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3>Admin List
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active">Admin List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body order-datatable">
+                            <div class="btn-popup pull-right">
+                                <a href="/admins/add" class="btn btn-primary">Add Admin</a>
+                            </div>
+                            <table class="display" id="admins_list">
+                                <thead>
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Email</th>
+                                    <th>User Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Role</th>
+                                    <th>IP Address</th>
+                                    <th>Login Count</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- Datatable js-->
+    <script src="/assets/js/datatables/jquery.dataTables.min.js"></script>
+    
+
+    <script>
+        (function($) {
+            "use strict";
+
+            var itemCount = parseInt('<%= admins.length %>');
+
+            $(document).ready(function(){
+                var dt = $('#admins_list').DataTable({
+                    "serverSide": true,
+                    "processing": true,
+                    "ajax": {
+                        url: '/api/admins/',
+                        type: 'POST',
+                        dataSrc: 'data',
+                        dataType :"json",
+                        headers: {"Authorization": "Bearer " + token},
+                        dataFilter: function(data){
+                            var json = jQuery.parseJSON( data );
+                            
+                            var ret;
+                            if( json.status == 'fail' ){
+                                ret = {
+                                    data: [],
+                                    recordsTotal: 0,
+                                    recordsFiltered: 0
+                                }
+                            } else {
+                                ret = {
+                                    data: json.data.data,
+                                    recordsTotal: json.data.recordsTotal,
+                                    recordsFiltered: json.data.recordsFiltered
+                                }
+                            }
+                            return JSON.stringify(ret)
+                        }
+                    },
+                    columnDefs: [ 
+                        {"orderable": true, "targets": [1,2,3,4,5,6,7]},
+                        {"orderable": false, "sorting": false, "targets": [0,8]},
+                        {"searchable": true, "targets": [1,2,3,4,5]},
+                        {"searchable": false, "targets": [0,5,6,7,8]},
+                        {
+                            "targets": 0,
+                            "data": 'provider.local.picture',
+                            "render": function (data, type, row) {
+                                return `
+                                    <img src="${data}" class="" style="width: 50px; height: 50px"/>
+                                `
+                            }
+                        }, {
+                            "targets": 1,
+                            "data": 'email',
+                        }, {
+                            "targets": 2,
+                            "data": 'username',
+                        }, {
+                            "targets": 3,
+                            "data": 'phone',
+                        }, {
+                            "targets": 4,
+                            "data": 'role',
+                        },{
+                            "targets": 5,
+                            "data": 'ipAddress',
+                        }, {
+                            "targets": 6,
+                            "data": 'loginCount',
+                        }, {
+                            "targets": 7,
+                            "data": 'status',
+                            "render": function (data, type, row) {
+                                return `
+                                    <span>${data}</span>
+                                `
+                            }
+                        }, {
+                            "targets": 8,
+                            "data": '_id',
+                            "render": function (data, type, row) {
+                                return `
+                                    <a href="/admins/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a>
+                                    <a href="/admins/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>
+                                `
+                            }
+                        } 
+                    ],
+                });
+
+                $('#admins_list').on( 'page.dt', function (e) {
+                    var info = dt.settings();
+                } );
+            })
+            
+        })(jQuery);
+    </script>
+</body>
+</html>

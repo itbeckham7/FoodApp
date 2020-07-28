@@ -50,6 +50,48 @@ module.exports = {
   },
 
 
+  apiGetSliderFoods: async function (req, res) {
+    let ret = { status: 'fail', data: '' };
+
+    if (req.user) {
+      FoodModel.find({inSlider: true})
+        .populate({
+          path: 'trans',
+          model: 'food_trans',
+          populate: {
+            path: 'languageId',
+            model: 'language',
+          },
+        })
+        .populate({
+          path: 'categoryId',
+          model: 'category',
+          populate: {
+            path: 'trans',
+            model: 'category_trans',
+          },
+        })
+        .exec(function (err, result) {
+          if (err) {
+            ret.data = "Can't get food list";
+            console.log(err);
+            res.status(200).send(ret);
+            return;
+          }
+          
+          ret.data = result;
+          ret.status = 'success';
+          res.status(200).send(ret);
+          return;
+        });
+    } else {
+      ret.data = 'Please Login!';
+      res.status(200).send(ret);
+      return;
+    }
+  },
+
+
   apiGetFood: async function (req, res) {
     let ret = { status: 'fail', data: '' };
     var foodId = req.params.foodId;

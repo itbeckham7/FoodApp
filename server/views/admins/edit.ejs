@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../layouts/header.ejs')  %>
+
+    <!-- jsgrid css-->
+    <link rel="stylesheet" type="text/css" href="/assets/css/jsgrid.css">
+
+</head>
+
+<body>
+    <%- include('../layouts/navbar.ejs')  %>
+    <%- include('../layouts/sidebar.ejs')  %>
+
+    <div class="page-body">
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="page-header-left">
+                            <h3><%= (pg_mode=='add')?'Add New':'Edit' %> Admin
+                                <small>FoodApp</small>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <ol class="breadcrumb pull-right">
+                            <li class="breadcrumb-item"><a href="index.html"><i data-feather="home"></i></a></li>
+                            <li class="breadcrumb-item active"><%= (pg_mode=='add')?'Add New':'Edit' %> Admin</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+        <!-- Container-fluid starts-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <% if(error && error.length > 0){ %>
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
+                            <% } else if(success && success.length > 0 ){ %>
+                            <div class="alert alert-success">
+                                <%= success %>
+                            </div>
+                            <% } %>
+                            <form class="needs-validation add-product-form" novalidate="" method="post"
+                                action="/admins/<%= (pg_mode=='add')?'add':'update' %><%= (pg_mode=='edit')?'/' + admin_info._id:'' %>"
+                                enctype="multipart/form-data">
+                                <div class="row product-adding">
+                                    <div class="col-xl-5">
+                                        <div class="add-product">
+                                            <div class="row">
+                                                <div class="col-xl-9 xl-50 col-sm-6 col-9">
+                                                    <img src="<%= (pg_mode=='edit' && admin_info.provider && admin_info.provider.local.picture && admin_info.provider.local.picture != '') ? admin_info.provider.local.picture : '/assets/images/pro3/1.jpg' %>"
+                                                        alt="" class="img-fluid image_zoom_1 blur-up lazyloaded"
+                                                        id="admin-picture-preview">
+                                                    <div class="invalid-feedback offset-sm-4 offset-xl-3">Please input
+                                                        your photo.</div>
+                                                </div>
+                                                <div class="col-xl-3 xl-50 col-sm-6 col-3">
+                                                    <ul class="file-upload-product">
+                                                        <li>
+                                                            <div class="box-input-file">
+                                                                <input class="upload form-control" type="file"
+                                                                    id="admin-picture" name="admin-picture"
+                                                                    <%= (pg_mode=='edit') ? '' : 'required' %>>
+                                                                <i class="fa fa-plus"></i>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-7">
+                                        <ul class="nav nav-tabs tab-coupon" id="myTab" role="tablist">
+                                            <li class="nav-item"><a class="nav-link active show" id="account-tab"
+                                                    data-toggle="tab" href="#account" role="tab" aria-controls="account"
+                                                    aria-selected="true" data-original-title="" title="">Account</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link" id="permission-tabs"
+                                                    data-toggle="tab" href="#permission" role="tab"
+                                                    aria-controls="permission" aria-selected="false"
+                                                    data-original-title="" title="">Permission</a></li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade active show" id="account" role="tabpanel"
+                                                aria-labelledby="account-tab">
+                                                <h4>Account</h4>
+                                                <div class="form">
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="admin-firstName"
+                                                            class="col-xl-3 col-sm-4 mb-0">First Name :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7"
+                                                            id="admin-firstName" type="text" name="admin-firstName"
+                                                            value="<%= (pg_mode=='edit')?admin_info.firstName:'' %>">
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="admin-lastName" class="col-xl-3 col-sm-4 mb-0">Last
+                                                            Name :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7"
+                                                            id="admin-lastName" type="text" name="admin-lastName"
+                                                            value="<%= (pg_mode=='edit')?admin_info.lastName:'' %>">
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="admin-username" class="col-xl-3 col-sm-4 mb-0">User
+                                                            Name :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7"
+                                                            id="admin-username" type="text" name="admin-username"
+                                                            value="<%= (pg_mode=='edit')?admin_info.username:'' %>">
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="admin-email" class="col-xl-3 col-sm-4 mb-0">Email
+                                                            :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="admin-email"
+                                                            type="email" required name="admin-email"
+                                                            value="<%= (pg_mode=='edit')?admin_info.email:'' %>">
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label for="admin-phone" class="col-xl-3 col-sm-4 mb-0">Phone
+                                                            Number :</label>
+                                                        <input class="form-control col-xl-8 col-sm-7" id="admin-phone"
+                                                            type="text" name="admin-phone"
+                                                            value="<%= (pg_mode=='edit')?admin_info.phone:'' %>">
+                                                    </div>
+                                                    <div class="form-group mb-3 row">
+                                                        <label class="col-xl-3 col-md-4 mb-0">Status</label>
+                                                        <div class="checkbox checkbox-primary col-md-7">
+                                                            <input id="admin-status" type="checkbox" name="admin-status"
+                                                                <%= (pg_mode=='edit' && admin_info.status=='active')?'checked':'' %>>
+                                                            <label for="admin-status"
+                                                                style="font-weight: normal;">Enable</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="permission" role="tabpanel"
+                                                aria-labelledby="permission-tabs">
+                                                <h4>Permission</h4>
+                                                <div class="permission-block row">
+                                                    <% for(var i=0; i<permissions.length; i++) { 
+                                                        var permission = permissions[i]
+                                                    %>
+                                                    <div class="attribute-blocks col-xl-6 col-sm-12"
+                                                        style="float: left; margin-bottom: 30px;">
+                                                        <h5 class="f-w-600 mb-3" style="margin-top: 0;">
+                                                            <%= permission.title %></h5>
+                                                        <% for(var j=0; j<permission.actions.length; j++) { 
+                                                                var action = permission.actions[j];
+                                                            %>
+                                                        <div class="row">
+                                                            <div class="col-xl-4 col-sm-4">
+                                                                <label><%= action.title %></label>
+                                                            </div>
+                                                            <div class="col-xl-8 col-sm-8">
+                                                                <div
+                                                                    class="form-group m-checkbox-inline mb-0 custom-radio-ml d-flex radio-animated">
+                                                                    <label class="d-block"
+                                                                        for="<%= permission.model + action.action %>">
+                                                                        <input class="radio_animated"
+                                                                            id="<%= permission.model + action.action %>-allow"
+                                                                            type="radio"
+                                                                            name="<%= permission.model + action.action %>"
+                                                                            value="true" 
+                                                                            <%= (pg_mode=='edit') ? admin_info.permissions[permission.model+action.action] ? 'checked' : '' : '' %>>
+                                                                        Allow
+                                                                    </label>
+                                                                    <label class="d-block"
+                                                                        for="<%= permission.model + action.action %>">
+                                                                        <input class="radio_animated"
+                                                                            id="<%= permission.model + action.action %>-deny"
+                                                                            type="radio"
+                                                                            name="<%= permission.model + action.action %>"
+                                                                            value="false"
+                                                                            <%= (pg_mode=='edit') ? admin_info.permissions[permission.model+action.action] ? '' : 'checked' : '' %>>
+                                                                        Deny
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+                                                    </div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="offset-xl-3 offset-sm-4">
+                                            <button type="submit"
+                                                class="btn btn-primary"><%= (pg_mode=='edit')? 'Edit' : 'Add' %></button>
+                                            <a class="btn btn-light" href="/admins">Discard</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container-fluid Ends-->
+
+    </div>
+
+    <%- include('../layouts/footer.ejs')  %>
+    <%- include('../layouts/script.ejs')  %>
+
+    <!-- touchspin js-->
+    <script src="/assets/js/touchspin/vendors.min.js"></script>
+    <script src="/assets/js/touchspin/touchspin.js"></script>
+    <script src="/assets/js/touchspin/input-groups.min.js"></script>
+
+    <!-- form validation js-->
+    <script src="/assets/js/dashboard/form-validation-custom.js"></script>
+
+    <!-- Zoom js-->
+    <script src="/assets/js/jquery.elevatezoom.js"></script>
+
+    <script>
+        (function ($) {
+            "use strict";
+
+            $(document).ready(function () {
+                $('#admin-picture-preview').elevateZoom({
+                    zoomType: "inner",
+                    cursor: "crosshair"
+                });
+            })
+
+            $('#admin-picture').change(function () {
+                var input = this;
+                var url = $(this).val();
+                var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+                if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#admin-picture-preview').attr('src', e.target.result);
+                        $('#admin-picture-preview').elevateZoom({
+                            zoomType: "inner",
+                            cursor: "crosshair"
+                        });
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+        })(jQuery);
+    </script>
+</body>
+
+</html>

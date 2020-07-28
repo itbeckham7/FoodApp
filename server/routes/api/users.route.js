@@ -6,7 +6,9 @@ const createUserAuthorizationMiddleware = require('../../middleware/createUserAu
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadUser = createUserAuthorizationMiddleware('read');
-const canModifyUser = createUserAuthorizationMiddleware('modify');
+const canUpdateUser = createUserAuthorizationMiddleware('update');
+const canDeleteUser = createUserAuthorizationMiddleware('delete');
+const canInsertUser = createUserAuthorizationMiddleware('insert');
 
 router.use(jwtAuthenticate);
 
@@ -17,9 +19,9 @@ router.get('/', canReadUser, usersCtr.getUsers);
 
 router.get('/:userId', canReadUser, usersCtr.getUser);
 
-router.put('/:userId', canModifyUser, usersCtr.updateUser);
+router.put('/:userId', canUpdateUser, usersCtr.updateUser);
 
-router.delete('/:userId', canModifyUser, usersCtr.deleteUser);
+router.delete('/:userId', canDeleteUser, usersCtr.deleteUser);
 
 router.post('/', canReadUser, usersCtr.apiGetUsers);
 

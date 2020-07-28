@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadOrder = createAuthorizationMiddleware('order', 'read');
-const canModifyOrder = createAuthorizationMiddleware('order', 'modify');
+const canUpdateOrder = createAuthorizationMiddleware('order', 'update');
+const canDeleteOrder = createAuthorizationMiddleware('order', 'delete');
+const canInsertOrder = createAuthorizationMiddleware('order', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -19,8 +21,8 @@ router.get('/:userId', canReadOrder, ordersCtr.apiGetOrders);
 
 router.get('/order/:orderId', canReadOrder, ordersCtr.apiGetOrder);
 
-router.post('/add', canModifyOrder, ordersCtr.apiAddOrder);
+router.post('/add', canInsertOrder, ordersCtr.apiAddOrder);
 
-router.post('/changestatus', canModifyOrder, ordersCtr.apiChangeOrderStatus);
+router.post('/changestatus', canUpdateOrder, ordersCtr.apiChangeOrderStatus);
 
 module.exports = router;

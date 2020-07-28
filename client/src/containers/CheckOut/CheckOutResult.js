@@ -15,6 +15,7 @@ import {
   getOrderProcessing,
 } from '../../store/selectors';
 import config from '../../config';
+import {getExtraPrice} from '../../utils';
 
 const styles = (theme) => ({
   root: {
@@ -129,7 +130,6 @@ class CheckOutResult extends React.Component {
       });
 
       const result = this.props.match.params.result;
-      console.log('-- result : ', result);
       if (result == 'success') {
         this.props.clearBag(this.props.me.id);
       }
@@ -149,7 +149,7 @@ class CheckOutResult extends React.Component {
       itemCounts = bags.length;
       bags.map((bag) => {
         currency = bag.currency;
-        totalPrice += bag.price * bag.qty;
+        totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
       });
     }
 
@@ -179,8 +179,6 @@ class CheckOutResult extends React.Component {
         );
       }
     }
-    console.log('-- orderInitialValue : ', orderInitialValue);
-    console.log('-- cardNumberElem : ', cardNumberElem);
 
     var resultImg = '/images/tick-blue.png';
     var resultText = ' Your confirmation is successful';
@@ -337,7 +335,6 @@ class CheckOutResult extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('-- state : ', state);
   return {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),

@@ -22,8 +22,8 @@ module.exports = BaseController.extend({
       return res.redirect('/auth/login');
     }
 
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderRead) {
+      return res.redirect('/dashboard');
     }
 
     orders = await OrderModel.find().sort({ createdAt: 1 });
@@ -44,8 +44,8 @@ module.exports = BaseController.extend({
       req.session.redirectTo = '/orders/add';
       return res.redirect('/auth/login');
     }
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderInsert) {
+      return res.redirect('/dashboard');
     }
 
     v = new View(res, 'orders/edit');
@@ -65,8 +65,8 @@ module.exports = BaseController.extend({
       return res.redirect('/auth/login');
     }
 
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderInsert) {
+      return res.redirect('/dashboard');
     }
 
     // Check same order with sku address
@@ -97,14 +97,14 @@ module.exports = BaseController.extend({
       return res.redirect('/auth/login');
     }
 
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderRead) {
+      return res.redirect('/dashboard');
     }
 
     orderId = req.params.orderId;
     orderInfo = await OrderModel.findOne({ _id: orderId });
     if (!orderInfo) {
-      return res.redirect('/*');
+      return res.redirect('/dashboard');
     }
 
     var bags = JSON.parse(orderInfo.bags);
@@ -156,13 +156,13 @@ module.exports = BaseController.extend({
       return res.redirect('/auth/login');
     }
 
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderUpdate) {
+      return res.redirect('/dashboard');
     }
 
     orderInfo = await OrderModel.findOne({ _id: orderId });
     if (!orderInfo) {
-      return res.redirect('/*');
+      return res.redirect('/dashboard');
     }
 
     prevOrder = await OrderModel.findOne({
@@ -187,13 +187,13 @@ module.exports = BaseController.extend({
       req.session.redirectTo = '/orders';
       return res.redirect('/auth/login');
     }
-    if (req.session.user.role == 'User') {
-      return res.redirect('/*');
+    if (req.session.user.role != 'root' && !req.session.user.permissions.orderDelete) {
+      return res.redirect('/dashboard');
     }
 
     orderInfo = await OrderModel.findOne({ _id: orderId });
     if (!orderInfo) {
-      return res.redirect('/*');
+      return res.redirect('/dashboard');
     }
 
     OrderModel.deleteOne({ _id: orderId }, function (err, result) {

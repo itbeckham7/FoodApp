@@ -142,14 +142,13 @@ class OrderHistory extends React.Component {
   }
 
   onClickOrderElem(orderInfo) {
-    console.log('-- orderInfo : ', orderInfo)
     this.props.history.push(`/profile/orderdetail/${orderInfo._id}`)
   }
 
   renderOrders() {
     const { classes } = this.props;
     const { orders } = this.state;
-    console.log('-- orders : ', orders);
+    
     if (orders && orders.length > 0) {
       var orderElems = [];
       orders.map((order) => {

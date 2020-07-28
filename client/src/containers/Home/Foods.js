@@ -12,7 +12,7 @@ import {
   getFoodProcessing,
   getFoodError,
 } from '../../store/selectors';
-import { textEllipsis } from '../../utils/textUtils';
+import { textEllipsis, getTrans } from '../../utils';
 import config from '../../config';
 
 const styles = (theme) => ({
@@ -137,9 +137,12 @@ class Foods extends React.Component {
 
   renderFoods() {
     const { foods, classes } = this.props;
+    
+
     var foodElems = [];
     if (foods && foods.length > 0) {
       foods.map((food) => {
+        var trans = getTrans(food, 'EN');
         foodElems.push(
           <Grid xs={6} item key={food._id} style={{ padding: '5px' }}>
             <Link
@@ -159,7 +162,7 @@ class Foods extends React.Component {
                 variant="body2"
                 className={classes.foodTitle}
               >
-                {food ? textEllipsis(food.trans[0].title, 15, '...') : ''}
+                {food ? textEllipsis(trans.title, 15, '...') : ''}
               </Typography>
 
               <div style={{ verticalAlign: 'middle' }}>
@@ -178,8 +181,8 @@ class Foods extends React.Component {
                 component="p"
                 variant="subtitle2"
                 className={classes.foodDesc}
+                dangerouslySetInnerHTML={{__html: food ? textEllipsis(trans.desc, 40, '...') : ''}}
               >
-                {food ? textEllipsis(food.trans[0].desc, 40, '...') : ''}
               </Typography>
 
               <Typography
@@ -189,12 +192,12 @@ class Foods extends React.Component {
               >
                 {food && (
                   <span style={{textDecoration: 'line-through', paddingRight: '10px', fontSize: '0.8rem', color: '#666'}}>
-                    {food.trans[0].languageId.currency + food.trans[0].oldPrice}
+                    {trans.languageId.currency + trans.oldPrice}
                   </span>
                 )}
                 {food && (
                   <span style={{fontWeight: 'normal'}}>
-                    {food.trans[0].languageId.currency + food.trans[0].price}
+                    {trans.languageId.currency + trans.price}
                   </span>
                 )}
               </Typography>
@@ -213,7 +216,6 @@ class Foods extends React.Component {
 
   render() {
     const { classes } = this.props;
-
     const { category } = this.state;
 
     return (

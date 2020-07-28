@@ -275,7 +275,7 @@ module.exports.createFoods = () => {
         .then(() => {
           return Food.findOne({ sku: foodInfo.sku });
         })
-        .then((existingFood) => {
+        .then(async (existingFood) => {
           if (existingFood) {
             throw new Error(
               chalk.yellow(
@@ -307,7 +307,7 @@ module.exports.createFoods = () => {
                 if (!food.trans) food.trans = [];
                 food.trans.push(foodTrans._id);
 
-                return food.save();
+                await food.save();
               }
             }
           }

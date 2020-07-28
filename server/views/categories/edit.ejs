@@ -91,13 +91,14 @@
                                         <div class="form">
                                             <% for(var i = 0; i<languages.length; i++) {  
                                                 var name = ''
-                                                if( pg_mode=='edit' ){
+                                                if( pg_mode=='edit' ){                                                    
                                                     var trans = category_info.trans;                                                    
+                                                    
                                                     trans = trans.filter(function( t ){
                                                         return t.abbr == languages[i].abbr
                                                     })
-                                                    
-                                                    name = trans[0].name;
+
+                                                    if( trans.length > 0 ) name = trans[0].name;
                                                 }
                                             %>
                                                 <div class="form-group mb-3 row">

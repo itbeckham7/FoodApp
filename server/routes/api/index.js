@@ -2,6 +2,7 @@ const express = require('express');
 const authRoutes = require('./auth.route');
 const profilesRoutes = require('./profiles.route');
 const usersRoutes = require('./users.route');
+const adminsRoutes = require('./admins.route');
 const categoriesRoutes = require('./categories.route');
 const foodsRoutes = require('./foods.route');
 const discountsRoutes = require('./discounts.route');
@@ -22,6 +23,7 @@ router.get('/alive', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/profiles', profilesRoutes);
 router.use('/users', usersRoutes);
+router.use('/admins', adminsRoutes);
 router.use('/categories', categoriesRoutes);
 router.use('/foods', foodsRoutes);
 router.use('/discounts', discountsRoutes);

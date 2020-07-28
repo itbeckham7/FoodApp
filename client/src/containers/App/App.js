@@ -39,14 +39,12 @@ class App extends React.Component {
 
   componentDidMount() {
     this.props.tryLocalSignIn().then(() => {
-      console.log('-- tryLocalSignIn end')
       this.setState({isDidMound: true})
     });
   }
 
   render() {
     var now = (new Date()).getTime();
-    console.log('-- isSignedIn : ', this.props.isSignedIn, now)
 
     if( !this.state.isDidMound ){
       return(<div></div>)

@@ -20,8 +20,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountRead) {
+            return res.redirect('/dashboard');
         }
 
         discounts = await DiscountModel.find().sort({createdAt: 1});
@@ -42,8 +42,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/discounts/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountInsert) {
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'discounts/edit');
@@ -63,7 +63,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountInsert) {
             return res.redirect('/dashboard');
         }
         
@@ -102,14 +102,14 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountUpdate) {
+            return res.redirect('/dashboard');
         }
 
         discountId = req.params.discountId;        
         discountInfo = await DiscountModel.findOne({_id: discountId});
         if (!discountInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'discounts/edit');
@@ -131,7 +131,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountUpdate) {
             return res.redirect('/dashboard');
         }
 
@@ -166,13 +166,13 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/discounts';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.discountDelete) {
+            return res.redirect('/dashboard');
         }
 
         discountInfo = await DiscountModel.findOne({_id: discountId});
         if (!discountInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
         
         DiscountModel.deleteOne({_id: discountId}, function (err, result) {

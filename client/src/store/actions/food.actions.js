@@ -17,6 +17,23 @@ export const getFoods = (categoryId) => (dispatch, getState, { mernApi }) => {
 };
 
 
+export const getSliderFoods = () => (dispatch, getState, { mernApi }) => {
+  dispatch({ type: actionTypes.GET_SLIDER_FOODS });
+  return mernApi.get(`/api/foods/slider/`, {}).then(
+    (response) => {
+      var foods = response.data;
+      dispatch({ type: actionTypes.GET_SLIDER_FOODS_SUCCESS, payload: foods });
+    },
+    (err) => {
+      dispatch({
+        type: actionTypes.GET_SLIDER_FOODS_FAIL,
+        payload: err.response.data.error.message,
+      });
+    }
+  );
+};
+
+
 export const getFood = (foodId) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.GET_FOOD });
   return mernApi.get(`/api/foods/${foodId}`, {}).then(

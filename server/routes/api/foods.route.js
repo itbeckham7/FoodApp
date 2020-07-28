@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadFood = createAuthorizationMiddleware('food', 'read');
-const canModifyFood = createAuthorizationMiddleware('food', 'modify');
+const canUpdateFood = createAuthorizationMiddleware('food', 'update');
+const canDeleteFood = createAuthorizationMiddleware('food', 'delete');
+const canInsertFood = createAuthorizationMiddleware('food', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -15,12 +17,14 @@ router.param('foodId', foodsCtr.preloadTargetFood);
 
 router.get('/', canReadFood, foodsCtr.apiGetFoods);
 
+router.get('/slider', canReadFood, foodsCtr.apiGetSliderFoods);
+
 router.get('/category/:categoryId', canReadFood, foodsCtr.apiGetFoodsFromCategory);
 
 router.get('/:foodId', canReadFood, foodsCtr.apiGetFood);
 
-// router.put('/:foodId', canModifyFood, foodsCtr.updateFood);
+// router.put('/:foodId', canUpdateFood, foodsCtr.updateFood);
 
-// router.delete('/:foodId', canModifyFood, foodsCtr.deleteFood);
+// router.delete('/:foodId', canDeleteFood, foodsCtr.deleteFood);
 
 module.exports = router;

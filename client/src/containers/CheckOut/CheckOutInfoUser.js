@@ -42,7 +42,7 @@ import {
 } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
 import config from '../../config';
-import { getTimeString } from '../../utils/textUtils';
+import { getTimeString, getExtraPrice } from '../../utils';
 
 const styles = (theme) => ({
   root: {
@@ -303,7 +303,7 @@ class CheckOutInfoUser extends React.Component {
     if (bags && bags.length > 0) {
       bags.map((bag) => {
         currency = bag.currency;
-        totalPrice += bag.price * bag.qty;
+        totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
       });
     }
 
@@ -361,7 +361,7 @@ class CheckOutInfoUser extends React.Component {
     var that = this;
     setTimeout(function () {
       var orderInitialValue = that.props.orderInitialValue;
-      console.log('-- orderInitialValue : ', orderInitialValue);
+      
       if (orderInitialValue.firstName == '') {
         // that.props.history.push('/checkout/result/fail');
         return;
@@ -375,7 +375,6 @@ class CheckOutInfoUser extends React.Component {
         }
 
         var order = that.props.order;
-        console.log('-- order : ', order);
         if (order._id) {
           that.props.history.push(`/checkout/result/success`);
         } else {
@@ -486,7 +485,7 @@ class CheckOutInfoUser extends React.Component {
 
   renderUserContactInfo() {
     const { classes, me, activeAddress } = this.props;
-    console.log('-- renderUserContactInfo activeAddress : ', activeAddress);
+    
     var addressInfo = '';
     if (activeAddress) {
       var country = csc.getCountryById(activeAddress.countryId);
@@ -652,20 +651,18 @@ class CheckOutInfoUser extends React.Component {
     } = this.state;
 
     var curTime = new Date().toString();
-    console.log('-- curTime : ', curTime);
     curTime = curTime.split(' ');
     curTime = curTime[4];
     var isWorkingTime = true;
     var startTime =
       setting && setting.startTime ? setting.startTime + ':00' : null;
     var endTime = setting && setting.endTime ? setting.endTime + ':00' : null;
-    console.log('-- start end time : ', startTime, endTime);
+    
     if (startTime && curTime < startTime) {
       isWorkingTime = false;
     } else if (endTime && curTime > endTime) {
       isWorkingTime = false;
     }
-    console.log('-- isWorkingTime : ', isWorkingTime);
 
     return (
       <div className={classes.root}>
@@ -863,7 +860,6 @@ class CheckOutInfoUser extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('-- state : ', state);
 
   return {
     isProcessing: getBagProcessing(state),

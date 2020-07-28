@@ -5,8 +5,6 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
-const canReadBag = createAuthorizationMiddleware('bag', 'read');
-const canModifyBag = createAuthorizationMiddleware('bag', 'modify');
 
 router.use(jwtAuthenticate);
 

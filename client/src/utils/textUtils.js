@@ -8,7 +8,6 @@ export const getTimeString = (value, format) => {
   if( value ){
     var timeVal = value == 'now' ? (new Date()) : (new Date(value))
     var str = timeVal.toString();
-    console.log('-- str : ', str)
     str = str.split(' ');
     var dateStr = str[0];
     var dayStr = str[1];

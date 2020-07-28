@@ -16,6 +16,7 @@ export const getBags = (userId) => (dispatch, getState, { mernApi }) => {
             currency: bag.currency,
             qty: bag.qty,
             note: bag.note,
+            bagExtras: bag.bagExtras,
           });
         });
         setBagsToStorage(userId, newBags);
@@ -57,12 +58,11 @@ export const getBag = (userId, bagId) => (dispatch, getState, { mernApi }) => {
   });
 };
 
-export const addToBag = (userId, foodId, price, currency, qty, nt) => (
+export const addToBag = (userId, foodId, price, currency, qty, nt, bagExtras) => (
   dispatch,
   getState,
   { mernApi }
 ) => {
-  console.log('-- addToBag start : ', userId, foodId, price, currency, qty, nt);
   dispatch({ type: actionTypes.ADD_TO_BAG });
 
   var note = nt ? nt : '';
@@ -76,19 +76,19 @@ export const addToBag = (userId, foodId, price, currency, qty, nt) => (
         bags[i].currency = currency;
         bags[i].qty = qty;
         bags[i].note = note;
+        bags[i].bagExtras = bagExtras;
         break;
       }
     }
 
     if (!isFind) {
-      bags.push({ foodId, qty, price, currency, note });
+      bags.push({ foodId, qty, price, currency, note, bagExtras });
     }
   } else {
-    bags = [{ foodId, qty, price, currency, note }];
+    bags = [{ foodId, qty, price, currency, note, bagExtras }];
   }
 
   if (bags) {
-    console.log('-- addToBag bags : ', bags);
     return mernApi.post('/api/bags/detailBags', { bags }).then(
       (response) => {
         var bags = response.data.bags;
@@ -100,9 +100,10 @@ export const addToBag = (userId, foodId, price, currency, qty, nt) => (
             currency: bag.currency,
             qty: bag.qty,
             note: bag.note,
+            bagExtras: bag.bagExtras,
           });
         });
-        console.log('-- addToBag newBags : ', newBags, userId);
+        
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.ADD_TO_BAG_SUCCESS, payload: bags });
       },
@@ -146,8 +147,11 @@ export const deleteBag = (userId, foodId) => (
         bags.map((bag) => {
           newBags.push({
             foodId: bag.foodId,
+            price: bag.price,
+            currency: bag.currency,
             qty: bag.qty,
             note: bag.note,
+            bagExtras: bag.bagExtras,
           });
         });
         setBagsToStorage(userId, newBags);

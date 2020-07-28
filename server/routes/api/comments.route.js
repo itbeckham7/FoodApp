@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadComment = createAuthorizationMiddleware('comment', 'read');
-const canModifyComment = createAuthorizationMiddleware('comment', 'modify');
+const canUpdateComment = createAuthorizationMiddleware('comment', 'update');
+const canDeleteComment = createAuthorizationMiddleware('comment', 'delete');
+const canInsertComment = createAuthorizationMiddleware('comment', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -17,8 +19,8 @@ router.get('/:foodId', canReadComment, commentsCtr.apiGetComments);
 
 router.get('/:commentId', canReadComment, commentsCtr.apiGetComment);
 
-router.post('/add/:userId/:foodId', canModifyComment, commentsCtr.apiAddComment);
+router.post('/add/:userId/:foodId', canInsertComment, commentsCtr.apiAddComment);
 
-// router.delete('/:commentId', canModifyComment, commentsCtr.deleteCategory);
+// router.delete('/:commentId', canDeleteComment, commentsCtr.deleteCategory);
 
 module.exports = router;

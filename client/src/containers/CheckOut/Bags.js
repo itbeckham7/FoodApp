@@ -25,6 +25,7 @@ import {
 } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
 import config from '../../config';
+import {getTrans, getExtraPrice} from '../../utils';
 
 const styles = (theme) => ({
   infoSec: {
@@ -168,7 +169,8 @@ class Bags extends React.Component {
       itemCounts = bags.length;
       bags.map((bag) => {
         currency = bag.currency;
-        totalPrice += bag.price * bag.qty;
+        totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
+        var trans = getTrans(bag.food, 'EN');
 
         bagElems.push(
           <Grid container className={classes.bagElem} key={bag.foodId}>
@@ -188,7 +190,7 @@ class Bags extends React.Component {
                 variant="h6"
                 className={classes.bagElemTitleSpan}
               >
-                {bag.food.trans[0].title}
+                {trans.title}
               </Typography>
               <Typography
                 component="p"
@@ -212,7 +214,7 @@ class Bags extends React.Component {
                 variant="h6"
                 className={classes.bagElemPrice}
               >
-                {bag.food ? bag.currency + bag.price * bag.qty : ''}
+                {bag.food ? bag.currency + (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty : ''}
               </Typography>
             </div>
           </Grid>

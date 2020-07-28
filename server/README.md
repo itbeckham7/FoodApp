@@ -154,10 +154,10 @@ Sample response
     "role": "user",
     "permissions": {
       "userInsert": false,
-      "userModify": false,
+      "userUpdate": false,
       "userRead": false,
       "postInsert": false,
-      "postModify": false,
+      "postUpdate": false,
       "postRead": true
     },
     "provider": {
@@ -222,10 +222,10 @@ Sample response
     "role": "user",
     "permissions": {
       "userInsert": false,
-      "userModify": false,
+      "userUpdate": false,
       "userRead": false,
       "postInsert": false,
-      "postModify": false,
+      "postUpdate": false,
       "postRead": true
     },
     "provider": {
@@ -291,10 +291,10 @@ Sample response
     "role": "user",
     "permissions": {
       "userInsert": false,
-      "userModify": false,
+      "userUpdate": false,
       "userRead": false,
       "postInsert": false,
-      "postModify": false,
+      "postUpdate": false,
       "postRead": true
     },
     "provider": {
@@ -541,10 +541,10 @@ Sample response
     "role": "user",
     "permissions": {
       "userInsert": false,
-      "userModify": false,
+      "userUpdate": false,
       "userRead": false,
       "postInsert": false,
-      "postModify": false,
+      "postUpdate": false,
       "postRead": true
     },
     "provider": {
@@ -696,10 +696,10 @@ Sample response
       "role": "root",
       "permissions": {
         "userInsert": false,
-        "userModify": false,
+        "userUpdate": false,
         "userRead": false,
         "postInsert": false,
-        "postModify": false,
+        "postUpdate": false,
         "postRead": true
       },
       "provider": {
@@ -720,10 +720,10 @@ Sample response
       "role": "user",
       "permissions": {
         "userInsert": false,
-        "userModify": false,
+        "userUpdate": false,
         "userRead": false,
         "postInsert": false,
-        "postModify": false,
+        "postUpdate": false,
         "postRead": true
       },
       "provider": {
@@ -775,10 +775,10 @@ Sample response
     "role": "root",
     "permissions": {
       "userInsert": false,
-      "userModify": false,
+      "userUpdate": false,
       "userRead": false,
       "postInsert": false,
-      "postModify": false,
+      "postUpdate": false,
       "postRead": true
     },
     "provider": {
@@ -823,10 +823,10 @@ Sample request body payload
   "role": "admin",
   "permissions": {
     "userInsert": true,
-    "userModify": true,
+    "userUpdate": true,
     "userRead": true,
     "postInsert": false,
-    "postModify": false,
+    "postUpdate": false,
     "postRead": true
   }
 }

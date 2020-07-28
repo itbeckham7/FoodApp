@@ -20,8 +20,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role == 'user') {
+            return res.redirect('/dashboard');
         }
 
         branches = await BranchModel.find().sort({createdAt: 1});
@@ -42,8 +42,9 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/branches/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        
+        if (req.session.user.role != 'root' && !req.session.user.permissions.branchInsert) {
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'branches/edit');
@@ -63,7 +64,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.branchInsert) {
             return res.redirect('/dashboard');
         }
         
@@ -101,14 +102,14 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.branchUpdate) {
+            return res.redirect('/dashboard');
         }
 
         branchId = req.params.branchId;        
         branchInfo = await BranchModel.findOne({_id: branchId});
         if (!branchInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'branches/edit');
@@ -130,7 +131,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.branchUpdate) {
             return res.redirect('/dashboard');
         }
 
@@ -164,13 +165,13 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/branches';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.branchDelete) {
+            return res.redirect('/dashboard');
         }
 
         branchInfo = await BranchModel.findOne({_id: branchId});
         if (!branchInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
         
         BranchModel.deleteOne({_id: branchId}, function (err, result) {

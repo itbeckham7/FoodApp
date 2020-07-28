@@ -323,8 +323,6 @@
             $('#orderStatusBtn').click(function () {
                 var orderId = '<%= orderInfo._id %>';
                 var orderStatus = $('#orderStatusList').val();
-                console.log('-- orderStatus : ', orderStatus, orderId);
-
 
                 $.ajax({
                     url: '/api/orders/changestatus',
@@ -337,7 +335,6 @@
                         // $('.category-info-list .loading-area').removeClass('im-hide');
                     },
                     success: function (res) {
-                        console.log('-- res : ', res)
                         if (res.status == 'success') {
                             location.reload();
                             $('#changeStatusResult span').text('Order status is changed successfully.');

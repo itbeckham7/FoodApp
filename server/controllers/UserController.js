@@ -2,12 +2,49 @@ const mongoose = require('mongoose');
 const createError = require('http-errors');
 const Joi = require('@hapi/joi');
 const _ = require('lodash');
+const email = require('../core/sendgrid');
 const constants = require('./constants');
+const config = require('../config')
 
 var UserModel = require('../models/user.model');
 
 var BaseController = require('./BaseController');
 var View = require('../views/base');
+
+const sendVerificationEmailAsync = (user) => {
+    return sendEmailHelperAsync(
+        user,
+        'Verify your email',
+        `Welcome to ${config.app.title}`,
+        'Before you can start using your account, please verify it by following the link below:',
+        'Verify Email',
+        `${config.server.publicUrl}/verify-email/${user.token}` // FIXME: fix port number
+    );
+};
+
+const sendEmailHelperAsync = (
+    user,
+    subject,
+    title,
+    content,
+    buttonText,
+    url
+) => {
+    return email.send({
+        to: user.email,
+        from: `${config.app.title} <${config.email.from}>`,
+        subject: `${config.app.title} - ${subject}`,
+        templatePath: `${config.paths.root}/templates/email.html`,
+        dynamicTemplateData: {
+            boxTitle: title,
+            firstName: user.firstName,
+            content,
+            buttonText,
+            url,
+            signature: config.email.signature,
+        },
+    });
+};
 
 module.exports = BaseController.extend({
     name: 'UserController',
@@ -19,15 +56,11 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userRead) {
             return res.redirect('/');
         }
 
-        if (req.session.user.role == 'SuperAdmin') {
-            users = await UserModel.find({role: {$ne: 'SuperAdmin'}}).sort({createdAt: 1});
-        } else {
-            users = await UserModel.find({role:'User'}).sort({createdAt: 1});
-        }
+        users = await UserModel.find({role:'user'}).sort({createdAt: 1});
 
         v = new View(res, 'users/index');
         v.render({
@@ -42,7 +75,7 @@ module.exports = BaseController.extend({
     getUserStatus: function (req, res) {
         if (this.isLogin(req)) {
             if (req.session.user) {
-                if (req.session.user.role == 'SuperAdmin') {
+                if (req.session.user.role == 'root') {
                     res.json({status: ''})
                 } else {
                     UserModel.findOne({_id: req.session.user._id}, function (err, data) {
@@ -75,7 +108,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/users/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
+
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userInsert) {
             return res.redirect('/');
         }
 
@@ -96,7 +130,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userInsert) {
             return res.redirect('/');
         }
         
@@ -125,12 +159,10 @@ module.exports = BaseController.extend({
             lastName: req.body['user-lastName'],
             username: req.body['user-username'],
             email: req.body['user-email'],
-            password: crypto.createHash('md5').update(config.default_password).digest("hex"),
-            picture: dest_fn,
             contactEmail: '',
             phone: req.body['user-phone'],
-            role: req.body['user-role'] ? req.body['user-role'] : 'User',
-            status: req.body['user-status'] == 'on' ? true : false,
+            role: 'user',
+            status: req.body['user-status'] == 'on' ? 'active' : 'disabled',
             emailActive: true,
             ipAddress: '',
             loginCount: 0,
@@ -138,12 +170,34 @@ module.exports = BaseController.extend({
             createdAt: new Date()
         }
 
-        new UserModel(userInfo).save(function (err, result) {
+        newUser = new UserModel(userInfo);
+        newUser.setSubId();
+        newUser.provider.local = {
+            userId: newUser._id,
+            picture: dest_fn
+        };
+
+        await newUser.setPasswordAsync(config.default_password);
+
+        if (config.auth.verifyEmail && !isOauthAccount) {
+            newUser.setToken('verify-email');
+            newUser.status = 'unverified-email';
+        }
+
+        newUser.save(function (err, result) {
             if (err) {
                 console.log(err);
                 req.flash('error', 'Database error');
                 return res.redirect('/users');
             }
+
+            if (config.auth.verifyEmail && !isOauthAccount) {
+                return sendVerificationEmailAsync(user).then((result) => {
+                    req.flash('success', 'A verification email has been sent to your email');
+                    return res.redirect('/auth/register');
+                });
+            }
+
             req.flash('success', 'New user created successfully!');
             return res.redirect('/users');
         })
@@ -156,7 +210,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userUpdate) {
             return res.redirect('/');
         }
 
@@ -185,7 +239,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userUpdate) {
             return res.redirect('/');
         }
 
@@ -222,8 +276,8 @@ module.exports = BaseController.extend({
         userInfo.username = req.body['user-username'];
         userInfo.email = req.body['user-email'];
         userInfo.phone = req.body['user-phone'];
-        userInfo.role = req.body['user-role'] ? req.body['user-role'] : 'User';
-        userInfo.status = req.body['user-status'] == 'on' ? true : false;
+        userInfo.role = 'user';
+        userInfo.status = req.body['user-status'] == 'on' ? 'active' : 'disabled';
 
         await userInfo.save();
         req.flash('success', 'Updated successfully');
@@ -237,7 +291,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/users';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
+
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userDelete) {
             return res.redirect('/');
         }
 
@@ -264,7 +319,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/users';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
+        
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userUpdate) {
             return res.redirect('/');
         }
 
@@ -273,7 +329,7 @@ module.exports = BaseController.extend({
             return res.redirect('/');
         }
         
-        userInfo.password = crypto.createHash('md5').update(config.default_password).digest("hex");
+        await userInfo.setPasswordAsync(config.default_password);
         userInfo.loginCount = 0;
         userInfo.save(function (err, result) {
             if (err) {
@@ -294,7 +350,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role == 'user') {
             return res.redirect('/');
         }
 
@@ -324,7 +380,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.userUpdate) {
             return res.redirect('/dashboard');
         }
 

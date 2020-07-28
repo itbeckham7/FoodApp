@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadDiscount = createAuthorizationMiddleware('discount', 'read');
-const canModifyDiscount = createAuthorizationMiddleware('discount', 'modify');
+const canUpdateDiscount = createAuthorizationMiddleware('discount', 'update');
+const canDeleteDiscount = createAuthorizationMiddleware('discount', 'delete');
+const canInsertDiscount = createAuthorizationMiddleware('discount', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -15,10 +17,10 @@ router.param('discountId', discountsCtr.preloadTargetDiscount);
 
 router.post('/', canReadDiscount, discountsCtr.apiGetDiscounts);
 
-// router.get('/:discountId', canReadUser, discountsCtr.apiGetDiscount);
+// router.get('/:discountId', canReadDiscount, discountsCtr.apiGetDiscount);
 
-// router.put('/:discountId', canModifyUser, discountsCtr.updateDiscount);
+// router.put('/:discountId', canUpdateDiscount, discountsCtr.updateDiscount);
 
-// router.delete('/:discountId', canModifyUser, discountsCtr.deleteDiscount);
+// router.delete('/:discountId', canDeleteDiscount, discountsCtr.deleteDiscount);
 
 module.exports = router;

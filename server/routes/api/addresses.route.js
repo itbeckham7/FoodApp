@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadAddress = createAuthorizationMiddleware('address', 'read');
-const canModifyAddress = createAuthorizationMiddleware('address', 'modify');
+const canInsertAddress = createAuthorizationMiddleware('address', 'insert');
+const canUpdateAddress = createAuthorizationMiddleware('address', 'update');
+const canDeleteAddress = createAuthorizationMiddleware('address', 'delete');
 
 router.use(jwtAuthenticate);
 
@@ -19,12 +21,12 @@ router.get('/getactive/:userId', canReadAddress, addressesCtr.apiGetActiveAddres
 
 router.get('/:addressId', canReadAddress, addressesCtr.apiGetAddress);
 
-router.post('/add/:userId', canModifyAddress, addressesCtr.apiAddAddress);
+router.post('/add/:userId', canInsertAddress, addressesCtr.apiAddAddress);
 
-router.put('/update/:addressId', canModifyAddress, addressesCtr.apiUpdateAddress);
+router.put('/update/:addressId', canUpdateAddress, addressesCtr.apiUpdateAddress);
 
 router.get('/updateactive/:userId/:addressId', canReadAddress, addressesCtr.apiUpdateActiveAddress);
 
-router.delete('/delete/:userId/:addressId', canModifyAddress, addressesCtr.apiDeleteAddress);
+router.delete('/delete/:userId/:addressId', canDeleteAddress, addressesCtr.apiDeleteAddress);
 
 module.exports = router;

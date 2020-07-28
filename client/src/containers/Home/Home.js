@@ -11,6 +11,7 @@ import { compose } from 'redux';
 import {
   getCategories,
   getFoods,
+  getSliderFoods,
   getBags,
   addToBag,
   clearBag,
@@ -22,6 +23,7 @@ import {
   getCategoryError,
   getSettingSetting,
   getFoodFoods,
+  getFoodSliderFoods,
   getFoodProcessing,
   getFoodError,
   getBagBags,
@@ -32,7 +34,7 @@ import {
 import { CarouselProvider, Slider, Slide } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import config from '../../config';
-import { textEllipsis } from '../../utils/textUtils';
+import { textEllipsis, getTrans } from '../../utils';
 
 const styles = (theme) => ({
   root: {
@@ -84,12 +86,64 @@ const styles = (theme) => ({
     fontWeight: 'normal',
     fontSize: '1.15rem',
     padding: theme.spacing(1, 0, 3),
-    textAlign: 'center'
+    textAlign: 'center',
+  },
+  sliderElem: {
+    position: 'relative',
+    display: 'inline-block',
+    width: '80vw',
+    height: '45vw',
+  },
+  sliderImage: {
+    borderRadius: '8px',
+    width: '100%',
+    height: '100%',
+  },
+  sliderImageOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: '8px',
+  },
+  sliderTitle: {
+    position: 'absolute',
+    width: '80%',
+    bottom: '20px',
+    left: '10px',
+    textAlign: 'left',
+    color: '#fff',
+    fontSize: '1.05rem',
+    fontWeight: 'normal',
+  },
+  categoryImageOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: '8px',
+  },
+  categoryImageSec: {
+    position: 'relative',
+    width: '100%',
+    height: '130px',
   },
   categoryImage: {
     borderRadius: '8px',
     width: '100%',
-    height: '130px',
+    height: '100%',
+  },
+  categoryTitle: {
+    color: '#fff',
+    fontWeight: 'normal',
+    fontSize: '1rem',
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
   },
   categoryText: {
     color: '#fff',
@@ -169,6 +223,7 @@ class Home extends React.Component {
   state = {
     categories: null,
     bags: null,
+    sliderfoods: null,
   };
 
   constructor() {
@@ -180,7 +235,17 @@ class Home extends React.Component {
   }
 
   componentWillMount() {
-    console.log('-- home componentWillMount props : ', this.props);
+    const { setting } = this.props;
+
+    if (setting && setting.homeType == 'home1') {
+      this.props.getSliderFoods().then(() => {
+        if (this.props.errorMessageFoods) {
+          console.log('-- error : ', this.props.errorMessageFoods);
+        }
+
+        this.setState({ sliderfoods: this.props.sliderfoods });
+      });
+    }
     this.props.getCategories().then(() => {
       if (this.props.errorMessage) {
         console.log('-- error : ', this.props.errorMessage);
@@ -202,18 +267,15 @@ class Home extends React.Component {
   }
 
   async onClickCategory(category) {
-    console.log('-- onClickCategory');
 
     var categories = this.state.categories;
     for (var i = 0; i < categories.length; i++) {
       if (categories[i]._id == category._id) {
-        console.log('-- category : ', category);
         if (category.foods) {
           if (category.open) category.open = false;
           else category.open = true;
           categories[i] = category;
           await this.setState({ categories });
-          console.log('-- categories : ', i, this.state.categories);
         } else {
           this.props.getFoods(category._id).then(() => {
             if (this.props.errorMessageFoods) {
@@ -221,7 +283,6 @@ class Home extends React.Component {
               return;
             }
 
-            console.log('-- foods : ', this.props.foods);
             category.foods = this.props.foods;
             category.open = true;
             categories[i] = category;
@@ -247,36 +308,35 @@ class Home extends React.Component {
   }
 
   onPlusQty(bag, food) {
-    console.log('-- onPlusQty start : ', bag, food);
     const { me } = this.props;
-    
-    var price = food.trans[0].price;
-    var currency = food.trans[0].languageId.currency;
+    var trans = getTrans(food, 'EN');
+
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     if (bag) {
-      console.log('-- onPlusQty 1');
       if (bag.qty > bag.food.qty) return;
       bag.qty++;
 
-      this.props.addToBag(me.id, bag.foodId, price, currency, bag.qty).then(() => {
-        if (this.props.errorMessage) {
-          console.log('-- error : ', this.props.errorMessage);
-          return;
-        }
+      this.props
+        .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+        .then(() => {
+          if (this.props.errorMessage) {
+            console.log('-- error : ', this.props.errorMessage);
+            return;
+          }
 
-        this.setState({
-          bags: this.props.bags,
+          this.setState({
+            bags: this.props.bags,
+          });
         });
-      });
     } else {
-      console.log('-- onPlusQty 2 : ', me, food);
       this.props.addToBag(me.id, food._id, price, currency, 1).then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
           return;
         }
 
-        console.log('-- onPlusQty 3 : ', this.props.bags);
         this.setState({
           bags: this.props.bags,
         });
@@ -286,24 +346,27 @@ class Home extends React.Component {
 
   onMinusQty(bag, food) {
     const { me } = this.props;
-    
-    var price = food.trans[0].price;
-    var currency = food.trans[0].languageId.currency;
+    var trans = getTrans(food, 'EN');
+
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     if (bag) {
       if (bag.qty === 0) return;
       bag.qty--;
 
-      this.props.addToBag(me.id, bag.foodId, price, currency, bag.qty).then(() => {
-        if (this.props.errorMessage) {
-          console.log('-- error : ', this.props.errorMessage);
-          return;
-        }
+      this.props
+        .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+        .then(() => {
+          if (this.props.errorMessage) {
+            console.log('-- error : ', this.props.errorMessage);
+            return;
+          }
 
-        this.setState({
-          bags: this.props.bags,
+          this.setState({
+            bags: this.props.bags,
+          });
         });
-      });
     } else {
     }
   }
@@ -312,27 +375,59 @@ class Home extends React.Component {
     var qty = bag.qty;
     var note = bag.note;
     this.props.clearBag(this.props.me.id);
+    var trans = getTrans(food, 'EN');
 
-    var price = food.trans[0].price;
-    var currency = food.trans[0].languageId.currency;
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     var that = this;
     setTimeout(function () {
-      console.log('-- onCheckOut bags', that.props.bags);
-      that.props.addToBag(that.props.me.id, food._id, price, currency, qty, note).then(() => {
-        if (that.props.errorMessage) {
-          console.log('-- error : ', that.props.errorMessage);
-          return;
-        }
+      that.props
+        .addToBag(that.props.me.id, food._id, price, currency, qty, note)
+        .then(() => {
+          if (that.props.errorMessage) {
+            console.log('-- error : ', that.props.errorMessage);
+            return;
+          }
 
-        console.log('-- onCheckOut bags 1', that.props.bags);
-        that.props.history.push('/bag/checkout');
-      });
+          that.props.history.push('/bag/checkout');
+        });
     }, 100);
   }
 
   renderTopSecHome1() {
     const { categories, classes } = this.props;
+    const { sliderfoods } = this.state;
+
+    var sliderElems = [];
+    if (sliderfoods && sliderfoods.length > 0) {
+      sliderfoods.map((food, index) => {
+        var trans = getTrans(food, 'EN');
+        sliderElems.push(
+          <Slide
+            index={index}
+            key={'slider-' + food._id}
+            style={{ textAlign: 'center' }}
+          >
+            <div className={classes.sliderElem}>
+              <img
+                alt="avatar"
+                src={config.serverUrl + food.image}
+                className={classes.sliderImage}
+              />
+              <div className={classes.sliderImageOverlay}></div>
+              <div className={classes.sliderTitle}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '300' }}>
+                  {food.categoryId[0].trans[0].name}
+                </span>
+                <br />
+                {textEllipsis(trans.title, 40, '...')}
+              </div>
+            </div>
+          </Slide>
+        );
+      });
+    }
 
     return (
       <div className={classes.topSecHome1}>
@@ -348,29 +443,7 @@ class Home extends React.Component {
             isPlaying={true}
             style={{ width: '100%', marginTop: '5px' }}
           >
-            <Slider>
-              <Slide index={0} style={{ textAlign: 'center' }}>
-                <img
-                  alt="avatar"
-                  src={'../images/Bitmap.png'}
-                  className={classes.image}
-                />
-              </Slide>
-              <Slide index={1} style={{ textAlign: 'center' }}>
-                <img
-                  alt="avatar"
-                  src={'../images/Bitmap-2.png'}
-                  className={classes.image}
-                />
-              </Slide>
-              <Slide index={2} style={{ textAlign: 'center' }}>
-                <img
-                  alt="avatar"
-                  src={'../images/Bitmap.png'}
-                  className={classes.image}
-                />
-              </Slide>
-            </Slider>
+            <Slider>{sliderElems}</Slider>
           </CarouselProvider>
         </div>
       </div>
@@ -416,6 +489,7 @@ class Home extends React.Component {
     var foodElems = [];
     if (foods && foods.length > 0) {
       foods.map((food) => {
+        var trans = getTrans(food, 'EN');
         var bag = this.getBagFromFood(food._id);
         var qty = bag ? bag.qty : 0;
 
@@ -425,7 +499,6 @@ class Home extends React.Component {
               xs={3}
               item
               onClick={() => {
-                console.log('-- click');
                 this.props.history.push('/dashboard/food/' + food._id);
               }}
             >
@@ -444,7 +517,7 @@ class Home extends React.Component {
             <Grid xs={9} item style={{ paddingLeft: '10px' }}>
               <div className={classes.foodElemTitleSec}>
                 <span className={classes.foodElemTitleSpan}>
-                  {textEllipsis(food.trans[0].title, 40, '...')}
+                  {textEllipsis(trans.title, 40, '...')}
                 </span>
                 <span className={classes.foodElemRatingSpan}>
                   <Rating
@@ -467,8 +540,8 @@ class Home extends React.Component {
                 component="p"
                 variant="h6"
                 className={classes.foodDetailDesc}
+                dangerouslySetInnerHTML={{__html: food ? textEllipsis(trans.desc, 60, '...') : ''}}
               >
-                {food ? textEllipsis(food.trans[0].desc, 60, '...') : ''}
               </Typography>
 
               <div style={{ display: 'inline-block', width: '50%' }}>
@@ -521,14 +594,21 @@ class Home extends React.Component {
         if (setting.homeType == 'home1') {
           categoryElems.push(
             <Grid xs={6} item key={category._id}>
-              <Box p={1}>
-                <Link href={'/dashboard/foods/' + category._id}>
-                  <img
-                    src={config.serverUrl + category.image}
-                    className={classes.categoryImage}
-                  />
-                </Link>
-              </Box>
+              <div
+                className={classes.categoryImageSec}
+                onClick={() => {
+                  this.props.history.push('/dashboard/foods/' + category._id);
+                }}
+              >
+                <img
+                  src={config.serverUrl + category.image}
+                  className={classes.categoryImage}
+                />
+                <div className={classes.categoryImageOverlay}></div>
+                <div className={classes.categoryTitle}>
+                  {textEllipsis(category.trans[0].name, 20, '...')}
+                </div>
+              </div>
             </Grid>
           );
         } else {
@@ -581,7 +661,6 @@ class Home extends React.Component {
   }
 
   renderMainSecHome2() {
-    console.log('-- renderMainSecHome2 start');
     const { classes } = this.props;
     return (
       <div className={classes.mainSecHome2}>
@@ -596,7 +675,6 @@ class Home extends React.Component {
   }
 
   renderMainSec() {
-    console.log('-- renderMainSec start');
     const { setting } = this.props;
 
     if (!setting || setting.homeType == 'home1') {
@@ -629,6 +707,7 @@ const mapStateToProps = (state) => {
     isProcessingFoods: getFoodProcessing(state),
     errorMessageFoods: getFoodError(state),
     foods: getFoodFoods(state),
+    sliderfoods: getFoodSliderFoods(state),
     isProcessingBags: getBagProcessing(state),
     errorMessageBags: getBagError(state),
     bags: getBagBags(state),
@@ -640,6 +719,7 @@ export default compose(
   connect(mapStateToProps, {
     getCategories,
     getFoods,
+    getSliderFoods,
     getBags,
     addToBag,
     clearBag,

@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadBranch = createAuthorizationMiddleware('branch', 'read');
-const canModifyBranch = createAuthorizationMiddleware('branch', 'modify');
+const canUpdateBranch = createAuthorizationMiddleware('branch', 'update');
+const canDeleteBranch = createAuthorizationMiddleware('branch', 'delete');
+const canInsertBranch = createAuthorizationMiddleware('branch', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -20,8 +22,8 @@ router.post('/', canReadBranch, branchesCtr.apiGetBranchesDatatable);
 
 // router.get('/:branchId', canReadBranch, branchesCtr.apiGetBranch);
 
-// router.put('/:branchId', canModifyBranch, branchesCtr.updateBranch);
+// router.put('/:branchId', canUpdateBranch, branchesCtr.updateBranch);
 
-// router.delete('/:branchId', canModifyBranch, branchesCtr.deleteBranch);
+// router.delete('/:branchId', canDeleteBranch, branchesCtr.deleteBranch);
 
 module.exports = router;

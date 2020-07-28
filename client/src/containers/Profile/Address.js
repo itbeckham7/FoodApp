@@ -194,7 +194,7 @@ class Address extends React.Component {
   renderAddresses() {
     const { classes } = this.props;
     const { addresses } = this.state;
-    console.log('-- addresses : ', addresses);
+    
     if (addresses && addresses.length > 0) {
       var addressElems = [];
       addresses.map((address) => {

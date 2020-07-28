@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadCard = createAuthorizationMiddleware('card', 'read');
-const canModifyCard = createAuthorizationMiddleware('card', 'modify');
+const canUpdateCard = createAuthorizationMiddleware('card', 'update');
+const canDeleteCard = createAuthorizationMiddleware('card', 'delete');
+const canInsertCard = createAuthorizationMiddleware('card', 'insert');
 
 router.use(jwtAuthenticate);
 
@@ -19,12 +21,12 @@ router.get('/getactive/:userId', canReadCard, cardsCtr.apiGetActiveCard);
 
 router.get('/:cardId', canReadCard, cardsCtr.apiGetCard);
 
-router.post('/add/:userId', canModifyCard, cardsCtr.apiAddCard);
+router.post('/add/:userId', canInsertCard, cardsCtr.apiAddCard);
 
-router.put('/update/:cardId', canModifyCard, cardsCtr.apiUpdateCard);
+router.put('/update/:cardId', canUpdateCard, cardsCtr.apiUpdateCard);
 
-router.get('/updateactive/:userId/:cardId', canReadCard, cardsCtr.apiUpdateActiveCard);
+router.get('/updateactive/:userId/:cardId', canUpdateCard, cardsCtr.apiUpdateActiveCard);
 
-router.delete('/delete/:userId/:cardId', canModifyCard, cardsCtr.apiDeleteCard);
+router.delete('/delete/:userId/:cardId', canDeleteCard, cardsCtr.apiDeleteCard);
 
 module.exports = router;

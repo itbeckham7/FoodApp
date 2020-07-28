@@ -9,6 +9,7 @@ let FoodTransSchema = new Schema(
         oldPrice: Number,
         abbr: String,
         foodId: String,
+        extras: String,
         languageId: { type: Schema.Types.ObjectId, ref: 'language' }
     },
     { timestamps: true }

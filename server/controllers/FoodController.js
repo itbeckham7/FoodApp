@@ -23,8 +23,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodRead) {
+            return res.redirect('/dashboard');
         }
 
         foods = await FoodModel.find()
@@ -61,8 +61,8 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/foods/add';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodInsert) {
+            return res.redirect('/dashboard');
         }
 
         categories = await CategoryModel.find().populate('trans').sort({createdAt: 1}).exec();
@@ -87,8 +87,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodInsert) {
+            return res.redirect('/dashboard');
         }
         
         // Check same food with sku address
@@ -116,36 +116,34 @@ module.exports = BaseController.extend({
             sku: req.body['food-sku'],
             categoryId: req.body['food-categoryId'] == '' ? null : req.body['food-categoryId'],
             qty: req.body['food-qty'],
+            inSlider: req.body['food-inSlider'] == 'on' ? true : false ,
             folder: folder,
             image: dest_fn,
             createdAt: new Date()
         };
 
         var food = await FoodModel.create(foodInfo);
-        if( food && food._id ){
-            languages = await LanguageModel.find().sort({createdAt: 1});
-            var trans = [];
-            for( var i=0; i<languages.length; i++ ){
-                var foodTrans = {
-                    title: req.body['food-title-' + languages[i].abbr],
-                    desc: req.body['food-description-' + languages[i].abbr],
-                    price: req.body['food-price-' + languages[i].abbr],
-                    oldPrice: req.body['food-oldPrice-' + languages[i].abbr],
-                    abbr: languages[i].abbr,
-                    foodId: food._id,
-                    languageId: languages[i]._id
-                }
-
-                var foodTrans = await FoodTransModel.create(foodTrans);
-                if( foodTrans && foodTrans._id ) trans.push(foodTrans._id);
+        var language = await LanguageModel.findOne({abbr: req.body['food-lang']})
+        if( food && food._id && language._id ){
+            var foodTrans = {
+                title: req.body['food-title'],
+                desc: req.body['food-description'],
+                price: req.body['food-price'],
+                oldPrice: req.body['food-oldPrice'],
+                extras: req.body['food-extras'],
+                abbr: language.abbr,
+                foodId: food._id,
+                languageId: language._id
             }
 
-            food = await FoodModel.findOne({_id: food._id});
+            var trans = [];
+            foodTrans = await FoodTransModel.create(foodTrans);
+            if( foodTrans && foodTrans._id ) trans.push(foodTrans._id);
             food.trans = trans;
             await food.save();
         }
 
-        req.flash('success', 'New category created successfully!');
+        req.flash('success', 'New food created successfully!');
         return res.redirect('/foods');
     },
     
@@ -156,8 +154,8 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
-            return res.redirect('/*');
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodUpdate) {
+            return res.redirect('/dashboard');
         }
 
         categories = await CategoryModel.find().populate('trans').sort({createdAt: 1}).exec();
@@ -166,7 +164,7 @@ module.exports = BaseController.extend({
         foodId = req.params.foodId;        
         foodInfo = await FoodModel.findOne({_id: foodId}).populate('trans').exec();
         if (!foodInfo) {
-            return res.redirect('/*');
+            return res.redirect('/dashboard');
         }
 
         v = new View(res, 'foods/edit');
@@ -190,7 +188,7 @@ module.exports = BaseController.extend({
             return res.redirect('/auth/login');
         }
 
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodUpdate) {
             return res.redirect('/dashboard');
         }
 
@@ -222,18 +220,52 @@ module.exports = BaseController.extend({
             foodInfo.image = dest_fn;
         }
 
-        foodInfo.sku = req.body['food-sku'],
-        foodInfo.categoryId = req.body['food-categoryId'] == '' ? null : req.body['food-categoryId'],
-        foodInfo.qty = req.body['food-qty'],
-        foodInfo.updatedAt = new Date(),
+        foodInfo.sku = req.body['food-sku'];
+        foodInfo.categoryId = req.body['food-categoryId'] == '' ? null : req.body['food-categoryId'];
+        foodInfo.qty = req.body['food-qty'];
+        foodInfo.inSlider = req.body['food-inSlider'] == 'on' ? true : false;
+        foodInfo.updatedAt = new Date();
 
-        foodInfo.trans.map(async function( trans ){
-            trans.title = req.body['food-title-' + trans.abbr];
-            trans.desc = req.body['food-description-' + trans.abbr];
-            trans.price = req.body['food-price-' + trans.abbr];
-            trans.oldPrice = req.body['food-oldPrice-' + trans.abbr];
-            await trans.save();
-        })
+        var language = await LanguageModel.findOne({abbr: req.body['food-lang']});
+        if( language._id ){
+            var isExist = false;
+
+            for( var i=0; i<foodInfo.trans.length; i++ ){
+                var trans = foodInfo.trans[i];
+                if( trans.abbr == language.abbr ){
+                    trans.title = req.body['food-title'];
+                    trans.desc = req.body['food-description'];
+                    trans.price = req.body['food-price'];
+                    trans.oldPrice = req.body['food-oldPrice'];
+                    trans.extras = req.body['food-extras'];
+                    await trans.save();
+                    isExist = true;
+                    break;
+                }
+            }
+            
+            if( !isExist ){
+                var foodTrans = {
+                    title: req.body['food-title'],
+                    desc: req.body['food-description'],
+                    price: req.body['food-price'],
+                    oldPrice: req.body['food-oldPrice'],
+                    abbr: language.abbr,
+                    foodId: foodInfo._id,
+                    languageId: language._id
+                }
+    
+                foodTrans = await FoodTransModel.create(foodTrans);
+                if( foodTrans && foodTrans._id ) {
+                    var transIds = [];
+                    foodInfo.trans.map(async function( trans ){
+                        transIds.push( trans._id )
+                    })
+                    transIds.push(foodTrans._id);
+                }
+                foodInfo.trans = transIds;
+            }
+        }
 
         await foodInfo.save();
         req.flash('success', 'Updated successfully');
@@ -247,7 +279,7 @@ module.exports = BaseController.extend({
             req.session.redirectTo = '/foods';
             return res.redirect('/auth/login');
         }
-        if (req.session.user.role == 'User') {
+        if (req.session.user.role != 'root' && !req.session.user.permissions.foodDelete) {
             return res.redirect('/dashboard');
         }
 

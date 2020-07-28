@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/types';
 
 const INITIAL_STATE = {
   foods: null,
+  sliderfoods: null,
   food: null,
   processing: false,
   processed: false,
@@ -11,6 +12,7 @@ const INITIAL_STATE = {
 const foodReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case actionTypes.GET_FOODS:
+    case actionTypes.GET_SLIDER_FOODS:
     case actionTypes.GET_FOOD:
       return { ...state, processed: false, processing: true, error: null };
     case actionTypes.GET_FOODS_SUCCESS:
@@ -20,6 +22,13 @@ const foodReducer = (state = INITIAL_STATE, action) => {
         processed: true,
         foods: action.payload.data,
       };
+    case actionTypes.GET_SLIDER_FOODS_SUCCESS:
+      return {
+        ...state,
+        processing: false,
+        processed: true,
+        sliderfoods: action.payload.data,
+      };
     case actionTypes.GET_FOOD_SUCCESS:
       return {
         ...state,
@@ -28,6 +37,7 @@ const foodReducer = (state = INITIAL_STATE, action) => {
         food: action.payload.data,
       };
     case actionTypes.GET_FOODS_FAIL:
+    case actionTypes.GET_SLIDER_FOODS_FAIL:
     case actionTypes.GET_FOOD_FAIL:
       return {
         ...state,

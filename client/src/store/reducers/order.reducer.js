@@ -58,7 +58,6 @@ const orderReducer = (state = INITIAL_STATE, action) => {
     case actionTypes.ORDER_INITIAL_VALUES:
       var orderInitialValue = state.orderInitialValue;
       var newOrderInitialValue = { ...orderInitialValue, ...action.payload };
-      console.log('-- ORDER_INITIAL_VALUES1 : ', newOrderInitialValue);
       return {
         ...state,
         orderInitialValue: newOrderInitialValue,

@@ -4,7 +4,6 @@ export const getOrders = (userId) => (dispatch, getState, { mernApi }) => {
   dispatch({ type: actionTypes.GET_ORDERS });
   return mernApi.get(`/api/orders/${userId}`, {}).then(
     (response) => {
-      console.log('-- getOrders response : ', response.data)
       var orders = response.data;
       dispatch({ type: actionTypes.GET_ORDERS_SUCCESS, payload: orders });
     },
@@ -40,7 +39,6 @@ export const addOrder = (userId, orderValue, bags) => (dispatch, getState, { mer
   var order = {userId, ...orderValue, bags, status: 'pending'}
   return mernApi.post(`/api/orders/add/`, order).then(
     (response) => {
-      console.log('-- addOrder response : ', response.data)
       var newOrder = response.data;
       dispatch({ type: actionTypes.ADD_ORDER_SUCCESS, payload: newOrder });
     },

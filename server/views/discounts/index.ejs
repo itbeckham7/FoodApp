@@ -46,7 +46,9 @@
                     <div class="card">
                         <div class="card-body order-datatable">
                             <div class="btn-popup pull-right">
+                                <% if(session.user.role == 'root' || session.user.permissions.discountInsert) { %>
                                 <a href="/discounts/add" class="btn btn-primary">Add Discount</a>
+                                <% } %>
                             </div>
                             <table class="display" id="discounts_list">
                                 <thead>
@@ -146,10 +148,15 @@
                             "targets": 7,
                             "data": '_id',
                             "render": function (data, type, row) {
-                                return `
-                                    <a href="/discounts/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a>
-                                    <a href="/discounts/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>
-                                `
+                                var ret = ''
+                                <% if(session.user.role == 'root' || session.user.permissions.discountUpdate) { %>
+                                    ret += `<a href="/discounts/edit/${data}" class="btn btn-warning btn-sm datatable-action-btn">Edit</a> `
+                                <% } %>
+                                <% if(session.user.role == 'root' || session.user.permissions.discountDelete) { %>
+                                    ret += `<a href="/discounts/delete/${data}" class="btn btn-danger btn-sm datatable-action-btn">Delete</a>`
+                                <% } %>
+
+                                return ret;
                             }
                         } 
                     ],

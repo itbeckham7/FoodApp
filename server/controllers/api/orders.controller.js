@@ -51,11 +51,10 @@ module.exports = {
 
   apiGetOrder: async function (req, res, next) {
     var orderId = req.params.orderId;
-    console.log('-- apiGetOrder orderId : ', orderId);
+    
     if (req.user) {
       OrderModel.findOne({ _id: orderId })
         .then(async (order) => {
-          console.log('-- apiGetOrder order : ', order);
           if (!order) {
             throw createError(422, "Can't get order");
           }
@@ -89,7 +88,6 @@ module.exports = {
             ...order._doc,
             bags: newBags,
           };
-          console.log('-- apiGetOrder order1 : ', order);
 
           res.status(200).json({ order: order });
         })
@@ -100,13 +98,11 @@ module.exports = {
   },
 
   apiAddOrder: (req, res, next) => {
-    console.log('-- apiAddOrder : start');
     if (req.user) {
       addOrderSchema
         .validateAsync(req.body, { stripUnknown: true })
         .then((payload) => {
           req.body = payload;
-          console.log('-- apiAddOrder req.body : ', req.body);
           newOrder = new OrderModel(req.body);
           newOrder.orderId = '#' + new Date().getTime();
           newOrder.track = JSON.stringify({
@@ -172,25 +168,16 @@ module.exports = {
         .validateAsync(req.body, { stripUnknown: true })
         .then((payload) => {
           req.body = payload;
-          console.log('-- apiChangeOrderStatus req.body : ', req.body);
           return OrderModel.findOne({ _id: req.body.orderId });
         })
         .then((order) => {
-          console.log('-- apiChangeOrderStatus order 1 : ', order);
           var trackInfo = JSON.parse(order.track);
           var tracks = trackInfo.history;
           for (var i = 0; i < tracks.length; i++) {
             if (tracks[i].status == req.body.status) newTrackIdx = i
             if (tracks[i].status == order.status) curTrackIdx = i
-            // {
-            //   if (i == 0) break;
-            //   if (tracks[i - 1].time != null) break;
-            //   ret.data = 'Can\'t change to this status.';
-            //   res.status(200).send(ret);
-            //   return;
-            // }
           }
-console.log('-- track idx : ', newTrackIdx, curTrackIdx)
+          
           if( newTrackIdx < curTrackIdx || newTrackIdx-curTrackIdx > 1 ){
             return;
           }
@@ -205,7 +192,6 @@ console.log('-- track idx : ', newTrackIdx, curTrackIdx)
         })
         .then((order) => {
           if( order ){
-            console.log('-- apiChangeOrderStatus order 2 : ', order);
             ret.data = order;
             ret.status = 'success';
             res.status(200).send(ret);
@@ -237,8 +223,7 @@ console.log('-- track idx : ', newTrackIdx, curTrackIdx)
           { status: { $regex: `.*${search}.*`, $options: 'i' } },
         ],
       };
-      console.log('-- req.body : ', req.body);
-      console.log('-- query : ', query);
+      
       var totalItems = await OrderModel.find(query).select('_id');
       totalItems = totalItems.length;
 
@@ -249,7 +234,6 @@ console.log('-- track idx : ', newTrackIdx, curTrackIdx)
           [orderArr[parseInt(order[0].column)], order[0].dir == 'asc' ? 1 : -1],
         ])
         .exec(async function (err, result) {
-          console.log('-- result : ', result);
           if (err) {
             ret.data = "Can't get discount list";
             console.log(err);
@@ -286,16 +270,13 @@ console.log('-- track idx : ', newTrackIdx, curTrackIdx)
                 newBags.push(bag);
               }
             });
-
-            console.log('-- newBags : ', newBags);
+            
             newOrders.push({
               ...orders[i]._doc,
               bags: newBags,
             });
           }
-
-          console.log('-- newOrders : ', newOrders);
-
+          
           ret.data = {
             draw: 1,
             recordsTotal: totalItems,

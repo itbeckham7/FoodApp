@@ -16,7 +16,7 @@ import {
   getCurrentUser,
 } from '../../store/selectors';
 import config from '../../config';
-import { textEllipsis } from '../../utils/textUtils';
+import { textEllipsis, getTrans, getExtraPrice } from '../../utils';
 
 const styles = (theme) => ({
   root: {
@@ -199,11 +199,12 @@ class Bag extends React.Component {
     if (bag.qty > bag.food.qty) return;
     bag.qty++;
 
-    var price = bag.food.trans[0].price;
-    var currency = bag.food.trans[0].languageId.currency;
+    var trans = getTrans(bag.food, 'EN');
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     this.props
-      .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+      .addToBag(me.id, bag.foodId, price, currency, bag.qty, bag.bagExtras)
       .then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
@@ -222,11 +223,12 @@ class Bag extends React.Component {
     if (bag.qty === 0) return;
     bag.qty--;
 
-    var price = bag.food.trans[0].price;
-    var currency = bag.food.trans[0].languageId.currency;
+    var trans = getTrans(bag.food, 'EN');
+    var price = trans.price;
+    var currency = trans.languageId.currency;
 
     this.props
-      .addToBag(me.id, bag.foodId, price, currency, bag.qty)
+      .addToBag(me.id, bag.foodId, price, currency, bag.qty, bag.bagExtras)
       .then(() => {
         if (this.props.errorMessage) {
           console.log('-- error : ', this.props.errorMessage);
@@ -246,6 +248,8 @@ class Bag extends React.Component {
     var bagElems = [];
     if (bags && bags.length > 0) {
       bags.map((bag) => {
+        var trans = getTrans(bag.food, 'EN');
+
         bagElems.push(
           <Grid container className={classes.bagElem} key={bag.foodId}>
             <div className={classes.bagElemImageSec}>
@@ -266,7 +270,7 @@ class Bag extends React.Component {
             >
               <div className={classes.bagElemTitleSec}>
                 <span className={classes.bagElemTitleSpan}>
-                  {textEllipsis(bag.food.trans[0].title, 40, '...')} &times;{' '}
+                  {textEllipsis(trans.title, 40, '...')} &times;{' '}
                   {bag.qty}
                 </span>
               </div>
@@ -299,7 +303,7 @@ class Bag extends React.Component {
                   variant="h6"
                   className={classes.bagElemPrice}
                 >
-                  {bag.food ? bag.currency + bag.price * bag.qty : ''}
+                  {bag.food ? bag.currency + (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty : ''}
                 </Typography>
               </div>
 
@@ -331,7 +335,7 @@ class Bag extends React.Component {
       itemCounts = bags.length;
       bags.map((bag) => {
         currency = bag.currency;
-        totalPrice += bag.price * bag.qty;
+        totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
       });
     }
 

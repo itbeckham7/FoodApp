@@ -32,20 +32,20 @@ const createUserAuthorizationMiddleware = (action) => {
     if (!req.user) {
       return next(createError(403, 'Forbidden action'));
     }
-
+    
     if (req.user.role === 'root') {
       return next();
     }
-
+    
     if (!req.user.hasPermission(permission)) {
       return next(createError(403, 'Forbidden action'));
     }
-
-    if (action !== 'modify') {
+    
+    if (action !== 'update' && action !== 'delete') {
       return next();
     }
-
-    // Now action == 'modify'
+    
+    // Now action == 'update' or 'delete'
     const targetUser = res.locals.targetUser;
     if (!targetUser) {
       return next(createError(500, 'res.locals.targetUser is undefined.'));
@@ -55,11 +55,11 @@ const createUserAuthorizationMiddleware = (action) => {
     } else if (
       req.user.role === 'user' &&
       targetUser.role === 'user' &&
-      targetUser.permissions['userModify'] === false
+      targetUser.permissions['user' + _.camelCase(action)] === false
     ) {
       return next();
     }
-
+    
     next(createError(403, 'Forbidden action'));
   };
 };

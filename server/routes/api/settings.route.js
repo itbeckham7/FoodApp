@@ -6,7 +6,9 @@ const createAuthorizationMiddleware = require('../../middleware/createAuthorizat
 const router = express.Router();
 const jwtAuthenticate = createAuthenticationStrategy('jwt');
 const canReadSetting = createAuthorizationMiddleware('setting', 'read');
-const canModifySetting = createAuthorizationMiddleware('setting', 'modify');
+const canUpdateSetting = createAuthorizationMiddleware('setting', 'update');
+const canDeleteSetting = createAuthorizationMiddleware('setting', 'delete');
+const canInsertSetting = createAuthorizationMiddleware('setting', 'insert');
 
 // Preload user object on routes with ':settingId'
 router.param('settingId', settingsCtr.preloadTargetSetting);
@@ -15,8 +17,8 @@ router.get('/', settingsCtr.apiGetSetting);
 
 // router.get('/:settingId', canReadSetting, settingsCtr.apiGetSetting);
 
-// router.put('/:settingId', canModifySetting, settingsCtr.updateSetting);
+// router.put('/:settingId', canUpdateSetting, settingsCtr.updateSetting);
 
-// router.delete('/:settingId', canModifySetting, settingsCtr.deleteSetting);
+// router.delete('/:settingId', canDeleteSetting, settingsCtr.deleteSetting);
 
 module.exports = router;
