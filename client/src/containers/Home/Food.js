@@ -547,7 +547,7 @@ class Food extends React.Component {
     }
     
     var price = trans ? trans.price : 0;
-    if( bag ) price += getExtraPrice(bag.bagExtras);
+    if( bagExtras ) price += getExtraPrice(bagExtras);
 
     return (
       <div style={{ padding: '16px 16px' }}>
