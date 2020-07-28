@@ -311,9 +311,8 @@
             window.extrasDb = extrasDb;
             
             extrasDb.extras = [];
-            <% if( pg_mode == 'edit' ) { %>
+            <% if( pg_mode == 'edit' && extras) { %>
                 extrasDb.extras = <%- extras %>
-                if( !extrasDb.extras ) extrasDb.extras = [];
             <% } %>
 
             $("#extra-list").jsGrid({
