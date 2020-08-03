@@ -20,6 +20,7 @@ import {
   getCurrentUser,
   getSignedInWith,
   getBagBags,
+  getSettingSetting,
 } from '../store/selectors';
 import { signOut, getBags } from '../store/actions';
 
@@ -51,8 +52,11 @@ const styles = (theme) => ({
     padding: 4,
   },
   logoText: {
-    textAlign: 'left',
-    color: 'rgba(255,255,255,0.7)',
+    textAlign: 'center',
+    color: '#fff',
+    // backgroundColor: '#E5293E',
+    padding: theme.spacing(0.5),
+    borderRadius: 20
   },
 });
 
@@ -105,6 +109,11 @@ class Header extends React.Component {
         }
       });
     });
+
+    if( brand == 'Home'  ){
+      brand = 'Anfas AlTeeb'
+
+    }
     return brand;
   };
 
@@ -187,6 +196,7 @@ const mapStateToProps = (state) => {
     bags: getBagBags(state),
     authProvider: getSignedInWith(state),
     pathname: state.router.location.pathname,
+    setting: getSettingSetting(state),
   };
 };
 

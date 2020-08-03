@@ -79,7 +79,7 @@ class BottomNavigator extends React.Component {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={()=>{window.location='/common/search'}}
+              onClick={()=>{}}
               className={classes.menuButton}
               style={{marginTop: '-50px'}}
             >
@@ -90,21 +90,22 @@ class BottomNavigator extends React.Component {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={()=>{}}
+              onClick={()=>{window.location='/common/search'}}
               className={classes.menuButton}
+              style={{marginLeft: '-15px'}}
             >
-              <img src="/images/Menu-lang.png" />
+              <img src="/images/Menu-search.png" />
             </IconButton>
           </Grid>
           <Grid xs={2} item className={classes.navElem}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={()=>{window.location='/profile/profile'}}
+              onClick={()=>{}}
               className={classes.menuButton}
-              style={{marginTop: '5px'}}
+              style={{marginLeft: '-15px', marginTop: '-2px'}}
             >
-              <img src="/images/Menu-Icon.png" />
+              <img src="/images/Menu-lang.png" />
             </IconButton>
           </Grid>
         </Grid>

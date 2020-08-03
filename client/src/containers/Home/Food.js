@@ -88,7 +88,7 @@ const styles = (theme) => ({
     bottom: '40px',
     width: '100%',
     display: 'block',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   blackTitle: {
     color: '#000',
@@ -134,7 +134,6 @@ const styles = (theme) => ({
     fontWeight: '300',
     textAlign: 'right',
     padding: theme.spacing(0.3, 1.5),
-    marginLeft: theme.spacing(1.5),
     borderRadius: '20px',
     backgroundColor: '#E5293E',
     fontSize: '0.8rem',
@@ -880,7 +879,6 @@ class Food extends React.Component {
                 variant="h6"
                 className={classes.whiteTitle}
               >
-                <span>{food ? trans.title : ''}</span>
                 <span className={classes.foodPrice}>
                   {food
                     ? trans.languageId.currency + trans.price

@@ -161,7 +161,7 @@ const theme = createMuiTheme({
     MuiAppBar: {
       colorPrimary: {
         backgroundColor: 'transparent',
-        padding: '40px 20px 0',
+        padding: '30px 20px 0',
         position: 'absolute',
       },
     },

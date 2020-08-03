@@ -45,7 +45,7 @@ const routeCategories = [
       {
         id: 'home',
         name: 'Home',
-        title: 'Fast Food',
+        title: 'Home',
         path: '/dashboard/home',
         component: HomePage,
         icon: '/images/home.png'

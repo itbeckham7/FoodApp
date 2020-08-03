@@ -8,6 +8,7 @@ import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import htmlToText from 'html-to-text';
 import {
   getCategories,
   getFoods,
@@ -41,13 +42,10 @@ const styles = (theme) => ({
     height: '100%',
   },
   paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
     height: '100%',
+    overflowY: 'auto',
   },
   topSecHome1: {
-    flex: 1,
     backgroundImage: 'url(../images/picturemessage_intra0vh.wzc@2x.png)',
     backgroundColor: '#fff',
     backgroundPosition: 'bottom center',
@@ -55,7 +53,7 @@ const styles = (theme) => ({
     width: '100%',
   },
   topSecHome2: {
-    flex: 1,
+    height: '60vw',
     backgroundImage: 'url(../../images/home-food-top.png)',
     backgroundColor: '#fff',
     backgroundPosition: 'bottom center',
@@ -65,13 +63,11 @@ const styles = (theme) => ({
   },
   mainSecHome1: {
     flex: 1.5,
-    overflowY: 'auto',
     padding: theme.spacing(3, 3),
   },
   mainSecHome2: {
     flex: 1.7,
     width: '100%',
-    overflowY: 'auto',
     padding: theme.spacing(3, 3),
     backgroundColor: '#fff',
   },
@@ -79,20 +75,20 @@ const styles = (theme) => ({
     color: '#fff',
     fontWeight: '300',
     padding: theme.spacing(0, 3),
-    fontSize: '1.2rem',
+    fontSize: '1rem',
   },
   blackTitle: {
     color: '#333',
     fontWeight: 'normal',
     fontSize: '1.15rem',
-    padding: theme.spacing(1, 0, 3),
+    padding: theme.spacing(0, 0, 2),
     textAlign: 'center',
   },
   sliderElem: {
     position: 'relative',
     display: 'inline-block',
-    width: '80vw',
-    height: '45vw',
+    width: '70vw',
+    height: '37vw',
   },
   sliderImage: {
     borderRadius: '8px',
@@ -123,14 +119,15 @@ const styles = (theme) => ({
     left: 0,
     top: 0,
     width: '100%',
-    height: '100%',
+    height: '130px',
     backgroundColor: 'rgba(0,0,0,0.3)',
     borderRadius: '8px',
   },
   categoryImageSec: {
     position: 'relative',
     width: '100%',
-    height: '130px',
+    height: '160px',
+    paddingBottom: '30px'
   },
   categoryImage: {
     borderRadius: '8px',
@@ -138,12 +135,10 @@ const styles = (theme) => ({
     height: '100%',
   },
   categoryTitle: {
-    color: '#fff',
+    color: '#333',
     fontWeight: 'normal',
     fontSize: '1rem',
-    position: 'absolute',
-    top: '10px',
-    left: '10px',
+    
   },
   categoryText: {
     color: '#fff',
@@ -152,10 +147,13 @@ const styles = (theme) => ({
     position: 'absolute',
     bottom: '0',
     right: '0',
-    padding: '5px 20px',
-    backgroundColor: 'rgba(229,41,62,0.5)',
-    borderTopLeftRadius: '20px',
+    height: '100%',
+    width: '50%',
+    backgroundColor: 'rgba(229,41,62,1)',
+    borderTopRightRadius: '5px',
     borderBottomRightRadius: '5px',
+    textAlign: 'center',
+    paddingTop: '12vw',
   },
   foodElem: {
     borderRadius: '10px',
@@ -217,6 +215,16 @@ const styles = (theme) => ({
     borderRadius: '15px',
     marginLeft: '10px',
   },
+  quentityBtn: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    borderRadius: 20,
+    backgroundColor: '#E5293E',
+    textAlign: 'center',
+    fontSize: '1rem',
+    lineHeight: '24px',
+    color: '#fff',
+  },
 });
 
 class Home extends React.Component {
@@ -267,7 +275,6 @@ class Home extends React.Component {
   }
 
   async onClickCategory(category) {
-
     var categories = this.state.categories;
     for (var i = 0; i < categories.length; i++) {
       if (categories[i]._id == category._id) {
@@ -432,16 +439,16 @@ class Home extends React.Component {
     return (
       <div className={classes.topSecHome1}>
         <div>
-          <div style={{ marginTop: '95px' }}></div>
+          <div style={{ height: '80px' }}></div>
           <Typography component="p" variant="h6" className={classes.whiteTitle}>
             Most Popular
           </Typography>
           <CarouselProvider
             naturalSlideWidth={100}
             naturalSlideHeight={50}
-            totalSlides={3}
+            totalSlides={sliderElems.length}
             isPlaying={true}
-            style={{ width: '100%', marginTop: '5px' }}
+            style={{ width: '100%', marginTop: '5px', height: '40vw' }}
           >
             <Slider>{sliderElems}</Slider>
           </CarouselProvider>
@@ -494,7 +501,7 @@ class Home extends React.Component {
         var qty = bag ? bag.qty : 0;
 
         foodElems.push(
-          <Grid container key={food._Id} className={classes.foodElem}>
+          <Grid container key={'cf_' + food._Id} className={classes.foodElem}>
             <Grid
               xs={3}
               item
@@ -540,9 +547,16 @@ class Home extends React.Component {
                 component="p"
                 variant="h6"
                 className={classes.foodDetailDesc}
-                dangerouslySetInnerHTML={{__html: food ? textEllipsis(trans.desc, 60, '...') : ''}}
-              >
-              </Typography>
+                dangerouslySetInnerHTML={{
+                  __html: food
+                    ? textEllipsis(
+                        htmlToText.fromString(trans.desc, { wordWrap: false }),
+                        60,
+                        '...'
+                      )
+                    : '',
+                }}
+              ></Typography>
 
               <div style={{ display: 'inline-block', width: '50%' }}>
                 <div className={classes.qtyActionSec}>
@@ -552,7 +566,7 @@ class Home extends React.Component {
                   >
                     +
                   </span>
-                  <span>{qty}</span>
+                  <span style={{ lineHeight: '24px' }}>{qty}</span>
                   <span
                     className={classes.quentityBtn}
                     onClick={this.onMinusQty.bind(this, bag, food)}
@@ -625,9 +639,9 @@ class Home extends React.Component {
                   height: '33vw',
                   backgroundImage:
                     'url(' + config.serverUrl + category.image + ')',
-                  backgroundPosition: 'center',
+                  backgroundPosition: '0 center',
                   backgroundRepeat: 'no-repeat',
-                  backgroundSize: '100% 100%',
+                  backgroundSize: 'auto 100%',
                   borderRadius: '5px',
                   position: 'relative',
                 }}

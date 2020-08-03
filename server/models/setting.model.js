@@ -6,6 +6,7 @@ let SettingSchema = new Schema(
         homeType: String,
         startTime: String,
         endTime: String,
+        logoText: String,
     },
     { timestamps: true }
 );

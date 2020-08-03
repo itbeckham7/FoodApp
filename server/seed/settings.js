@@ -4,6 +4,7 @@ module.exports = {
             homeType: 'home1',
             startTime: '09:00',
             endTime: '15:00',
+            logoText: 'Anfas AlTeeb',
         }
     ]
 }
