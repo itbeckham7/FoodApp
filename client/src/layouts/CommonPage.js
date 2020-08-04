@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import { withStyles } from '@material-ui/core/styles';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import { Switch, Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -12,13 +10,8 @@ import Navigator from '../components/Navigator';
 import HistoryBagHeader from '../components/HistoryBagHeader';
 import BottomNavigator from '../components/BottomNavigator';
 import ProtectedRoute from '../components/accessControl/ProtectedRoute';
-import { getRouteCategories } from '../store/selectors';
-import {
-  Home,
-  CartPlus,
-  Menu,
-  SearchWeb
-} from 'mdi-material-ui';
+import { getRouteCategories, getLangLang } from '../store/selectors';
+import * as translation from '../trans';
 
 const drawerWidth = 256;
 
@@ -46,7 +39,29 @@ const styles = (theme) => ({
 });
 
 class CommonPage extends React.Component {
-  state = { mobileOpen: false };
+
+  constructor(props) {
+    super();
+    
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      mobileOpen: false,
+      _t: translation[lang],
+    };
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
+  }
 
   handleDrawerToggle = () => {
     this.setState({ mobileOpen: !this.state.mobileOpen });
@@ -71,11 +86,13 @@ class CommonPage extends React.Component {
   );
 
   render() {
-    const { classes, routeCategories } = this.props;
+    const { classes, routeCategories, lang } = this.props;
     const { mobileOpen } = this.state;
 
+    var direction = lang && lang.abbr === 'AR' ? 'rtl' : 'ltr'
+
     return (
-      <div className={classes.root}>
+      <div className={classes.root} style={{direction: direction}}>
         <CssBaseline />
         <nav className={classes.drawer}>
           <Hidden lgUp implementation="js">
@@ -110,6 +127,7 @@ class CommonPage extends React.Component {
 
 const mapStateToProps = (state) => ({
   routeCategories: getRouteCategories(state),
+  lang: getLangLang(state),
 });
 
 CommonPage.propTypes = {

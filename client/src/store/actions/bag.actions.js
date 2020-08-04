@@ -18,6 +18,7 @@ export const getBags = (userId) => (dispatch, getState, { mernApi }) => {
             note: bag.note,
             bagExtras: bag.bagExtras,
           });
+          return bag;
         });
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.GET_BAGS_SUCCESS, payload: bags });
@@ -45,7 +46,7 @@ export const getBag = (userId, bagId) => (dispatch, getState, { mernApi }) => {
   return Promise.resolve().then(() => {
     const bags = JSON.parse(getBagsFromStorage(userId));
     if (bags) {
-      var bag = bags.filter((bag) => bag._id == bagId);
+      var bag = bags.filter((bag) => bag._id === bagId);
       if (bag && bag[0]) {
         dispatch({ type: actionTypes.GET_BAG_SUCCESS, payload: bag[0] });
       }
@@ -70,7 +71,7 @@ export const addToBag = (userId, foodId, price, currency, qty, nt, bagExtras) =>
   if (bags) {
     var isFind = false;
     for (var i = 0; i < bags.length; i++) {
-      if (bags[i].foodId == foodId) {
+      if (bags[i].foodId === foodId) {
         isFind = true;
         bags[i].price = price;
         bags[i].currency = currency;
@@ -102,6 +103,7 @@ export const addToBag = (userId, foodId, price, currency, qty, nt, bagExtras) =>
             note: bag.note,
             bagExtras: bag.bagExtras,
           });
+          return bag
         });
         
         setBagsToStorage(userId, newBags);
@@ -134,7 +136,7 @@ export const deleteBag = (userId, foodId) => (
   var bags = JSON.parse(getBagsFromStorage(userId));
   if (bags) {
     for (var i = 0; i < bags.length; i++) {
-      if (bags[i].foodId == foodId) {
+      if (bags[i].foodId === foodId) {
         bags.splice(i, 1);
         break;
       }
@@ -153,6 +155,7 @@ export const deleteBag = (userId, foodId) => (
             note: bag.note,
             bagExtras: bag.bagExtras,
           });
+          return bag
         });
         setBagsToStorage(userId, newBags);
         dispatch({ type: actionTypes.DELETE_BAG_SUCCESS, payload: bags });

@@ -7,16 +7,20 @@ import Link from '@material-ui/core/Link';
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import Languages from './Languages';
+import { SubmissionError } from 'redux-form';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { signIn, unloadAuthPage } from '../../store/actions';
 import {
-  signIn,
-  unloadAuthPage,
-} from '../../store/actions';
-import { getProcessing, getError, getCurrentUser } from '../../store/selectors';
+  getProcessing,
+  getError,
+  getCurrentUser,
+  getLangLang,
+} from '../../store/selectors';
 import config from '../../config';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -41,7 +45,7 @@ const styles = (theme) => ({
   },
   logoImage: {
     width: '70%',
-    display: 'inline-block'
+    display: 'inline-block',
   },
   logoText: {
     textAlign: 'center',
@@ -71,11 +75,41 @@ const styles = (theme) => ({
     color: '#E4283D',
     fontSize: '1rem',
   },
+  langListWrap: {
+    width: '40px',
+  },
+  langListElem: {
+    width: '100%',
+    textAlign: 'center',
+    padding: '5px 0',
+  },
 });
 
 class Launch extends React.Component {
+  constructor(props) {
+    super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      trans: translation[lang],
+    };
+  }
+
   componentWillUnmount() {
     this.props.unloadAuthPage();
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (lang === undefined && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        trans: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
   }
 
   renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
@@ -104,20 +138,20 @@ class Launch extends React.Component {
   };
 
   onClickLogin = () => {
-    this.props.history.push('/signin')
+    this.props.history.push('/signin');
   };
 
   render() {
-    const {
-      classes,
-      error,
-    } = this.props;
+    const { classes, error } = this.props;
+    const { trans } = this.state;
 
     return (
       <div className={classes.root}>
         <CssBaseline />
         <div className={classes.paper}>
-          <Grid container style={{ flex: 1 }}></Grid>
+          <Grid container style={{ flex: 1 }}>
+            <Languages />
+          </Grid>
           <div style={{ flex: 1.7, textAlign: 'center', width: '100%' }}>
             <img
               alt="avatar"
@@ -132,7 +166,7 @@ class Launch extends React.Component {
                 variant="h5"
                 className={classes.logoText}
               >
-                Food Shop
+                {trans.auth.food_shop}
               </Typography>
             </Grid>
           </Grid>
@@ -144,7 +178,7 @@ class Launch extends React.Component {
                 className={classes.actionBtn}
                 onClick={this.onClickGuest}
               >
-                Enter as Guest
+                {trans.auth.enter_as_guest}
               </Button>
               <Button
                 variant="contained"
@@ -152,17 +186,17 @@ class Launch extends React.Component {
                 className={classes.actionBtn}
                 onClick={this.onClickLogin}
               >
-                Login
+                {trans.auth.login}
               </Button>
             </Grid>
             <Grid xs={12} item className={classes.textLink}>
-              <span>Don't have a account? </span>
+              <span>{trans.auth.dont_have_account}</span>
               <Link
                 className={classes.textLinkLink}
                 href="/signup"
                 variant="body2"
               >
-                Sign up
+                {trans.auth.sign_up}
               </Link>
             </Grid>
           </Grid>
@@ -175,11 +209,11 @@ class Launch extends React.Component {
               severity="error"
               action={
                 <Link href="/request-verification-email" variant="body2">
-                  Click here
+                  {trans.auth.click_here}
                 </Link>
               }
             >
-              Email is not verified. Have not received verification email?
+              {trans.auth.email_is_not_verified}
             </Alert>
           )}
         </Snackbar>
@@ -191,7 +225,8 @@ const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
-    me: getCurrentUser(state)
+    me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 

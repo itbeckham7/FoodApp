@@ -11,9 +11,11 @@ import {
   getFoodFoods,
   getFoodProcessing,
   getFoodError,
+  getLangLang,
 } from '../../store/selectors';
-import { textEllipsis, getTrans } from '../../utils';
+import { textEllipsis, getTrans, getCatTrans } from '../../utils';
 import config from '../../config';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -117,7 +119,17 @@ const styles = (theme) => ({
 });
 
 class Foods extends React.Component {
-  state = { category: null };
+
+  constructor(props) {
+    super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = { 
+      category: null,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
+    };
+  }
 
   componentWillMount() {
     if (this.props.match.params && this.props.match.params.categoryId) {
@@ -135,14 +147,29 @@ class Foods extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
+  }
+
   renderFoods() {
     const { foods, classes } = this.props;
-    
+    const { direction } = this.state;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
 
     var foodElems = [];
     if (foods && foods.length > 0) {
       foods.map((food) => {
-        var trans = getTrans(food, 'EN');
+        var trans = getTrans(food, lang);
         foodElems.push(
           <Grid xs={6} item key={food._id} style={{ padding: '5px' }}>
             <Link
@@ -162,7 +189,7 @@ class Foods extends React.Component {
                 variant="body2"
                 className={classes.foodTitle}
               >
-                {food ? textEllipsis(trans.title, 15, '...') : ''}
+                {trans ? textEllipsis(trans.title, 15, '...') : ''}
               </Typography>
 
               <div style={{ verticalAlign: 'middle' }}>
@@ -181,7 +208,8 @@ class Foods extends React.Component {
                 component="p"
                 variant="subtitle2"
                 className={classes.foodDesc}
-                dangerouslySetInnerHTML={{__html: food ? textEllipsis(trans.desc, 40, '...') : ''}}
+                dangerouslySetInnerHTML={{__html: trans ? textEllipsis(trans.desc, 40, '...') : ''}}
+                style={{textAlign: direction === 'rtl' ? 'right' : 'left'}}
               >
               </Typography>
 
@@ -190,12 +218,12 @@ class Foods extends React.Component {
                 variant="body2"
                 className={classes.foodPrice}
               >
-                {food && (
+                {trans && (
                   <span style={{textDecoration: 'line-through', paddingRight: '10px', fontSize: '0.8rem', color: '#666'}}>
                     {trans.languageId.currency + trans.oldPrice}
                   </span>
                 )}
-                {food && (
+                {trans && (
                   <span style={{fontWeight: 'normal'}}>
                     {trans.languageId.currency + trans.price}
                   </span>
@@ -204,6 +232,8 @@ class Foods extends React.Component {
             </Link>
           </Grid>
         );
+
+        return food
       });
     }
 
@@ -217,6 +247,9 @@ class Foods extends React.Component {
   render() {
     const { classes } = this.props;
     const { category } = this.state;
+
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var catTrans = getCatTrans(category, lang);
 
     return (
       <div className={classes.root}>
@@ -235,7 +268,7 @@ class Foods extends React.Component {
                 variant="h6"
                 className={classes.whiteTitle}
               >
-                {category ? category.trans[0].name : ''}
+                {catTrans ? catTrans.name : ''}
               </Typography>
             </div>
           </div>
@@ -253,6 +286,7 @@ const mapStateToProps = (state) => {
     isProcessing: getFoodProcessing(state),
     errorMessage: getFoodError(state),
     foods: getFoodFoods(state),
+    lang: getLangLang(state),
   };
 };
 

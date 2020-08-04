@@ -19,6 +19,7 @@ var categoryIds = [];
  * @returns {Promise} Resolve with a list of newly added users
  */
 module.exports.createUsers = () => {
+
   const User = mongoose.model('user');
   let addedUsers = [];
 
@@ -210,7 +211,7 @@ module.exports.createCategories = () => {
         .then(() => {
           return Category.findOne({ slug: categoryInfo.slug });
         })
-        .then((existingCategory) => {
+        .then(async (existingCategory) => {
           if (existingCategory) {
             throw new Error(
               chalk.yellow(
@@ -236,7 +237,7 @@ module.exports.createCategories = () => {
                 category.trans.push(categoryTrans._id);
 
                 categoryIds[category.slug] = category._id;
-                return category.save();
+                await category.save();
               }
             }
           }

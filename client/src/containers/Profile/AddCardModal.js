@@ -8,9 +8,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-import csc from 'country-state-city';
 import { withStyles } from '@material-ui/core/styles';
-import { Field, reduxForm, SubmissionError, submit } from 'redux-form';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {
@@ -18,6 +17,7 @@ import {
   getSignedInWith,
   getCardCards,
   getCardError,
+  getLangLang,
 } from '../../store/selectors';
 import { required } from '../../utils/formValidator';
 import {
@@ -25,6 +25,7 @@ import {
   addCard,
   changeCardInitialValues,
 } from '../../store/actions';
+import * as translation from '../../trans';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,8 +40,12 @@ const styles = (theme) => ({
 class AddCardModal extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       isVisibleAddCardDlg: true,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
 
     this.onChangeValue = this.onChangeValue.bind(this);
@@ -49,6 +54,20 @@ class AddCardModal extends React.Component {
 
   componentWillMount() {}
   
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   onChangeValue(input, meta, e) {
     var changeValue = {};
     changeValue[input.name] = e.target.value;
@@ -73,8 +92,7 @@ class AddCardModal extends React.Component {
   };
 
   renderTypeField = ({ input, label, meta, ...custom }) => {
-    const { classes } = this.props;
-    const { stateId, cityId } = this.state;
+    const { _t } = this.state;
     var cardTypes = [
       {
         id: 'mastercard',
@@ -89,7 +107,7 @@ class AddCardModal extends React.Component {
     ];
     var cardTypesElem = [
       <MenuItem key={'state-none'} value="">
-        <em>None</em>
+        <em>{_t.profile.none}</em>
       </MenuItem>,
     ];
     cardTypes.map((cardType) => {
@@ -98,6 +116,8 @@ class AddCardModal extends React.Component {
           {cardType.name}
         </MenuItem>
       );
+
+      return cardType;
     });
 
     return (
@@ -149,8 +169,11 @@ class AddCardModal extends React.Component {
   }
 
   renderAddCardModal() {
-    const { handleSubmit, classes } = this.props;
-    const { isVisibleAddCardDlg } = this.state;
+    const { handleSubmit, classes, lang } = this.props;
+    const { isVisibleAddCardDlg, _t } = this.state;
+
+    var direction = lang && lang.abbr === 'AR' ? 'rtl' : 'ltr';
+
     return (
       <Dialog
         open={isVisibleAddCardDlg}
@@ -159,6 +182,7 @@ class AddCardModal extends React.Component {
         onClose={this.closeAddCardDlg}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
+        style={{ direction: direction }}
       >
         <DialogTitle
           id="alert-dialog-slide-title"
@@ -168,7 +192,7 @@ class AddCardModal extends React.Component {
             paddingBottom: '0',
           }}
         >
-          {'Add Card'}
+          {_t.profile.add_card}
         </DialogTitle>
         <form onSubmit={handleSubmit(this.onSubmitAddCard)}>
           <DialogContent>
@@ -176,7 +200,7 @@ class AddCardModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="cardType"
-                  label="Card Type"
+                  label={_t.profile.card_type}
                   name="cardType"
                   required
                   autoComplete="cardType"
@@ -186,7 +210,7 @@ class AddCardModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="holderName"
-                  label="Holder Name"
+                  label={_t.profile.holder_name}
                   name="holderName"
                   required
                   autoComplete="holderName"
@@ -196,7 +220,7 @@ class AddCardModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="cardNumber"
-                  label="Card Number"
+                  label={_t.profile.card_number}
                   name="cardNumber"
                   required
                   autoComplete="cardNumber"
@@ -206,7 +230,7 @@ class AddCardModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="expireDate"
-                  label="Expire Date"
+                  label={_t.profile.expire_date}
                   name="expireDate"
                   required
                   autoComplete="expireDate"
@@ -216,7 +240,7 @@ class AddCardModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="cvv"
-                  label="CVV"
+                  label={_t.profile.cvv}
                   name="cvv"
                   required
                   autoComplete="cvv"
@@ -227,10 +251,10 @@ class AddCardModal extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.closeAddCardDlg} variant="outlined">
-              Cancel
+              {_t.profile.cancel}
             </Button>
             <Button color="primary" variant="contained" type="submit">
-              Submit
+              {_t.profile.submit}
             </Button>
           </DialogActions>
         </form>
@@ -239,8 +263,6 @@ class AddCardModal extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
-
     return <div>{this.renderAddCardModal()}</div>;
   }
 }
@@ -263,6 +285,7 @@ const mapStateToProps = (state) => {
     errorMessage: getCardError(state),
     initialValues: state.card.cardInitialValues,
     enableReinitialize: true,
+    lang: getLangLang(state),
   };
 };
 

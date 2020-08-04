@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import { withStyles } from '@material-ui/core/styles';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import { Switch, Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -13,12 +11,6 @@ import HistoryHeader from '../components/HistoryHeader';
 import ProtectedRoute from '../components/accessControl/ProtectedRoute';
 import { getRouteCategories } from '../store/selectors';
 import BottomNavigator from '../components/BottomNavigator';
-import {
-  Home,
-  CartPlus,
-  Menu,
-  SearchWeb
-} from 'mdi-material-ui';
 
 const drawerWidth = 256;
 

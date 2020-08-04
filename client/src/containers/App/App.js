@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import AnonymousRoute from '../../components/accessControl/AnonymousRoute';
 import ProtectedRoute from '../../components/accessControl/ProtectedRoute';
@@ -44,7 +44,6 @@ class App extends React.Component {
   }
 
   render() {
-    var now = (new Date()).getTime();
 
     if( !this.state.isDidMound ){
       return(<div></div>)

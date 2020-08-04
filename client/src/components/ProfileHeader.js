@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import {
   ChevronLeft,
-  Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -18,8 +17,6 @@ import {
   getSignedInWith,
   getBagBags,
 } from '../store/selectors';
-
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 const styles = (theme) => ({
   secondaryBar: {
@@ -45,14 +42,6 @@ const styles = (theme) => ({
 });
 
 class HistoryHeader extends React.Component {
-
-  constructor() {
-    super();
-  }
-
-  componentWillMount() {
-    const { me } = this.props;
-  }
 
   onNavigatePrev = () => {
     window.history.back();

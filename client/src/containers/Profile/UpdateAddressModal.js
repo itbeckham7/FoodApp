@@ -10,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import csc from 'country-state-city';
 import { withStyles } from '@material-ui/core/styles';
-import { Field, reduxForm, SubmissionError, submit } from 'redux-form';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {
@@ -18,6 +18,7 @@ import {
   getSignedInWith,
   getAddressAddresses,
   getAddressError,
+  getLangLang,
 } from '../../store/selectors';
 import { required } from '../../utils/formValidator';
 import {
@@ -25,6 +26,7 @@ import {
   updateAddress,
   changeAddressInitialValues,
 } from '../../store/actions';
+import * as translation from '../../trans';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -39,11 +41,15 @@ const styles = (theme) => ({
 class UpdateAddressModal extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       isVisibleUpdateAddressDlg: true,
       countryId: props.selectAddress.countryId,
       stateId: props.selectAddress.stateId,
       cityId: props.selectAddress.cityId,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
 
     this.onChangeValue = this.onChangeValue.bind(this);
@@ -54,23 +60,37 @@ class UpdateAddressModal extends React.Component {
     
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   onChangeValue(input, meta, e) {
     var changeValue = {};
     changeValue[input.name] = e.target.value;
     this.props.changeAddressInitialValues(changeValue);
 
-    if(input.name == 'countryId'){
+    if(input.name === 'countryId'){
       this.setState({
         countryId: e.target.value,
         stateId: '',
         cityId: ''
       })
-    } else if(input.name == 'stateId'){
+    } else if(input.name === 'stateId'){
       this.setState({
         stateId: e.target.value,
         cityId: '',
       })
-    } else if(input.name == 'cityId'){
+    } else if(input.name === 'cityId'){
       this.setState({
         cityId: e.target.value,
       })
@@ -116,7 +136,6 @@ class UpdateAddressModal extends React.Component {
         variant="outlined"
         margin="none"
         required
-        fullWidth
         {...input}
         {...custom}
         onChange={this.onChangeValue.bind(this, input, meta)}
@@ -131,12 +150,11 @@ class UpdateAddressModal extends React.Component {
     meta,
     ...custom
   }) => {
-    const { classes } = this.props;
-    const { countryId } = this.state;
+    const { _t } = this.state;
     var countries = csc.getAllCountries();
     var countriesElem = [
       <MenuItem key={'country-none'} value="">
-        <em>None</em>
+        <em>{_t.profile.none}</em>
       </MenuItem>,
     ];
     countries.map((country) => {
@@ -145,6 +163,8 @@ class UpdateAddressModal extends React.Component {
           {country.name}
         </MenuItem>
       );
+
+      return country
     });
 
     return (
@@ -171,12 +191,11 @@ class UpdateAddressModal extends React.Component {
     meta,
     ...custom
   }) => {
-    const { classes } = this.props;
-    const { countryId, stateId } = this.state;
+    const { countryId, _t } = this.state;
     var states = csc.getStatesOfCountry(countryId);
     var statesElem = [
       <MenuItem key={'state-none'} value="">
-        <em>None</em>
+        <em>{_t.profile.none}</em>
       </MenuItem>,
     ];
     states.map((state) => {
@@ -185,6 +204,8 @@ class UpdateAddressModal extends React.Component {
           {state.name}
         </MenuItem>
       );
+
+      return state;
     });
 
     return (
@@ -206,12 +227,11 @@ class UpdateAddressModal extends React.Component {
   };
 
   renderCityField = ({ input, label, meta, ...custom }) => {
-    const { classes } = this.props;
-    const { stateId, cityId } = this.state;
+    const { stateId, _t } = this.state;
     var cities = csc.getCitiesOfState(stateId);
     var cityiesElem = [
       <MenuItem key={'state-none'} value="">
-        <em>None</em>
+        <em>{_t.profile.none}</em>
       </MenuItem>,
     ];
     cities.map((city) => {
@@ -220,6 +240,8 @@ class UpdateAddressModal extends React.Component {
           {city.name}
         </MenuItem>
       );
+
+      return city
     });
 
     return (
@@ -279,8 +301,11 @@ class UpdateAddressModal extends React.Component {
   }
 
   renderUpdateAddressModal() {
-    const { handleSubmit, classes } = this.props;
-    const { isVisibleUpdateAddressDlg } = this.state;
+    const { handleSubmit, classes, lang } = this.props;
+    const { isVisibleUpdateAddressDlg, _t } = this.state;
+
+    var direction = lang && lang.abbr === 'AR' ? 'rtl' : 'ltr';
+
     return (
       <Dialog
         open={isVisibleUpdateAddressDlg}
@@ -289,6 +314,7 @@ class UpdateAddressModal extends React.Component {
         onClose={this.closeUpdateAddressDlg}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
+        style={{ direction: direction }}
       >
         <DialogTitle
           id="alert-dialog-slide-title"
@@ -298,7 +324,7 @@ class UpdateAddressModal extends React.Component {
             paddingBottom: '0',
           }}
         >
-          {'Update Address'}
+          {_t.profile.update_address}
         </DialogTitle>
         <form onSubmit={handleSubmit(this.onSubmitUpdateAddress)}>
           <DialogContent>
@@ -306,7 +332,7 @@ class UpdateAddressModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="addressName"
-                  label="Name"
+                  label={_t.profile.name}
                   name="addressName"
                   required
                   autoComplete="addressName"
@@ -316,7 +342,7 @@ class UpdateAddressModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="countryId"
-                  label="Country"
+                  label={_t.profile.country}
                   name="countryId"
                   required
                   autoComplete="countryId"
@@ -326,7 +352,7 @@ class UpdateAddressModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="stateId"
-                  label="State"
+                  label={_t.profile.state}
                   name="stateId"
                   required
                   autoComplete="stateId"
@@ -336,7 +362,7 @@ class UpdateAddressModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="cityId"
-                  label="City"
+                  label={_t.profile.city}
                   name="cityId"
                   required
                   autoComplete="cityId"
@@ -346,7 +372,7 @@ class UpdateAddressModal extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   name="address"
-                  label="Address"
+                  label={_t.profile.address}
                   id="address"
                   required
                   autoComplete="address"
@@ -357,10 +383,10 @@ class UpdateAddressModal extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.closeUpdateAddressDlg} variant="outlined">
-              Cancel
+              {_t.profile.cancel}
             </Button>
             <Button color="primary" variant="contained" type="submit">
-              Submit
+              {_t.profile.submit}
             </Button>
           </DialogActions>
         </form>
@@ -369,7 +395,6 @@ class UpdateAddressModal extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
 
     return (
       <div>
@@ -397,6 +422,7 @@ const mapStateToProps = (state) => {
     errorMessage: getAddressError(state),
     initialValues: state.address.addressInitialValues,
     enableReinitialize: true,
+    lang: getLangLang(state),
   };
 };
 

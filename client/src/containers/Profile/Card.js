@@ -2,10 +2,8 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
 import AddCardModal from './AddCardModal';
 import UpdateCardModal from './UpdateCardModal';
-import csc from 'country-state-city';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -13,9 +11,8 @@ import {
   getCurrentUser,
   getSignedInWith,
   getCardCards,
-  getCardProcessing,
-  getCardError,
   getCardActiveCard,
+  getLangLang,
 } from '../../store/selectors';
 import {
   updateProfile,
@@ -25,10 +22,7 @@ import {
   getActiveCard,
   changeCardInitialValues,
 } from '../../store/actions';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -103,7 +97,6 @@ const styles = (theme) => ({
   },
   cardElemRight: {
     position: 'absolute',
-    right: 0,
     bottom: 0,
   },
   cardElemNumber: {
@@ -148,12 +141,16 @@ const styles = (theme) => ({
 class Card extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       me: props.me,
       cards: null,
       selectCard: null,
       isVisibleAddCardDlg: false,
       isVisibleUpdateCardDlg: false,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
 
     this.activeCard = this.activeCard.bind(this);
@@ -176,6 +173,20 @@ class Card extends React.Component {
       var cards = this.props.cards;
       this.setState({ cards });
     });
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
   }
 
   closeAddCardDlg() {
@@ -223,8 +234,10 @@ class Card extends React.Component {
 
   renderCards() {
     const { classes } = this.props;
-    const { cards } = this.state;
-    
+    const { cards, _t, direction } = this.state;
+
+    var positionStyle = direction === 'rtl' ? { left: 0 } : { right: 0 };
+
     if (cards && cards.length > 0) {
       var cardElems = [];
       cards.map((card) => {
@@ -242,12 +255,12 @@ class Card extends React.Component {
           : '/images/Checkbox-2.png';
 
         var cardImage =
-          card.cardType == 'mastercard'
+          card.cardType === 'mastercard'
             ? 'url(/images/Mastercard.png)'
-            : card.cardType == 'visa'
+            : card.cardType === 'visa'
             ? 'url(/images/Visa.png)'
             : 'url(/images/Knet.png)';
-        
+
         cardElems.push(
           <div
             className={classes.cardElem}
@@ -260,33 +273,35 @@ class Card extends React.Component {
             >
               <div className={classes.cardElemNumber}>{cardNumberElem}</div>
               <div className={classes.cardElemHolder}>
-                <span className={classes.cardElemLabel}>Expire</span>
+                <span className={classes.cardElemLabel}>
+                  {_t.profile.holder_name}
+                </span>
                 <span className={classes.cardElemValue}>{card.holderName}</span>
               </div>
               <div className={classes.cardElemExpire}>
-                <span className={classes.cardElemLabel}>Expire</span>
+                <span className={classes.cardElemLabel}>
+                  {_t.profile.expire}
+                </span>
                 <span className={classes.cardElemValue}>{card.expireDate}</span>
               </div>
             </div>
-            <div className={classes.cardElemRight}>
+            <div className={classes.cardElemRight} style={positionStyle}>
               <IconButton
                 color="inherit"
                 aria-label="active card"
                 onClick={this.activeCard.bind(this, card._id)}
               >
-                <img src={checkImage} />
+                <img src={checkImage} alt="" />
               </IconButton>
             </div>
           </div>
         );
+
+        return card;
       });
       return <div>{cardElems}</div>;
     } else {
-      return (
-        <div className={classes.noCard}>
-          There are no cards. Please add new card.
-        </div>
-      );
+      return <div className={classes.noCard}>{_t.profile.no_card}</div>;
     }
   }
 
@@ -297,10 +312,10 @@ class Card extends React.Component {
   render() {
     const { classes } = this.props;
     const {
-      me,
       isVisibleAddCardDlg,
       isVisibleUpdateCardDlg,
       selectCard,
+      _t,
     } = this.state;
 
     return (
@@ -312,7 +327,7 @@ class Card extends React.Component {
               variant="h6"
               className={classes.pageTitle}
             >
-              Cards
+              {_t.profile.cards}
             </Typography>
           </div>
           <div className={classes.mainSec}>
@@ -334,7 +349,7 @@ class Card extends React.Component {
               this.setState({ isVisibleAddCardDlg: true });
             }}
           >
-            New Card
+            {_t.profile.new_card}
           </Button>
           {isVisibleAddCardDlg && (
             <AddCardModal
@@ -361,6 +376,7 @@ const mapStateToProps = (state) => {
     authProvider: getSignedInWith(state),
     cards: getCardCards(state),
     activeCard: getCardActiveCard(state),
+    lang: getLangLang(state),
   };
 };
 

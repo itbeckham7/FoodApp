@@ -1,8 +1,6 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
 import { ChevronRight } from 'mdi-material-ui';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -11,15 +9,11 @@ import {
   getCurrentUser,
   getSignedInWith,
   getOrderOrders,
-  getOrderProcessing,
-  getOrderError,
+  getLangLang,
 } from '../../store/selectors';
 import { getOrders } from '../../store/actions';
 import { getTimeString } from '../../utils/textUtils';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -119,9 +113,13 @@ const styles = (theme) => ({
 class OrderHistory extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       me: props.me,
       orders: null,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
 
     this.onClickOrderElem = this.onClickOrderElem.bind(this);
@@ -141,19 +139,31 @@ class OrderHistory extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   onClickOrderElem(orderInfo) {
     this.props.history.push(`/profile/orderdetail/${orderInfo._id}`)
   }
 
   renderOrders() {
     const { classes } = this.props;
-    const { orders } = this.state;
+    const { orders, _t } = this.state;
     
     if (orders && orders.length > 0) {
       var orderElems = [];
       orders.map((order) => {
-        var createTime = new Date(order.createdAt).toString();
-
         orderElems.push(
           <div className={classes.orderElem} key={order._id}>
             <div
@@ -163,18 +173,18 @@ class OrderHistory extends React.Component {
               <div className={classes.orderElemTitle}>
                 <span>{order.orderId}</span>
                 <span className={classes.orderElemDate}>
-                  created at : {getTimeString(order.createdAt, 'd m')}
+                  {_t.order.created_at} : {getTimeString(order.createdAt, 'd m')}
                 </span>
               </div>
               <div className={classes.orderElemInfo}>
                 <div>
                   <span>
-                    Price : {order.currency}
+                    {_t.order.price} : {order.currency}
                     {order.price}
                   </span>
                 </div>
                 <div>
-                  <span>Status : {order.status}</span>
+                  <span>{_t.order.status} : {order.status}</span>
                 </div>
               </div>
             </div>
@@ -188,20 +198,19 @@ class OrderHistory extends React.Component {
             </div>
           </div>
         );
+
+        return order;
       });
       return <div>{orderElems}</div>;
     } else {
-      return <div className={classes.noOrder}>There are no orders.</div>;
+      return <div className={classes.noOrder}>{_t.order.no_orders}</div>;
     }
   }
 
   render() {
     const { classes } = this.props;
     const {
-      me,
-      isVisibleAddAddressDlg,
-      isVisibleUpdateAddressDlg,
-      selectAddress,
+      _t
     } = this.state;
 
     return (
@@ -213,7 +222,7 @@ class OrderHistory extends React.Component {
               variant="h6"
               className={classes.pageTitle}
             >
-              Order History
+              {_t.profile.order_history}
             </Typography>
           </div>
           <div className={classes.mainSec}>
@@ -230,6 +239,7 @@ const mapStateToProps = (state) => {
     me: getCurrentUser(state),
     authProvider: getSignedInWith(state),
     orders: getOrderOrders(state),
+    lang: getLangLang(state),
   };
 };
 

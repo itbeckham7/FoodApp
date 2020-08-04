@@ -1,22 +1,21 @@
 import React from 'react';
 import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
+import Languages from './Languages';
 import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { signUp, unloadAuthPage } from '../../store/actions';
-import { getProcessing, getError } from '../../store/selectors';
+import { getProcessing, getError, getLangLang } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -26,8 +25,9 @@ const styles = (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundImage: 'url(images/signup-bk.png)',
-    backgroundPosition: 'top',
+    backgroundImage: 'url(images/signin-bk.png)',
+    backgroundPosition: 'center',
+    backgroundSize: 'auto 100%',
     height: '100%',
     padding: theme.spacing(0, 2),
   },
@@ -46,14 +46,20 @@ const styles = (theme) => ({
     margin: theme.spacing(4, 0, 2),
   },
   logoSec: {
-    textAlign: 'center', 
-    marginTop: theme.spacing(2)
+    textAlign: 'center',
+    marginTop: theme.spacing(2),
   },
   logoText: {
     textAlign: 'center',
     color: '#fff',
-    marginTop: theme.spacing(1.5),
-    fontSize: '2.4rem',
+    marginTop: '7vh',
+    fontSize: '2.3rem',
+  },
+  logoText1: {
+    textAlign: 'center',
+    color: '#fff',
+    marginTop: theme.spacing(1),
+    fontSize: '1.5rem',
   },
   title: {
     textAlign: 'center',
@@ -91,61 +97,33 @@ const styles = (theme) => ({
   },
 });
 
-const IOSSwitch = withStyles((theme) => ({
-  root: {
-    width: 42,
-    height: 26,
-    padding: 0,
-    margin: theme.spacing(1),
-  },
-  switchBase: {
-    padding: 1,
-    '&$checked': {
-      transform: 'translateX(16px)',
-      color: theme.palette.common.white,
-      '& + $track': {
-        backgroundColor: '#52d869',
-        opacity: 1,
-        border: 'none',
-      },
-    },
-    '&$focusVisible $thumb': {
-      color: '#52d869',
-      border: '6px solid #fff',
-    },
-  },
-  thumb: {
-    width: 24,
-    height: 24,
-  },
-  track: {
-    borderRadius: 26 / 2,
-    border: `1px solid ${theme.palette.grey[400]}`,
-    backgroundColor: theme.palette.grey[50],
-    opacity: 1,
-    transition: theme.transitions.create(['background-color', 'border']),
-  },
-  checked: {},
-  focusVisible: {},
-}))(({ classes, ...props }) => {
-  return (
-    <Switch
-      focusVisibleClassName={classes.focusVisible}
-      disableRipple
-      classes={{
-        root: classes.root,
-        switchBase: classes.switchBase,
-        thumb: classes.thumb,
-        track: classes.track,
-        checked: classes.checked,
-      }}
-      {...props}
-    />
-  );
-});
-
 class SignUp extends React.Component {
-  state = { status: false };
+  constructor(props) {
+    super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      status: false,
+      trans: translation[lang],
+    };
+  }
+
+  componentWillUnmount() {
+    this.props.unloadAuthPage();
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (lang === undefined && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        trans: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
+  }
 
   onSubmit = (formValues) => {
     return this.props.signUp(formValues).then(() => {
@@ -155,10 +133,6 @@ class SignUp extends React.Component {
       this.props.history.push('/signin');
     });
   };
-
-  componentWillUnmount() {
-    this.props.unloadAuthPage();
-  }
 
   renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
     <TextField
@@ -207,38 +181,40 @@ class SignUp extends React.Component {
       submitting,
       valid,
       error,
+      lang,
     } = this.props;
 
-    const { status } = this.state;
+    const { trans } = this.state;
+
+    var direction = lang && lang.abbr === 'AR' ? 'rtl' : 'ltr';
 
     return (
-      <div className={classes.root}>
+      <div className={classes.root} style={{ direction: direction }}>
         <CssBaseline />
         <div className={classes.paper}>
           <Grid container style={{ flex: 1 }}>
             <Grid xs={12} item className={classes.logoSec}>
-              <IOSSwitch checked={status} onChange={this.onChangeStatus}/>
+              <Languages />
               <Typography
                 component="h4"
                 variant="h4"
                 className={classes.logoText}
               >
-                Anfas Alteeb
+                {trans.auth.logo}
               </Typography>
               <Typography
                 component="h4"
                 variant="h5"
-                className={classes.logoText}
-                style={{fontSize: '1.5rem'}}
+                className={classes.logoText1}
               >
-                Food Shop
+                {trans.auth.food_shop}
               </Typography>
             </Grid>
           </Grid>
           <Grid container style={{ flex: 2, overflowY: 'auto' }}>
             <Grid xs={12} item>
               <Typography component="h4" variant="h4" className={classes.title}>
-                Sign up
+                {trans.auth.sign_up}
               </Typography>
               <form
                 className={classes.form}
@@ -248,7 +224,7 @@ class SignUp extends React.Component {
                   <Grid item xs={12}>
                     <Field
                       id="username"
-                      label="Username"
+                      label={trans.auth.username}
                       name="username"
                       component={this.renderTextField}
                     />
@@ -256,7 +232,7 @@ class SignUp extends React.Component {
                   <Grid item xs={12}>
                     <Field
                       id="email"
-                      label="Email Address"
+                      label={trans.auth.email_address}
                       name="email"
                       component={this.renderTextField}
                     />
@@ -264,7 +240,7 @@ class SignUp extends React.Component {
                   <Grid item xs={12}>
                     <Field
                       id="phone"
-                      label="Phone"
+                      label={trans.auth.phone}
                       name="phone"
                       component={this.renderTextField}
                     />
@@ -272,7 +248,7 @@ class SignUp extends React.Component {
                   <Grid item xs={12}>
                     <Field
                       name="password"
-                      label="Password"
+                      label={trans.auth.password}
                       type="password"
                       id="password"
                       component={this.renderTextField}
@@ -287,25 +263,21 @@ class SignUp extends React.Component {
                   type="submit"
                   variant="contained"
                 >
-                  Sign Up
+                  {trans.auth.sign_up}
                 </Button>
                 <Grid container>
                   <Grid xs={12} item className={classes.textLink}>
-                    <span>Already have a account? </span>
+                    <span>{trans.auth.already_have_account} </span>
                     <Link
                       className={classes.textLinkLink}
                       href="/signin"
                       variant="body2"
                     >
-                      Login
+                      {trans.auth.login}
                     </Link>
                   </Grid>
                   <Grid xs={12} item className={classes.textDescription}>
-                    <span>
-                      By signing up you accept the Terms of
-                      <br />
-                      Service and Privacy Policy.
-                    </span>
+                    <span>{trans.auth.service_and_policy}</span>
                   </Grid>
                 </Grid>
               </form>
@@ -324,6 +296,7 @@ const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
+    lang: getLangLang(state),
   };
 };
 

@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
-import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
@@ -22,17 +21,6 @@ import {
   getBagBags,
 } from '../store/selectors';
 import { getBags } from '../store/actions';
-
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-
-function ShowOnScroll({ children }) {
-  const trigger = useScrollTrigger({ threshold: 48, disableHysteresis: true });
-  return (
-    <Slide in={trigger} direction="up">
-      <span>{children}</span>
-    </Slide>
-  );
-}
 
 const styles = (theme) => ({
   secondaryBar: {
@@ -57,10 +45,6 @@ const styles = (theme) => ({
 });
 
 class HistoryBagHeader extends React.Component {
-
-  constructor() {
-    super();
-  }
 
   componentWillMount() {
     const { me } = this.props;

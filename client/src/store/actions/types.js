@@ -191,3 +191,11 @@ export const GET_BRANCHES_FAIL = '[Branch] Get Branches Fail';
 export const GET_SETTING = '[Setting] Get Setting';
 export const GET_SETTING_SUCCESS = '[Setting] Get Setting Success';
 export const GET_SETTING_FAIL = '[Setting] Get Setting Fail';
+
+
+export const GET_LANGS = '[Lang] Get Langs';
+export const GET_LANGS_SUCCESS = '[Lang] Get Langs Success';
+export const GET_LANGS_FAIL = '[Lang] Get Langs Fail';
+export const GET_LANG_SUCCESS = '[Lang] Get Lang Success';
+export const SET_LANG_SUCCESS = '[Lang] Set Lang Success';
+export const CLEAR_LANG = '[Lang] Clear lang';

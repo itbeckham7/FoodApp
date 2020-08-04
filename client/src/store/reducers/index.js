@@ -11,6 +11,7 @@ import cardReducer from './card.reducer';
 import orderReducer from './order.reducer';
 import branchReducer from './branch.reducer';
 import settingReducer from './setting.reducer';
+import langReducer from './lang.reducer';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -26,6 +27,7 @@ const createRootReducer = (history) =>
     address: addressReducer,
     card: cardReducer,
     order: orderReducer,
+    lang: langReducer,
   });
 
 export default createRootReducer;

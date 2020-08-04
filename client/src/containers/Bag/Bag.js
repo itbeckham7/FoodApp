@@ -14,9 +14,11 @@ import {
   getBagProcessing,
   getBagError,
   getCurrentUser,
+  getLangLang,
 } from '../../store/selectors';
 import config from '../../config';
 import { textEllipsis, getTrans, getExtraPrice } from '../../utils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -96,6 +98,11 @@ const styles = (theme) => ({
     justifyContent: 'space-between',
     margin: theme.spacing(1, 0, 0.5),
   },
+  bagElemInfoSec: {
+    display: 'inline-block',
+    width: 'calc( 100% - 21vw )',
+    paddingLeft: '12px',
+  },
   bagElemTitleSpan: {
     verticalAlign: 'middle',
     fontSize: '0.85rem',
@@ -161,9 +168,16 @@ const styles = (theme) => ({
 });
 
 class Bag extends React.Component {
-  state = {
-    bags: null,
-  };
+  constructor(props) {
+    super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      bags: null,
+      _t: translation['en'],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
+    };
+  }
 
   componentWillMount() {
     this.props.getBags(this.props.me.id).then(() => {
@@ -176,6 +190,20 @@ class Bag extends React.Component {
         bags: this.props.bags,
       });
     });
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
   }
 
   onDeleteBag(bag) {
@@ -243,8 +271,9 @@ class Bag extends React.Component {
 
   renderBags() {
     const { classes } = this.props;
-    const { bags } = this.state;
+    const { bags, _t, direction } = this.state;
 
+    var paddingStyle = direction === 'rtl' ? {paddingRight: '12px'} : {paddingLeft: '12px'}
     var bagElems = [];
     if (bags && bags.length > 0) {
       bags.map((bag) => {
@@ -262,16 +291,12 @@ class Bag extends React.Component {
               ></Box>
             </div>
             <div
-              style={{
-                display: 'inline-block',
-                width: 'calc( 100% - 21vw )',
-                paddingLeft: '12px',
-              }}
+              className={classes.bagElemInfoSec}
+              style={paddingStyle}
             >
               <div className={classes.bagElemTitleSec}>
                 <span className={classes.bagElemTitleSpan}>
-                  {textEllipsis(trans.title, 40, '...')} &times;{' '}
-                  {bag.qty}
+                  {textEllipsis(trans.title, 40, '...')} &times; {bag.qty}
                 </span>
               </div>
               <Typography
@@ -279,7 +304,7 @@ class Bag extends React.Component {
                 variant="h6"
                 className={classes.bagElemNote}
               >
-                Notes: {bag.note ? bag.note : ''}
+                {_t.bag.notes}: {bag.note ? bag.note : ''}
               </Typography>
 
               <div className={classes.cartSec}>
@@ -303,7 +328,10 @@ class Bag extends React.Component {
                   variant="h6"
                   className={classes.bagElemPrice}
                 >
-                  {bag.food ? bag.currency + (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty : ''}
+                  {bag.food
+                    ? bag.currency +
+                      (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty
+                    : ''}
                 </Typography>
               </div>
 
@@ -317,6 +345,8 @@ class Bag extends React.Component {
             </div>
           </Grid>
         );
+
+        return bag;
       });
     }
 
@@ -325,7 +355,7 @@ class Bag extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { bags } = this.state;
+    const { bags, _t } = this.state;
 
     var totalPrice = 0;
     var currency = '';
@@ -336,6 +366,8 @@ class Bag extends React.Component {
       bags.map((bag) => {
         currency = bag.currency;
         totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
+
+        return bag;
       });
     }
 
@@ -357,7 +389,7 @@ class Bag extends React.Component {
                   variant="h6"
                   className={classes.whiteTitle}
                 >
-                  {itemCounts} Items / Total Cost {currency}
+                  {itemCounts} {_t.bag.items} / {_t.bag.total_cost} {currency}
                   {totalPrice}
                 </Typography>
               </div>
@@ -375,7 +407,9 @@ class Bag extends React.Component {
                     padding: '12px 12px 50px',
                   }}
                 >
-                  <span className={classes.totalPriceText1}>TOTAL</span>
+                  <span className={classes.totalPriceText1}>
+                    {_t.bag.total}
+                  </span>
                   <span className={classes.totalPriceText2}>
                     {currency}
                     {totalPrice}
@@ -395,7 +429,7 @@ class Bag extends React.Component {
                     this.props.history.push('/checkout/checkoutinfo');
                   }}
                 >
-                  Check out
+                  {_t.bag.check_out}
                 </Button>
               </div>
             ) : (
@@ -414,6 +448,7 @@ const mapStateToProps = (state) => {
     errorMessage: getBagError(state),
     bags: getBagBags(state),
     me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 

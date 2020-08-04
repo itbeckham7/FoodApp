@@ -1,21 +1,17 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { ChevronRight } from 'mdi-material-ui';
-import { getCurrentUser, getSignedInWith } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
+import { getCurrentUser, getSignedInWith, getLangLang } from '../../store/selectors';
+import { email, required } from '../../utils/formValidator';
 import { updateProfile, signOut } from '../../store/actions';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -97,13 +93,32 @@ const styles = (theme) => ({
 });
 
 class Profile extends React.Component {
-  state = {
-    tabValue: 'general',
-  };
 
-  constructor() {
+  constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      tabValue: 'general',
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
+    };
   }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => {
     return (
       <TextField
@@ -124,8 +139,8 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { me, classes, authProvider, handleSubmit } = this.props;
-    const { tabValue } = this.state;
+    const { me, classes, authProvider } = this.props;
+    const { _t } = this.state;
 
     let picture = '';
     if (me.provider) {
@@ -163,9 +178,9 @@ class Profile extends React.Component {
           <div  className={classes.mainSec}>
             <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/general');}}>
               <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Edit-Profile.png'} />
+                <img src={'/images/Icon_Edit-Profile.png'} alt=""/>
               </Grid>
-              <Grid xs={8} item className={classes.menuText}>Edit Profile</Grid>
+              <Grid xs={8} item className={classes.menuText}>{_t.profile.edit_profile}</Grid>
               <Grid xs={2} item className={classes.menuNav}>
                 <IconButton color="#333">
                   <ChevronRight />
@@ -175,9 +190,9 @@ class Profile extends React.Component {
 
             <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/address');}}>
               <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Location.png'} />
+                <img src={'/images/Icon_Location.png'} alt=""/>
               </Grid>
-              <Grid xs={8} item className={classes.menuText}>Shipping Address</Grid>
+              <Grid xs={8} item className={classes.menuText}>{_t.profile.shipping_address}</Grid>
               <Grid xs={2} item className={classes.menuNav}>
                 <IconButton color="#333">
                   <ChevronRight />
@@ -187,9 +202,9 @@ class Profile extends React.Component {
 
             <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/card');}}>
               <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Payment.png'} />
+                <img src={'/images/Icon_Payment.png'} alt=""/>
               </Grid>
-              <Grid xs={8} item className={classes.menuText}>Cards</Grid>
+              <Grid xs={8} item className={classes.menuText}>{_t.profile.cards}</Grid>
               <Grid xs={2} item className={classes.menuNav}>
                 <IconButton color="#333">
                   <ChevronRight />
@@ -199,9 +214,9 @@ class Profile extends React.Component {
 
             <Grid container className={classes.menuElem} onClick={() => {this.props.history.push('/profile/orderhistory');}}>
               <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_History.png'} />
+                <img src={'/images/Icon_History.png'} alt=""/>
               </Grid>
-              <Grid xs={8} item className={classes.menuText}>Order History</Grid>
+              <Grid xs={8} item className={classes.menuText}>{_t.profile.order_history}</Grid>
               <Grid xs={2} item className={classes.menuNav}>
                 <IconButton color="#333">
                   <ChevronRight />
@@ -211,9 +226,9 @@ class Profile extends React.Component {
 
             <Grid container className={classes.menuElem} onClick={() => {this.props.signOut()}}>
               <Grid xs={2} item className={classes.menuIcon}>
-                <img src={'/images/Icon_Exit.png'} />
+                <img src={'/images/Icon_Exit.png'} alt=""/>
               </Grid>
-              <Grid xs={8} item className={classes.menuText}>Log Out</Grid>
+              <Grid xs={8} item className={classes.menuText}>{_t.profile.log_out}</Grid>
               <Grid xs={2} item className={classes.menuNav}>
                 <IconButton color="#333">
                   <ChevronRight />
@@ -289,6 +304,7 @@ const mapStateToProps = (st) => {
     me: me,
     authProvider: getSignedInWith(st),
     initialValues: initialValues,
+    lang: getLangLang(st),
   };
 };
 

@@ -1,8 +1,5 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Rating from '@material-ui/lab/Rating';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -11,9 +8,9 @@ import {
   getBagProcessing,
   getBagError,
   getCurrentUser,
+  getLangLang
 } from '../../store/selectors';
-import config from '../../config';
-import { textEllipsis } from '../../utils/textUtils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -65,21 +62,38 @@ const styles = (theme) => ({
 
 });
 
-class AboutUs extends React.Component {
-  state = {
-  };
+class Policy extends React.Component {
 
-  constructor() {
+  constructor(props) {
     super();
+    
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      _t: translation[lang],
+    };
   }
 
   componentWillMount() {
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
   }
 
   render() {
     const {
       classes,
     } = this.props;
+    const { _t } = this.state;
 
     return (
       <div className={classes.root}>
@@ -91,7 +105,7 @@ class AboutUs extends React.Component {
                 variant="h6"
                 className={classes.pageTitleText}
               >
-                Policy
+                {_t.common.policy}
               </Typography>
             </div>
             <div
@@ -117,7 +131,7 @@ class AboutUs extends React.Component {
               }}
             >
               <div className={classes.infoTitleSec}>
-                <img src="/images/About-us-page-bro.png" />
+                <img src="/images/About-us-page-bro.png" alt=""/>
               </div>
               <div className={classes.infoContentSec}>
                 <Typography
@@ -142,10 +156,11 @@ const mapStateToProps = (state) => {
     errorMessage: getBagError(state),
     bags: getBagBags(state),
     me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 
 export default compose(
   connect(mapStateToProps, {}),
   withStyles(styles)
-)(AboutUs);
+)(Policy);

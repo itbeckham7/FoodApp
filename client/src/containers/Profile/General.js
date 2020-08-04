@@ -1,15 +1,5 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Tabs from '@material-ui/core/Tab';
-import Tab from '@material-ui/core/Tab';
-import TabList from '@material-ui/lab/TabList';
-import TabPanel from '@material-ui/lab/TabPanel';
-import TabContext from '@material-ui/lab/TabContext';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -21,9 +11,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { getCurrentUser, getSignedInWith } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
+import { getCurrentUser, getSignedInWith, getLangLang } from '../../store/selectors';
+import { email, required } from '../../utils/formValidator';
 import { updateProfile } from '../../store/actions';
+import * as translation from '../../trans';
+
 
 const styles = (theme) => ({
   root: {
@@ -82,10 +74,28 @@ class Profile extends React.Component {
   
   constructor(props){
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
-      me: props.me
+      me: props.me,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
     }
     
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
   }
 
   renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => {
@@ -112,16 +122,19 @@ class Profile extends React.Component {
     ...custom
   }) => {
     const { classes } = this.props;
+    const { _t } = this.state;
     var countries = csc.getAllCountries();
     var countriesElem = [
       <MenuItem key={'country-none'} value="">
-        <em>None</em>
+        <em>{_t.profile.none}</em>
       </MenuItem>,
     ];
     countries.map((country) => {
       countriesElem.push(
         <MenuItem key={country.id} value={country.sortname}>{country.name}</MenuItem>
       );
+
+      return country;
     });
 
     return (
@@ -132,7 +145,7 @@ class Profile extends React.Component {
           variant="outlined"
           required
         >
-          Country
+          {_t.profile.country}
         </InputLabel>
         <Select
           labelId="country-label"
@@ -171,9 +184,8 @@ class Profile extends React.Component {
       pristine,
       submitting,
       valid,
-      error,
     } = this.props;
-    const {me} = this.state
+    const {me, _t} = this.state
 
     let picture = '';
     if (me.provider) {
@@ -201,7 +213,7 @@ class Profile extends React.Component {
               <form onSubmit={handleSubmit(this.onSubmit)}>
                 <Field
                   id="firstName"
-                  label="First Name"
+                  label={_t.checkout.first_name}
                   required
                   name="firstName"
                   autoComplete="firstName"
@@ -209,7 +221,7 @@ class Profile extends React.Component {
                 />
                 <Field
                   id="lastName"
-                  label="Last Name"
+                  label={_t.checkout.last_name}
                   name="lastName"
                   required
                   autoComplete="lastName"
@@ -217,7 +229,7 @@ class Profile extends React.Component {
                 />
                 <Field
                   id="username"
-                  label="User Name"
+                  label={_t.auth.username}
                   name="username"
                   required
                   autoComplete="username"
@@ -225,7 +237,7 @@ class Profile extends React.Component {
                 />
                 <Field
                   id="email"
-                  label="Email Address"
+                  label={_t.auth.email_address}
                   name="email"
                   required
                   autoComplete="email"
@@ -233,7 +245,7 @@ class Profile extends React.Component {
                 />
                 <Field
                   id="phone"
-                  label="Phone"
+                  label={_t.auth.phone}
                   name="phone"
                   required
                   autoComplete="phone"
@@ -241,7 +253,7 @@ class Profile extends React.Component {
                 />
                 <Field
                   id="country"
-                  label="Country"
+                  label={_t.profile.country}
                   name="country"
                   required
                   autoComplete="country"
@@ -255,7 +267,7 @@ class Profile extends React.Component {
                   type="submit"
                   variant="contained"
                 >
-                  Save
+                  {_t.profile.save}
                 </Button>
               </form>
             </div>
@@ -331,6 +343,7 @@ const mapStateToProps = (st) => {
     me: me,
     authProvider: getSignedInWith(st),
     initialValues: initialValues,
+    lang: getLangLang(st),
   };
 };
 

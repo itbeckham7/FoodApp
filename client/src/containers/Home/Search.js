@@ -7,13 +7,14 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import {
-  getBagBags,
   getBagProcessing,
   getBagError,
   getCurrentUser,
+  getLangLang
 } from '../../store/selectors';
 import config from '../../config';
 import { textEllipsis } from '../../utils/textUtils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -206,18 +207,34 @@ const styles = (theme) => ({
 });
 
 class Search extends React.Component {
-  state = {
-  };
 
-  constructor() {
+  constructor(props) {    
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
+    };
   }
 
-  componentWillMount() {
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
   }
 
   renderFoods() {
     const { classes } = this.props;
+
     var bagElems = [];
     for( var i=0; i<5; i++){
       bagElems.push(
@@ -228,11 +245,10 @@ class Search extends React.Component {
                 width: '100%',
                 height: '100%',
                 backgroundImage:
-                  'url(' + config.serverUrl + '/uploads/food/foodbakery_special_pizza.jpg' + ')',
+                  'url(' + config.serverUrl + '/uploads/food/foodbakery_special_pizza.jpg)',
                 backgroundPosition: 'center',
                 backgroundSize: 'auto 100%',
                 backgroundRepeat: 'no-repeat',
-                height: '100%',
                 borderRadius: '5px',
               }}
             ></Box>
@@ -319,7 +335,7 @@ class Search extends React.Component {
               }}
             >
               <div className={classes.infoTitleSec}>
-                <img src="/images/Product-hunt-amico.png" />
+                <img src="/images/Product-hunt-amico.png" alt=""/>
                 <Typography
                   component="p"
                   variant="h6"
@@ -344,6 +360,7 @@ const mapStateToProps = (state) => {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
     me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 

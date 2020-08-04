@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { verifyEmail, unloadAuthPage } from '../../store/actions';
 import { getError, getProcessed } from '../../store/selectors';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   paper: {
@@ -28,6 +29,10 @@ const styles = (theme) => ({
 });
 
 class VerifyEmail extends React.Component {
+  state = {
+    trans: translation['en'],
+  };
+
   componentDidMount() {
     this.verifyToken = this.props.match.params.token;
     this.props.verifyEmail(this.verifyToken);
@@ -39,6 +44,7 @@ class VerifyEmail extends React.Component {
 
   render() {
     const { classes, errorMessage, isProcessed } = this.props;
+    const { trans } = this.state;
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -49,15 +55,15 @@ class VerifyEmail extends React.Component {
             src="/logo-circle512.png"
           />
           <Typography component="h1" variant="h5" color="primary">
-            Verify Email
+            {trans.auth.verify_email}
           </Typography>
           <Box m={2}>
             <Typography variant="body1" color="textSecondary">
-              We are verifying your email address
+              {trans.auth.we_are_verifying}
             </Typography>
           </Box>
           <Link href="/signin" variant="body2">
-            {'Go to Sign In page'}
+            {trans.auth.go_to_signin}
           </Link>
         </div>
         <Snackbar open={!!errorMessage}>
@@ -68,11 +74,11 @@ class VerifyEmail extends React.Component {
             severity="success"
             action={
               <Link href="/signin" variant="body2">
-                Sign In
+                {trans.auth.sign_in}
               </Link>
             }
           >
-            Email has been verified successfully
+            {trans.auth.email_verified}
           </Alert>
         </Snackbar>
       </Container>

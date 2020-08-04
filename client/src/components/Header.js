@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
-import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
@@ -23,17 +22,6 @@ import {
   getSettingSetting,
 } from '../store/selectors';
 import { signOut, getBags } from '../store/actions';
-
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-
-function ShowOnScroll({ children }) {
-  const trigger = useScrollTrigger({ threshold: 48, disableHysteresis: true });
-  return (
-    <Slide in={trigger} direction="up">
-      <span>{children}</span>
-    </Slide>
-  );
-}
 
 const styles = (theme) => ({
   secondaryBar: {
@@ -95,22 +83,22 @@ class Header extends React.Component {
         var pathArr = path.split('/');
         var pathnameArr = pathname.split('/');
 
-        if (pathArr.length == pathnameArr.length) {
+        if (pathArr.length === pathnameArr.length) {
           var isSuccess = true;
           for (var i = 0; i < pathArr.length; i++) {
-            if (pathArr[i] != pathnameArr[i]) {
-              if (pathArr[i][0] == ':') continue;
+            if (pathArr[i] !== pathnameArr[i]) {
+              if (pathArr[i][0] === ':') continue;
               isSuccess = false;
               break;
             }
           }
 
-          if (isSuccess) brand = title;
+          if (isSuccess) brand = title['en'];
         }
       });
     });
 
-    if( brand == 'Home'  ){
+    if( brand === 'Home'  ){
       brand = 'Anfas AlTeeb'
 
     }

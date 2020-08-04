@@ -7,7 +7,6 @@ import CheckOutInfoUser from './CheckOutInfoUser';
 import {
   getCurrentUser,
 } from '../../store/selectors';
-import config from '../../config';
 
 const styles = (theme) => ({
   root: {
@@ -21,12 +20,12 @@ class CheckOutInfo extends React.Component {
   }
 
   render() {
-    const { classes, me } = this.props;
+    const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-        {this.props.me.role == 'guest' && <CheckOutInfoGuest history={this.props.history}/>}
-        {this.props.me.role != 'guest' && <CheckOutInfoUser history={this.props.history}/>}
+        {this.props.me.role === 'guest' && <CheckOutInfoGuest history={this.props.history}/>}
+        {this.props.me.role !== 'guest' && <CheckOutInfoUser history={this.props.history}/>}
       </div>
     );
   }

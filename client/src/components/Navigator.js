@@ -127,8 +127,8 @@ function Navigator(props) {
               </ListItem> */}
               {category.routes.map((route) => {
                 if (route.isHidden) return null;
-                if( route.id == 'profile' || route.id == 'profileGeneral' || route.id == 'profileAddress' ){
-                  if(me.role == 'guest') return null
+                if( route.id === 'profile' || route.id === 'profileGeneral' || route.id === 'profileAddress' ){
+                  if(me.role === 'guest') return null
                 }
                 return (
                   <ListItem
@@ -151,14 +151,14 @@ function Navigator(props) {
                     }}
                   >
                     <ListItemIcon className={classes.itemIcon}>
-                      <img src={route.icon} />
+                      <img src={route.icon} alt=""/>
                     </ListItemIcon>
                     <ListItemText
                       classes={{
                         primary: classes.itemPrimary,
                       }}
                     >
-                      {route.name}
+                      {route.name['en']}
                     </ListItemText>
                   </ListItem>
                 );

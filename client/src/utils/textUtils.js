@@ -6,7 +6,7 @@ export const textEllipsis = (value, overNum, tail) => {
 
 export const getTimeString = (value, format) => {
   if( value ){
-    var timeVal = value == 'now' ? (new Date()) : (new Date(value))
+    var timeVal = value === 'now' ? (new Date()) : (new Date(value))
     var str = timeVal.toString();
     str = str.split(' ');
     var dateStr = str[0];
@@ -17,22 +17,20 @@ export const getTimeString = (value, format) => {
     var timeArr = timeStr.split(':');
     var hour = timeArr[0];
     var minute = timeArr[1];
-    var second = timeArr[2];
-    var pStr = str[5]
     
-    if( format == 'd m' ){
+    if( format === 'd m' ){
       return dayStr + ' ' + monthStr
-    } else if( format == 'd d m' ){
+    } else if( format === 'd d m' ){
       return dateStr + ' ' + dayStr + ' ' + monthStr
-    } else if( format == 'd d m y' ){
+    } else if( format === 'd d m y' ){
       return dateStr + ' ' + dayStr + ' ' + monthStr + ' ' + yearStr
-    } else if( format == 'd m, y' ){
+    } else if( format === 'd m, y' ){
       return dayStr + ' ' + monthStr + ', ' + yearStr
-    } else if( format == 'h:m:s' ){
+    } else if( format === 'h:m:s' ){
       return timeStr
-    } else if( format == 'h:m p' ){
+    } else if( format === 'h:m p' ){
       return hour + ':' + minute
-    } else if( format == 'm/d' ){
+    } else if( format === 'm/d' ){
       return monthStr + '/' + dayStr
     } else {
       return str

@@ -1,13 +1,12 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -23,26 +22,22 @@ import {
   getBranches,
 } from '../../store/actions';
 import {
-  getBagBags,
   getBagProcessing,
   getBagError,
   getCurrentUser,
   getAddressActiveAddress,
   getCardActiveCard,
-  getOrderOrders,
   getOrderOrder,
   getOrderProcessing,
   getOrderError,
-  getCardError,
   getOrderInitialValue,
   getBranchBranches,
-  getBranchProcessing,
-  getBranchError,
   getSettingSetting,
+  getLangLang,
 } from '../../store/selectors';
-import { email, minLength, required } from '../../utils/formValidator';
-import config from '../../config';
+import { required } from '../../utils/formValidator';
 import { getTimeString, getExtraPrice } from '../../utils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -116,7 +111,6 @@ const styles = (theme) => ({
     color: '#0B2031',
     fontSize: '1.1rem',
     fontWeight: 'normal',
-    marginLeft: theme.spacing(2),
   },
   infoSecEdit: {
     display: 'inline-block',
@@ -260,12 +254,15 @@ class CheckOutInfoUser extends React.Component {
   constructor(props) {
     super();
 
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       bags: null,
       deliveryStyle: 'now',
       branches: null,
       totalPrice: 0,
       currency: '',
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
     };
 
     this.updateBags = this.updateBags.bind(this);
@@ -296,6 +293,20 @@ class CheckOutInfoUser extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
+  }
+
   updateBags(bags) {
     var totalPrice = 0;
     var currency = '';
@@ -304,6 +315,8 @@ class CheckOutInfoUser extends React.Component {
       bags.map((bag) => {
         currency = bag.currency;
         totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
+
+        return bag;
       });
     }
 
@@ -362,7 +375,7 @@ class CheckOutInfoUser extends React.Component {
     setTimeout(function () {
       var orderInitialValue = that.props.orderInitialValue;
       
-      if (orderInitialValue.firstName == '') {
+      if (orderInitialValue.firstName === '') {
         // that.props.history.push('/checkout/result/fail');
         return;
       }
@@ -440,7 +453,6 @@ class CheckOutInfoUser extends React.Component {
       variant="outlined"
       margin="none"
       required
-      fullWidth
       {...input}
       {...custom}
       onChange={this.onChangeValue.bind(this, input, meta)}
@@ -449,7 +461,6 @@ class CheckOutInfoUser extends React.Component {
   );
 
   renderBranchField = ({ input, label, meta, ...custom }) => {
-    const { classes } = this.props;
     const { branches } = this.state;
 
     var branchesElem = [
@@ -463,6 +474,8 @@ class CheckOutInfoUser extends React.Component {
           {branch.name}
         </MenuItem>
       );
+
+      return branch
     });
 
     return (
@@ -485,7 +498,11 @@ class CheckOutInfoUser extends React.Component {
 
   renderUserContactInfo() {
     const { classes, me, activeAddress } = this.props;
+    const { _t, direction } = this.state;
     
+    var floatStyle = direction === 'rtl' ? {float: 'left'} : {float: 'right'};
+    var marginStyle = direction === 'rtl' ? {marginRight: '16px'} : {marginLeft: '16px'};
+
     var addressInfo = '';
     if (activeAddress) {
       var country = csc.getCountryById(activeAddress.countryId);
@@ -506,36 +523,38 @@ class CheckOutInfoUser extends React.Component {
             component="span"
             variant="h6"
             className={classes.infoSecTitle}
+            style={marginStyle}
           >
-            Contact Info
+            {_t.checkout.contact_info}
           </Typography>
           <Button
             size="small"
             className={classes.infoSecEdit}
+            style={floatStyle}
             onClick={() => {
               this.props.history.push('/profile/general');
             }}
           >
-            Edit
+            {_t.checkout.edit}
           </Button>
         </div>
         <div className={classes.infoContentSec}>
           <div style={{ marginBottom: '15px' }}>
-            <div className={classes.infoLabel}>NAME</div>
+            <div className={classes.infoLabel} style={{textTransform: 'uppercase'}}>{_t.checkout.name}</div>
             <div className={classes.infoValue}>
               {me.firstName} {me.lastName}
             </div>
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <div className={classes.infoLabel}>PHONE NUMBER</div>
+            <div className={classes.infoLabel} style={{textTransform: 'uppercase'}}>{_t.checkout.phone_number}</div>
             <div className={classes.infoValue}>{me.phone}</div>
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <div className={classes.infoLabel}>EMAIL</div>
+            <div className={classes.infoLabel} style={{textTransform: 'uppercase'}}>{_t.checkout.email}</div>
             <div className={classes.infoValue}>{me.email}</div>
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <div className={classes.infoLabel}>ADDRESS</div>
+            <div className={classes.infoLabel} style={{textTransform: 'uppercase'}}>{_t.checkout.address}</div>
             <div className={classes.infoValue}>{addressInfo}</div>
             <div>
               <Button
@@ -547,7 +566,7 @@ class CheckOutInfoUser extends React.Component {
                   this.props.history.push('/profile/address');
                 }}
               >
-                Change Address
+                {_t.checkout.change_address}
               </Button>
             </div>
           </div>
@@ -557,18 +576,22 @@ class CheckOutInfoUser extends React.Component {
   }
 
   renderUserPaymentInfo() {
-    const { classes, me, activeCard } = this.props;
+    const { classes, activeCard } = this.props;
+    const { _t, direction } = this.state;
+
+    var floatStyle = direction === 'rtl' ? {float: 'left'} : {float: 'right'};
+    var marginStyle = direction === 'rtl' ? {marginRight: '16px'} : {marginLeft: '16px'};
 
     var contentElem = (
       <div className={classes.noCards} style={{ textAlign: 'center' }}>
-        There are no cards.
+        {_t.checkout.no_cards}
       </div>
     );
     if (activeCard) {
       var cardImage =
-        activeCard.cardType == 'mastercard'
+        activeCard.cardType === 'mastercard'
           ? '/images/MasterCard_Logo.svg.png'
-          : activeCard.cardType == 'visa'
+          : activeCard.cardType === 'visa'
           ? '/images/visa_PNG30.png'
           : '/images/knet-icon.png';
 
@@ -578,29 +601,30 @@ class CheckOutInfoUser extends React.Component {
             <img
               src={cardImage}
               style={{ marginRight: '20px', verticalAlign: 'middle' }}
+              alt=""
             />
             <Typography
               component="span"
               variant="h6"
               className={classes.noCards}
             >
-              You will need to confirm the payment
+              {_t.checkout.confirm_payment}
             </Typography>
           </Grid>
           <Grid xs={6} item style={{ marginBottom: '10px' }}>
-            <div className={classes.infoLabel}>Cardholder Name</div>
+            <div className={classes.infoLabel}>{_t.checkout.cardholder_name}</div>
             <div className={classes.infoValue}>{activeCard.holderName}</div>
           </Grid>
           <Grid xs={6} item style={{ marginBottom: '10px' }}>
-            <div className={classes.infoLabel}>Card Number</div>
+            <div className={classes.infoLabel}>{_t.checkout.card_number}</div>
             <div className={classes.infoValue}>{activeCard.cardNumber}</div>
           </Grid>
           <Grid xs={6} item>
-            <div className={classes.infoLabel}>Expiration Date</div>
+            <div className={classes.infoLabel}>{_t.checkout.expiration_date}</div>
             <div className={classes.infoValue}>{activeCard.expireDate}</div>
           </Grid>
           <Grid xs={6} item>
-            <div className={classes.infoLabel}>CVV</div>
+            <div className={classes.infoLabel}>{_t.checkout.cvv}</div>
             <div className={classes.infoValue}>{activeCard.cvv}</div>
           </Grid>
         </Grid>
@@ -621,17 +645,19 @@ class CheckOutInfoUser extends React.Component {
             component="span"
             variant="h6"
             className={classes.infoSecTitle}
+            style={marginStyle}
           >
-            Payment Info
+            {_t.checkout.payment_info}
           </Typography>
           <Button
             size="small"
             className={classes.infoSecEdit}
+            style={floatStyle}
             onClick={() => {
               this.props.history.push('/profile/card');
             }}
           >
-            Edit
+            {_t.checkout.edit}
           </Button>
         </div>
         <div className={classes.infoContentSec}>{contentElem}</div>
@@ -640,14 +666,15 @@ class CheckOutInfoUser extends React.Component {
   }
 
   render() {
-    const { classes, me, handleSubmit, setting } = this.props;
+    const { classes, handleSubmit, setting } = this.props;
     const {
-      bags,
       deliveryStyle,
       isError,
       errorMessage,
       totalPrice,
       currency,
+      _t,
+      direction
     } = this.state;
 
     var curTime = new Date().toString();
@@ -664,6 +691,10 @@ class CheckOutInfoUser extends React.Component {
       isWorkingTime = false;
     }
 
+    var marginStyle = direction === 'rtl' ? {marginRight: '16px'} : {marginLeft: '16px'};
+    var marginDeliveryBtnStyle = direction === 'rtl' ? {marginLeft: '4vw'} : {marginRight: '4vw'};
+    var marginDeliveryBtnStyle1 = direction === 'rtl' ? {marginLeft: isWorkingTime ? '0' : '4vw'} : {marginRight: isWorkingTime ? '0' : '4vw'};
+
     return (
       <div className={classes.root}>
         <div className={classes.paper}>
@@ -674,7 +705,7 @@ class CheckOutInfoUser extends React.Component {
                 variant="h6"
                 className={classes.pageTitleText}
               >
-                CHECK OUT
+                {_t.checkout.check_out}
               </Typography>
             </div>
             <div className={classes.dateSec}>
@@ -683,7 +714,7 @@ class CheckOutInfoUser extends React.Component {
                 variant="h6"
                 className={classes.topDateText}
               >
-                Date:
+                {_t.checkout.date}:
               </Typography>
               <Typography
                 component="span"
@@ -699,7 +730,7 @@ class CheckOutInfoUser extends React.Component {
                 variant="h6"
                 className={classes.topDateText}
               >
-                Total Bill:
+                {_t.checkout.total_bill}:
               </Typography>
               <Typography
                 component="span"
@@ -743,8 +774,9 @@ class CheckOutInfoUser extends React.Component {
                     component="span"
                     variant="h6"
                     className={classes.infoSecTitle}
+                    style={marginStyle}
                   >
-                    Style of delivery
+                    {_t.checkout.style_of_delivery}
                   </Typography>
                 </div>
                 <div className={classes.infoContentSec}>
@@ -756,52 +788,52 @@ class CheckOutInfoUser extends React.Component {
                     {isWorkingTime && (
                       <Button
                         variant="contained"
-                        color={deliveryStyle == 'now' ? 'primary' : 'default'}
+                        color={deliveryStyle === 'now' ? 'primary' : 'default'}
                         className={classes.deliveryBtn}
                         onClick={() => this.setState({ deliveryStyle: 'now' })}
-                        style={{ marginRight: '4vw' }}
+                        style={marginDeliveryBtnStyle}
                       >
-                        Now
+                        {_t.checkout.now}
                       </Button>
                     )}
 
                     <Button
-                      color={deliveryStyle == 'pickup' ? 'primary' : 'default'}
+                      color={deliveryStyle === 'pickup' ? 'primary' : 'default'}
                       variant="contained"
                       className={classes.deliveryBtn}
                       onClick={() => this.setState({ deliveryStyle: 'pickup' })}
-                      style={{ marginRight: isWorkingTime ? '0' : '4vw' }}
+                      style={marginDeliveryBtnStyle1}
                     >
-                      Pickup
+                      {_t.checkout.pickup}
                     </Button>
                     <Button
-                      color={deliveryStyle == 'later' ? 'primary' : 'default'}
+                      color={deliveryStyle === 'later' ? 'primary' : 'default'}
                       variant="contained"
                       className={classes.deliveryBtn}
                       onClick={() => this.setState({ deliveryStyle: 'later' })}
                     >
-                      Later
+                      {_t.checkout.later}
                     </Button>
                   </div>
 
                   <Grid container style={{ marginTop: '20px' }}>
-                    {deliveryStyle == 'pickup' && (
+                    {deliveryStyle === 'pickup' && (
                       <Grid xs={12} item>
                         <Field
                           name="branchId"
-                          label="Branch"
+                          label={_t.checkout.branch}
                           id="branchId"
                           autoComplete="branchId"
                           component={this.renderBranchField}
                         />
                       </Grid>
                     )}
-                    {(deliveryStyle == 'pickup' ||
-                      deliveryStyle == 'later') && (
+                    {(deliveryStyle === 'pickup' ||
+                      deliveryStyle === 'later') && (
                       <Grid xs={12} item>
                         <Field
                           name="deliveryTime"
-                          label="Delivery Time"
+                          label={_t.checkout.delivery_time}
                           id="deliveryTime"
                           autoComplete="deliveryTime"
                           component={this.renderDatetimeField}
@@ -821,7 +853,7 @@ class CheckOutInfoUser extends React.Component {
                   type="submit"
                   className={classes.roundBtn}
                 >
-                  Confirm
+                  {_t.checkout.confirm}
                 </Button>
                 <Button
                   variant="outlined"
@@ -833,7 +865,7 @@ class CheckOutInfoUser extends React.Component {
                     window.history.back();
                   }}
                 >
-                  Back
+                  {_t.checkout.back}
                 </Button>
               </div>
             </form>
@@ -877,6 +909,7 @@ const mapStateToProps = (state) => {
     initialValues: state.order.orderInitialValue,
     enableReinitialize: true,
     setting: getSettingSetting(state),
+    lang: getLangLang(state),
   };
 };
 

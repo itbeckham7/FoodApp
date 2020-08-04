@@ -16,6 +16,7 @@ import { compose } from 'redux';
 import { resetPassword, unloadAuthPage } from '../../store/actions';
 import { getError, getProcessed } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   paper: {
@@ -39,6 +40,10 @@ const styles = (theme) => ({
 });
 
 class ResetPassword extends React.Component {
+  state = {
+    trans: translation['en'],
+  };
+
   componentDidMount() {
     this.resetToken = this.props.match.params.token;
   }
@@ -80,6 +85,8 @@ class ResetPassword extends React.Component {
       errorMessage,
       isProcessed,
     } = this.props;
+    const { trans } = this.state;
+
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -90,7 +97,7 @@ class ResetPassword extends React.Component {
             src="/logo-circle512.png"
           />
           <Typography component="h1" variant="h5" color="primary">
-            Reset Your Password
+            {trans.auth.reset_password}
           </Typography>
           <form className={classes.form} onSubmit={handleSubmit(this.onSubmit)}>
             <Grid container spacing={3}>
@@ -99,7 +106,7 @@ class ResetPassword extends React.Component {
                   component={this.renderTextField}
                   disabled={isProcessed && !errorMessage}
                   id="email"
-                  label="Email Address"
+                  label={trans.auth.email_address}
                   name="email"
                 />
               </Grid>
@@ -108,7 +115,7 @@ class ResetPassword extends React.Component {
                   component={this.renderTextField}
                   disabled={isProcessed && !errorMessage}
                   id="password"
-                  label="Password"
+                  label={trans.auth.password}
                   name="password"
                   type="password"
                 />
@@ -127,17 +134,17 @@ class ResetPassword extends React.Component {
               type="submit"
               variant="contained"
             >
-              Submit
+              {trans.auth.submit}
             </Button>
             <Grid container>
               <Grid item xs>
                 <Link href="/signin" variant="body2">
-                  Sign In
+                  {trans.auth.sign_in}
                 </Link>
               </Grid>
               <Grid item>
                 <Link href="/signup" variant="body2">
-                  {"Don't have an account? Sign up"}
+                  {trans.auth.dont_have_account} {trans.auth.sign_up}
                 </Link>
               </Grid>
             </Grid>
@@ -148,7 +155,7 @@ class ResetPassword extends React.Component {
         </Snackbar>
         <Snackbar open={isProcessed && !errorMessage}>
           <Alert severity="success">
-            Your password has been reset successfully
+            {trans.auth.reset_successfully}
           </Alert>
         </Snackbar>
       </Container>

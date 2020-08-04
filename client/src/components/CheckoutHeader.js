@@ -1,28 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { push } from 'connected-react-router';
 import {
-  Account,
-  Bell,
-  Logout,
-  CartPlus,
   ChevronLeft,
-  Menu as MenuIcon,
 } from 'mdi-material-ui';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -33,17 +18,6 @@ import {
   getBagBags,
 } from '../store/selectors';
 import { signOut } from '../store/actions';
-
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-
-function ShowOnScroll({ children }) {
-  const trigger = useScrollTrigger({ threshold: 48, disableHysteresis: true });
-  return (
-    <Slide in={trigger} direction="up">
-      <span>{children}</span>
-    </Slide>
-  );
-}
 
 const styles = (theme) => ({
   secondaryBar: {
@@ -70,14 +44,6 @@ const styles = (theme) => ({
 class CheckoutHeader extends React.Component {
   state = { anchorEl: null };
 
-  constructor() {
-    super();
-  }
-
-  componentWillMount() {
-    const { me } = this.props;
-  }
-
   onNavigatePrev = () => {
     window.history.back();
   };
@@ -86,8 +52,6 @@ class CheckoutHeader extends React.Component {
     const {
       classes,
     } = this.props;
-
-    const { anchorEl } = this.state;
 
     return (
       <React.Fragment>

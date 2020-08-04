@@ -40,10 +40,12 @@ import {
   getBagProcessing,
   getBagError,
   getCommentComments,
+  getLangLang,
 } from '../../store/selectors';
 import { required } from '../../utils/formValidator';
-import { textEllipsis, getTrans, getExtraPrice } from '../../utils';
+import { getTrans, getExtraPrice } from '../../utils';
 import config from '../../config';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -178,7 +180,7 @@ const styles = (theme) => ({
     padding: theme.spacing(0, 0),
     fontWeight: '300',
     fontSize: '0.85rem',
-    textAlign: 'left',
+    textAlign: 'center',
   },
   foodDetailPrice: {
     padding: theme.spacing(0, 0),
@@ -202,7 +204,7 @@ const styles = (theme) => ({
     height: '10px',
     borderBottom: '1px solid rgba(0,0,0,0.2)',
     margin: theme.spacing(0, 1),
-    flex: 'auto'
+    flex: 'auto',
   },
   quentityBtn: {
     fontSize: '1.5rem',
@@ -303,19 +305,24 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 class Food extends React.Component {
-  state = {
-    tabValue: 'book',
-    qty: 1,
-    note: '',
-    rating: 0,
-    isVisibleAddCommentDlg: false,
-    comments: [],
-    bag: null,
-    bagExtras: [],
-  };
-
-  constructor() {
+  
+  constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      tabValue: 'book',
+      qty: 1,
+      note: '',
+      rating: 0,
+      isVisibleAddCommentDlg: false,
+      comments: [],
+      bag: null,
+      bagExtras: [],
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
+    };
+
     this.onTabChange = this.onTabChange.bind(this);
     this.onPlusQty = this.onPlusQty.bind(this);
     this.onMinusQty = this.onMinusQty.bind(this);
@@ -335,7 +342,6 @@ class Food extends React.Component {
           return;
         }
 
-        var food = this.props.food;
       });
 
       this.props.getBags(this.props.me.id).then(() => {
@@ -347,11 +353,11 @@ class Food extends React.Component {
         var bags = this.props.bags;
         if (bags) {
           for (var i = 0; i < bags.length; i++) {
-            if (bags[i].foodId == this.props.match.params.foodId) {
-              this.setState({ 
+            if (bags[i].foodId === this.props.match.params.foodId) {
+              this.setState({
                 qty: bags[i].qty,
                 bag: bags[i],
-                bagExtras: bags[i].bagExtras
+                bagExtras: bags[i].bagExtras,
               });
             }
           }
@@ -372,6 +378,20 @@ class Food extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
+  }
+
   onTabChange(event, newValue) {
     this.setState({ tabValue: newValue });
   }
@@ -388,10 +408,9 @@ class Food extends React.Component {
   }
 
   onMinusQty() {
-    const { food } = this.props;
     var { qty } = this.state;
 
-    if (qty == 0) return;
+    if (qty === 0) return;
     qty--;
     this.setState({
       qty: qty,
@@ -403,12 +422,13 @@ class Food extends React.Component {
   }
 
   onAddToBag() {
-    const { food, me, bags } = this.props;
+    const { food, me } = this.props;
     const { qty, note, bagExtras } = this.state;
 
-    var trans = getTrans(food, 'EN');
-    var price = trans.price;
-    var currency = trans.languageId.currency;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var trans = getTrans(food, lang);
+    var price = trans ? trans.price : 0;
+    var currency = trans ? trans.languageId.currency : '';
 
     this.props
       .addToBag(me.id, food._id, price, currency, qty, note, bagExtras)
@@ -422,9 +442,10 @@ class Food extends React.Component {
   onCheckOut() {
     this.props.clearBag();
 
-    var trans = getTrans(this.props.food, 'EN');
-    var price = trans.price;
-    var currency = trans.languageId.currency;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var trans = getTrans(this.props.food, lang);
+    var price = trans ? trans.price : 0;
+    var currency = trans ? trans.languageId.currency : '';
 
     var that = this;
     setTimeout(function () {
@@ -447,36 +468,37 @@ class Food extends React.Component {
     }, 100);
   }
 
-  addExtra(Name, Value, Price, event){
-    var {bagExtras} = this.state;
+  addExtra(Name, Value, Price, event) {
+    var { bagExtras } = this.state;
 
     var addExtra = Name + '-' + Value + '-' + Price;
-    
+
     var isExist = false;
-    for( var i=0; i<bagExtras.length; i++ ){
+    for (var i = 0; i < bagExtras.length; i++) {
       var extra = bagExtras[i];
-      if( extra == addExtra ){
+      if (extra === addExtra) {
         bagExtras.splice(i, 1);
         isExist = true;
         break;
       }
     }
 
-    if( !isExist ){
-      bagExtras.push( addExtra );
+    if (!isExist) {
+      bagExtras.push(addExtra);
     }
 
-    this.setState({bagExtras: bagExtras});
+    this.setState({ bagExtras: bagExtras });
   }
 
   renderExtras() {
     const { food, classes } = this.props;
-    const { qty, bagExtras, bag } = this.state;
+    const { qty, bagExtras, _t, direction } = this.state;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var trans = getTrans(food, lang);
 
     var extras = [];
     var newExtras = [];
     var extrasElem = [];
-    var trans = getTrans(food, 'EN');
     if (food && trans && trans.extras) extras = JSON.parse(trans.extras);
 
     extras.map((extra) => {
@@ -487,45 +509,71 @@ class Food extends React.Component {
         Value: extra.Value,
         Price: extra['Extra Price'],
       });
+
+      return extra
     });
 
-    if( extras.length > 0 ){
+    if (extras.length > 0) {
       var extraNames = Object.keys(newExtras);
-  
+
       extraNames.map((Name) => {
         var extraValues = newExtras[Name];
         var extraValuesElem = [];
-        extraValues.map((extraValue) => {          
-          var isExist = bagExtras.filter((extra)=>{
-            return extra == Name+'-'+extraValue.Value+'-'+extraValue.Price
+        extraValues.map((extraValue) => {
+          var isExist = bagExtras.filter((extra) => {
+            return (
+              extra === Name + '-' + extraValue.Value + '-' + extraValue.Price
+            );
           }).length;
-          
 
           extraValuesElem.push(
             <FormGroup row key={extraValue.Value}>
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={isExist>0}
-                    onChange={this.addExtra.bind(this, Name, extraValue.Value, extraValue.Price)}
+                    checked={isExist > 0}
+                    onChange={this.addExtra.bind(
+                      this,
+                      Name,
+                      extraValue.Value,
+                      extraValue.Price
+                    )}
                     color="primary"
                   />
                 }
                 label={
-                  <div style={{ marign: 0, display: 'flex', justifyContent: 'space-between', width: '75vw' }}>
-                    <span className={classes.inputLabel} style={{display: 'inline-block'}}>
+                  <div
+                    style={{
+                      marign: 0,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '75vw',
+                    }}
+                  >
+                    <span
+                      className={classes.inputLabel}
+                      style={{ display: 'inline-block' }}
+                    >
                       {extraValue.Value}
                     </span>
-                    <span className={classes.inputLabelMargin} style={{display: 'inline-block'}}></span>
-                    <span className={classes.inputLabel} style={{display: 'inline-block'}}>
+                    <span
+                      className={classes.inputLabelMargin}
+                      style={{ display: 'inline-block' }}
+                    ></span>
+                    <span
+                      className={classes.inputLabel}
+                      style={{ display: 'inline-block' }}
+                    >
                       +{extraValue.Price}
                     </span>
                   </div>
                 }
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
             </FormGroup>
           );
+
+          return extraValue
         });
 
         extrasElem.push(
@@ -534,19 +582,20 @@ class Food extends React.Component {
               component="h1"
               variant="h6"
               className={classes.foodBookTitle}
+              style={{textAlign: direction === 'rtl' ? 'right' : 'left'}}
             >
               {Name}
             </Typography>
-            <div style={{ marginBottom: '20px' }}>
-              {extraValuesElem}
-            </div>
+            <div style={{ marginBottom: '20px' }}>{extraValuesElem}</div>
           </div>
         );
+
+        return Name
       });
     }
-    
+
     var price = trans ? trans.price : 0;
-    if( bagExtras ) price += getExtraPrice(bagExtras);
+    if (bagExtras) price += getExtraPrice(bagExtras);
 
     return (
       <div style={{ padding: '16px 16px' }}>
@@ -556,8 +605,9 @@ class Food extends React.Component {
           component="p"
           variant="h6"
           className={classes.foodBookTitle}
+          style={{textAlign: direction === 'rtl' ? 'right' : 'left'}}
         >
-          Quantity
+          {_t.food.quantity}
         </Typography>
         <div className={classes.qtyActionSec}>
           <span className={classes.quentityBtn} onClick={this.onPlusQty}>
@@ -572,9 +622,7 @@ class Food extends React.Component {
         <div className={classes.totalPriceSec}>
           <span className={classes.totalPriceText}>Total</span>
           <span className={classes.totalPriceText}>
-            {food
-              ? trans.languageId.currency + price * qty
-              : ''}
+            {trans ? trans.languageId.currency + price * qty : ''}
           </span>
         </div>
 
@@ -582,8 +630,9 @@ class Food extends React.Component {
           component="p"
           variant="h6"
           className={classes.foodBookTitle}
+          style={{textAlign: direction === 'rtl' ? 'right' : 'left'}}
         >
-          Other Description
+          {_t.food.other_description}
         </Typography>
         <div>
           <TextField
@@ -605,7 +654,7 @@ class Food extends React.Component {
               fullWidth
               onClick={this.onAddToBag}
             >
-              Add to bag
+              {_t.food.add_to_bag}
             </Button>
             <Button
               variant="contained"
@@ -615,7 +664,7 @@ class Food extends React.Component {
               className={classes.roundBtn}
               onClick={this.onCheckOut}
             >
-              Check out
+              {_t.bag.check_out}
             </Button>
           </div>
         )}
@@ -625,7 +674,9 @@ class Food extends React.Component {
 
   renderDesc() {
     const { food, classes } = this.props;
-    var trans = getTrans(food, 'EN');
+    const { _t } = this.state;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var trans = getTrans(food, lang);
 
     return (
       <div style={{ padding: '16px 16px' }}>
@@ -634,22 +685,20 @@ class Food extends React.Component {
           variant="h6"
           className={classes.foodDetailTitle}
         >
-          Description
+          {_t.bag.description}
         </Typography>
         <Typography
           component="p"
           variant="h6"
           className={classes.foodDetailDesc}
-          dangerouslySetInnerHTML={{__html: food ? trans.desc : ''}}
-        >
-        </Typography>
+          dangerouslySetInnerHTML={{ __html: trans ? trans.desc : '' }}
+        ></Typography>
       </div>
     );
   }
 
   renderComment() {
-    const { food, classes } = this.props;
-    const { comments } = this.props;
+    const { classes, comments } = this.props;
 
     var commentElems = [];
     if (comments && comments.length > 0) {
@@ -716,13 +765,15 @@ class Food extends React.Component {
             </Grid>
           </Grid>
         );
+
+        return comment;
       });
     }
 
     return (
       <div>
         {commentElems}
-        {this.props.me.role != 'guest' && (
+        {this.props.me.role !== 'guest' && (
           <Fab
             color="primary"
             aria-label="add"
@@ -732,7 +783,7 @@ class Food extends React.Component {
             <AddIcon />
           </Fab>
         )}
-        {this.props.me.role != 'guest' && this.renderAddCommentModal()}
+        {this.props.me.role !== 'guest' && this.renderAddCommentModal()}
       </div>
     );
   }
@@ -776,7 +827,7 @@ class Food extends React.Component {
 
   renderAddCommentModal() {
     const { handleSubmit, classes } = this.props;
-    const { isVisibleAddCommentDlg } = this.state;
+    const { isVisibleAddCommentDlg, _t } = this.state;
     return (
       <Dialog
         open={isVisibleAddCommentDlg}
@@ -790,7 +841,7 @@ class Food extends React.Component {
           id="alert-dialog-slide-title"
           style={{ textAlign: 'center', fontSize: '1.5rem' }}
         >
-          {'Please comment now'}
+          {_t.food.comment_now}
         </DialogTitle>
         <form onSubmit={handleSubmit(this.onSubmit)}>
           <DialogContent>
@@ -798,7 +849,7 @@ class Food extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   id="subject"
-                  label="Subject"
+                  label={_t.food.subject}
                   name="subject"
                   autoComplete="subject"
                   component={this.renderTextField}
@@ -807,7 +858,7 @@ class Food extends React.Component {
               <Grid item xs={12} className={classes.inputElem}>
                 <Field
                   name="description"
-                  label="Description"
+                  label={_t.food.description}
                   id="description"
                   autoComplete="description"
                   component={this.renderTextField}
@@ -821,7 +872,7 @@ class Food extends React.Component {
                     marginRight: '20px',
                   }}
                 >
-                  Rating:{' '}
+                  {_t.food.rating}:{' '}
                 </span>
                 <Rating
                   name="rating"
@@ -837,10 +888,10 @@ class Food extends React.Component {
           </DialogContent>
           <DialogActions>
             <Button onClick={this.closeAddCommentDlg} variant="outlined">
-              Cancel
+              {_t.food.cancel}
             </Button>
             <Button color="primary" variant="contained" type="submit">
-              Submit
+              {_t.food.submit}
             </Button>
           </DialogActions>
         </form>
@@ -850,14 +901,15 @@ class Food extends React.Component {
 
   render() {
     const { classes, food } = this.props;
-    const { tabValue, comments } = this.state;
-
-    var trans = getTrans(food, 'EN');
+    const { tabValue, comments, _t } = this.state;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
+    var trans = getTrans(food, lang);
 
     var totalRating = 0;
     if (comments && comments.length > 0) {
       comments.map((comment) => {
         totalRating += comment.rating;
+        return comment;
       });
       totalRating = parseFloat(totalRating / comments.length).toFixed(1);
     }
@@ -880,9 +932,7 @@ class Food extends React.Component {
                 className={classes.whiteTitle}
               >
                 <span className={classes.foodPrice}>
-                  {food
-                    ? trans.languageId.currency + trans.price
-                    : ''}
+                  {trans ? trans.languageId.currency + trans.price : ''}
                 </span>
               </Typography>
               <Typography
@@ -892,9 +942,7 @@ class Food extends React.Component {
                 style={{ bottom: '20px' }}
               >
                 <span className={classes.foodOldPrice}>
-                  {food
-                    ? trans.languageId.currency + trans.oldPrice
-                    : ''}
+                  {trans ? trans.languageId.currency + trans.oldPrice : ''}
                 </span>
               </Typography>
             </div>
@@ -906,15 +954,14 @@ class Food extends React.Component {
                 variant="h6"
                 className={classes.foodDetailTitle}
               >
-                {food ? trans.title : ''}
+                {trans ? trans.title : ''}
               </Typography>
               <Typography
                 component="p"
                 variant="h6"
                 className={classes.foodDetailDesc}
-                dangerouslySetInnerHTML={{__html: food ? trans.desc : ''}}
-              >
-              </Typography>
+                dangerouslySetInnerHTML={{ __html: trans ? trans.desc : '' }}
+              ></Typography>
               <div className={classes.foodRatingSec}>
                 <Rating
                   name="read-only"
@@ -938,14 +985,18 @@ class Food extends React.Component {
                   onChange={this.onTabChange}
                   aria-label="disabled tabs example"
                 >
-                  <Tab label="Book" value="book" className={classes.tabText} />
                   <Tab
-                    label="Description"
+                    label={_t.food.book}
+                    value="book"
+                    className={classes.tabText}
+                  />
+                  <Tab
+                    label={_t.food.description}
                     value="description"
                     className={classes.tabText}
                   />
                   <Tab
-                    label="Comment"
+                    label={_t.food.comment}
                     value="comment"
                     className={classes.tabText}
                   />
@@ -979,6 +1030,7 @@ const mapStateToProps = (state) => {
     errorMessageBag: getBagError(state),
     comments: getCommentComments(state),
     me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 

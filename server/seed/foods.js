@@ -167,11 +167,25 @@ module.exports = {
             abbr: 'EN',
             sku: 'foodbakery_special_pizza',
         }, {
+            title: 'بيتزا فود باكيري الخاصة',
+            desc: 'الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة والأعشاب الإيطالية',
+            price: 100,
+            oldPrice: 140,
+            abbr: 'AR',
+            sku: 'foodbakery_special_pizza',
+        }, {
             title: 'Foodbakery Pizza',
             desc: 'tuna fish, sweetcorn and italian herbs, Cheese, tomatoes, Cheese, tomatoes',
             price: 20,
             oldPrice: 70,
             abbr: 'EN',
+            sku: 'foodbakery_pizza',
+        }, {
+            title: 'بيتزا فود باكيري ',
+            desc: 'الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة والأعشاب ',
+            price: 60,
+            oldPrice: 80,
+            abbr: 'AR',
             sku: 'foodbakery_pizza',
         }, {
             title: 'Special Pizza',
@@ -181,11 +195,25 @@ module.exports = {
             abbr: 'EN',
             sku: 'special_pizza',
         }, {
+            title: 'بيتزا فود  ',
+            desc: 'الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة',
+            price: 70,
+            oldPrice: 90,
+            abbr: 'AR',
+            sku: 'special_pizza',
+        }, {
             title: 'Bakery Special Pizza',
             desc: 'Cheese, tomatoes, tuna fish, sweetcorn and italian herbs',
             price: 50,
             oldPrice: 70,
             abbr: 'EN',
+            sku: 'bakery_special_pizza',
+        }, {
+            title: 'بيتزا فود الطماطم',
+            desc: 'لجبن ، الطماطم ، سمك الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة',
+            price: 90,
+            oldPrice: 100,
+            abbr: 'AR',
             sku: 'bakery_special_pizza',
         }, {
             title: 'bakery Pizza',
@@ -195,6 +223,13 @@ module.exports = {
             abbr: 'EN',
             sku: 'bakery_pizza',
         }, {
+            title: 'بيتزا فود الطماطالذرة الحلوم',
+            desc: 'لجبن ، الطماطم ، سمك الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة',
+            price: 40,
+            oldPrice: 50,
+            abbr: 'AR',
+            sku: 'bakery_pizza',
+        }, {
             title: 'Special special Pizza',
             desc: 'sweetcorn and italian herbs, Cheese, tomatoes, tuna fish, Cheese, tomatoes, tuna fish',
             price: 30,
@@ -202,12 +237,12 @@ module.exports = {
             abbr: 'EN',
             sku: 'special_special_pizza',
         }, {
-            title: 'بيتزا فود باكيري الخاصة',
-            desc: 'الجبن ، الطماطم ، سمك التونة ، الذرة الحلوة والأعشاب الإيطالية',
-            price: 100,
-            oldPrice: 140,
+            title: 'بيتزا فود الطماطالذرة الحلومالحلوة',
+            desc: 'لجبن ، الطماطم ، سمك الجبن ، الطماطم ، سمك التونة ، الذرة ',
+            price: 50,
+            oldPrice: 70,
             abbr: 'AR',
-            sku: 'foodbakery_special_pizza',
+            sku: 'special_special_pizza',
         }, {
             title: 'Calzone (Folded Pizza)',
             desc: 'Cheese, tomatoes and italian herbs.',

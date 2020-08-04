@@ -1,11 +1,5 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Slide from '@material-ui/core/Slide';
-import { ChevronRight } from 'mdi-material-ui';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -15,14 +9,11 @@ import {
   getOrderOrder,
   getOrderProcessing,
   getOrderError,
+  getLangLang,
 } from '../../store/selectors';
 import { getOrder } from '../../store/actions';
-import config from '../../config';
 import { getTimeString } from '../../utils/textUtils';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -96,8 +87,6 @@ const styles = (theme) => ({
     width: '70%',
     verticalAlign: 'top',
     paddingBottom: theme.spacing(10),
-    borderLeft: '1px solid #ddd',
-    paddingLeft: theme.spacing(5),
     position: 'relative',
   },
   trackElemTime1: {
@@ -144,14 +133,17 @@ const styles = (theme) => ({
 class OrderTrack extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       me: props.me,
       order: null,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
   }
 
   componentWillMount() {
-    const { me } = this.props;
     const orderId = this.props.match.params.orderId;
 
     this.props.getOrder(orderId).then(() => {
@@ -165,12 +157,33 @@ class OrderTrack extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   render() {
     const { classes } = this.props;
-    const { me, order } = this.state;
+    const { order, _t, direction } = this.state;
 
     if (!order) return <div></div>;
 
+    var rightStyle =
+      direction === 'rtl'
+        ? { borderRight: '1px solid #ddd', paddingRight: '40px' }
+        : { borderLeft: '1px solid #ddd', paddingLeft: '40px' };
+
+    var circleStyle =
+      direction === 'rtl' ? { right: '-15px' } : { left: '-15px' };
     var tracks = JSON.parse(order.track);
 
     var trackElems = [];
@@ -180,7 +193,7 @@ class OrderTrack extends React.Component {
         i < tracks.history.length - 1 ? tracks.history[i + 1] : null;
 
       trackElems.push(
-        <div className={classes.trackElem}>
+        <div className={classes.trackElem} key={track.status}>
           <div className={classes.trackElemLeft}>
             {track.time && (
               <div style={{ marginTop: '-20px' }}>
@@ -196,20 +209,26 @@ class OrderTrack extends React.Component {
           <div
             className={classes.trackElemRight}
             style={{
+              ...rightStyle,
               borderColor:
                 track.time && nextTrack && nextTrack.time ? '#E5293E' : '#ddd',
               borderLeftWidth: nextTrack ? '1px' : '0',
             }}
           >
             <div style={{ marginTop: '-20px' }}>
-              <div className={classes.trackElemTitle}>{track.title}</div>
+              <div className={classes.trackElemTitle}>
+                {_t.order[track.status]}
+              </div>
               {track.address && (
                 <div className={classes.trackElemAddress}>{track.address}</div>
               )}
             </div>
             <div
               className={classes.circleSec}
-              style={{ borderColor: track.time ? '#E5293E' : '#ddd' }}
+              style={{
+                ...circleStyle,
+                borderColor: track.time ? '#E5293E' : '#ddd',
+              }}
             >
               <div
                 className={classes.circleMark}
@@ -248,6 +267,7 @@ const mapStateToProps = (state) => {
     order: getOrderOrder(state),
     isProcessing: getOrderProcessing(state),
     errorMessage: getOrderError(state),
+    lang: getLangLang(state),
   };
 };
 

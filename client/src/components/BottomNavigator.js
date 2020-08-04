@@ -1,16 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
-import { Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import Languages from './Languages';
 import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -42,14 +35,6 @@ class BottomNavigator extends React.Component {
   render() {
     const {
       classes,
-      pathname,
-      routeCategories,
-      onClose,
-      signOut,
-      push,
-      me,
-      authProvider,
-      ...other
     } = this.props;
     
     return (
@@ -62,7 +47,7 @@ class BottomNavigator extends React.Component {
               onClick={()=>{window.location='/dashboard/home'}}
               className={classes.menuButton}
             >
-              <img src="/images/ico.png" />
+              <img src="/images/ico.png" alt=""/>
             </IconButton>
           </Grid>
           <Grid xs={2} item className={classes.navElem}>
@@ -72,7 +57,7 @@ class BottomNavigator extends React.Component {
               onClick={()=>{window.location='/bag/checkout'}}
               className={classes.menuButton}
             >
-              <img src="/images/shopping-bag-solid.png" />
+              <img src="/images/shopping-bag-solid.png" alt=""/>
             </IconButton>
           </Grid>
           <Grid xs={4} item className={classes.navElem}>
@@ -83,7 +68,7 @@ class BottomNavigator extends React.Component {
               className={classes.menuButton}
               style={{marginTop: '-50px'}}
             >
-              <img src="/images/ico-1.png" />
+              <img src="/images/ico-1.png" alt=""/>
             </IconButton>
           </Grid>
           <Grid xs={2} item className={classes.navElem}>
@@ -94,19 +79,11 @@ class BottomNavigator extends React.Component {
               className={classes.menuButton}
               style={{marginLeft: '-15px'}}
             >
-              <img src="/images/Menu-search.png" />
+              <img src="/images/Menu-search.png" alt=""/>
             </IconButton>
           </Grid>
           <Grid xs={2} item className={classes.navElem}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={()=>{}}
-              className={classes.menuButton}
-              style={{marginLeft: '-15px', marginTop: '-2px'}}
-            >
-              <img src="/images/Menu-lang.png" />
-            </IconButton>
+            <Languages/>
           </Grid>
         </Grid>
       </div>

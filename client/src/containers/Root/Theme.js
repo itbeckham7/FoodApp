@@ -1,24 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import {
-  red,
-  pink,
-  purple,
-  deepPurple,
-  indigo,
   blue,
-  lightBlue,
-  cyan,
-  teal,
-  green,
-  lightGreen,
-  lime,
-  yellow,
-  amber,
-  orange,
-  deepOrange,
-  brown,
-  grey,
-  blueGrey,
 } from '@material-ui/core/colors';
 import latoRegular from '../../fonts/Lato-Regular.ttf';
 import latoItalic from '../../fonts/Lato-Italic.ttf';
@@ -219,6 +201,13 @@ const theme = createMuiTheme({
       },
     },
     MuiOutlinedInput: {
+      root: {
+        '&$focused': {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#E5293E'
+          }
+        }
+      },
       input: {
         padding: '15.5px 14px'
       }
@@ -258,15 +247,6 @@ const theme = createMuiTheme({
       root: {
         '&$focused': {
           color: '#E5293E'
-        }
-      }
-    },
-    MuiOutlinedInput: {
-      root: {
-        '&$focused': {
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#E5293E'
-          }
         }
       }
     },

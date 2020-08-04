@@ -11,13 +11,13 @@ import HomePage from './containers/Home/Home';
 import FoodsPage from './containers/Home/Foods';
 import FoodPage from './containers/Home/Food';
 import SearchPage from './containers/Home/Search';
-import Order from './containers/Order/Order';
 import BagPage from './containers/Bag/Bag';
 import CheckOutInfoPage from './containers/CheckOut/CheckOutInfo';
 import CheckOutResultPage from './containers/CheckOut/CheckOutResult';
 import AboutUs from './containers/Common/AboutUs';
 import ContactUs from './containers/Common/ContactUs';
 import Policy from './containers/Common/Policy';
+import * as translation from './trans';
 
 const routeCategories = [
   {
@@ -44,15 +44,21 @@ const routeCategories = [
     routes: [
       {
         id: 'home',
-        name: 'Home',
-        title: 'Home',
+        name: {
+          en: translation.en.menu.home,
+        },
+        title: {
+          en: translation.en.menu.home,
+        },
         path: '/dashboard/home',
         component: HomePage,
         icon: '/images/home.png'
       },
       {
         id: 'foods',
-        name: 'Foods',
+        name: {
+          en: translation.en.menu.foods,
+        },
         title: '',
         path: '/dashboard/foods/:categoryId',
         component: FoodsPage,
@@ -61,7 +67,9 @@ const routeCategories = [
       },
       {
         id: 'food',
-        name: 'Food',
+        name: {
+          en: translation.en.menu.food,
+        },
         title: '',
         path: '/dashboard/food/:foodId',
         component: FoodPage,
@@ -70,7 +78,9 @@ const routeCategories = [
       },
       {
         id: 'bag',
-        name: 'Bag',
+        name: {
+          en: translation.en.menu.bag,
+        },
         title: '',
         path: '/dashboard/bag',
         component: BagPage,
@@ -79,7 +89,9 @@ const routeCategories = [
       },
       {
         id: 'search',
-        name: 'Search',
+        name: {
+          en: translation.en.menu.search,
+        },
         title: '',
         path: '/common/search',
         component: SearchPage,
@@ -95,14 +107,18 @@ const routeCategories = [
     routes: [
       {
         id: 'bag',
-        name: 'Your Bag',
+        name: {
+          en: translation.en.menu.your_bag,
+        },
         path: '/bag/checkout',
         component: BagPage,
         icon: '/images/BASKET.png',
       },
       {
         id: 'checkoutinfo',
-        name: 'Check Out Info',
+        name: {
+          en: translation.en.menu.check_out_info,
+        },
         path: '/checkout/checkoutinfo',
         component: CheckOutInfoPage,
         isHidden: true,
@@ -110,7 +126,9 @@ const routeCategories = [
       },
       {
         id: 'checkoutresult',
-        name: 'Check Out Result',
+        name: {
+          en: translation.en.menu.check_out_result,
+        },
         path: '/checkout/result/:result',
         component: CheckOutResultPage,
         isHidden: true,
@@ -125,7 +143,9 @@ const routeCategories = [
     routes: [
       {
         id: ' ',
-        name: 'Order History',
+        name: {
+          en: translation.en.menu.order_history,
+        },
         path: '/profile/orderhistory',
         component: OrderHistory,
         icon: '/images/BASKET.png',
@@ -139,15 +159,21 @@ const routeCategories = [
     routes: [
       {
         id: 'profile',
-        name: 'Profile',
-        title: 'Profile',
+        name: {
+          en: translation.en.menu.profile,
+        },
+        title: {
+          en: translation.en.menu.profile,
+        },
         path: '/profile/profile',
         component: Profile,
         icon: '/images/Profile.png',
       },
       {
         id: 'profileGeneral',
-        name: 'Profile General',
+        name: {
+          en: translation.en.menu.profile_general,
+        },
         title: '',
         isHidden: true,
         path: '/profile/general',
@@ -156,8 +182,12 @@ const routeCategories = [
       },
       {
         id: 'profileAddress',
-        name: 'Profile Address',
-        title: 'Shipping Address',
+        name: {
+          en: translation.en.menu.profile_address,
+        },
+        title: {
+          en: translation.en.menu.shipping_address,
+        },
         isHidden: true,
         path: '/profile/address',
         component: ProfileAddress,
@@ -166,7 +196,9 @@ const routeCategories = [
       {
         id: 'profileCard',
         name: 'Profile Card',
-        title: 'Cards',
+        title: {
+          en: translation.en.menu.cards,
+        },
         isHidden: true,
         path: '/profile/card',
         component: ProfileCard,
@@ -175,7 +207,9 @@ const routeCategories = [
       {
         id: 'profileOrder',
         name: 'Profile Order',
-        title: 'Order History',
+        title: {
+          en: translation.en.menu.order_history,
+        },
         isHidden: true,
         path: '/profile/orderhistory',
         component: OrderHistory,
@@ -184,7 +218,9 @@ const routeCategories = [
       {
         id: 'profileOrderDetail',
         name: 'Profile Order Detail',
-        title: 'Order Detail',
+        title: {
+          en: translation.en.menu.order_detail,
+        },
         isHidden: true,
         path: '/profile/orderdetail/:orderId',
         component: OrderDetail,
@@ -193,7 +229,9 @@ const routeCategories = [
       {
         id: 'profileOrderTrack',
         name: 'Profile Order Track',
-        title: 'Order Track',
+        title: {
+          en: translation.en.menu.order_track,
+        },
         isHidden: true,
         path: '/profile/ordertrack/:orderId',
         component: OrderTrack,
@@ -208,7 +246,9 @@ const routeCategories = [
     routes: [
       {
         id: 'contactUs',
-        name: 'Contact Us',
+        name: {
+          en: translation.en.menu.contact_us,
+        },
         path: '/common/contactUs',
         component: ContactUs,
         icon: '/images/old-typical-phone.png',
@@ -222,13 +262,17 @@ const routeCategories = [
     routes: [
       {
         id: 'signin',
-        name: 'Sign in',
+        name: {
+          en: translation.en.menu.sign_in,
+        },
         path: '/signin',
         icon: '/images/Profile.png',
       },
       {
         id: 'signout',
-        name: 'Sign out',
+        name: {
+          en: translation.en.menu.sign_out,
+        },
         path: '/sign',
         icon: '/images/Profile.png',
       }
@@ -241,7 +285,9 @@ const routeCategories = [
     routes: [
       {
         id: 'aboutUs',
-        name: 'About Us',
+        name: {
+          en: translation.en.menu.about_us,
+        },
         path: '/common/aboutUs',
         component: AboutUs,
         icon: '/images/Profile1.png',
@@ -255,7 +301,9 @@ const routeCategories = [
     routes: [
       {
         id: 'policy',
-        name: 'Policy',
+        name: {
+          en: translation.en.menu.policy,
+        },
         path: '/common/policy',
         component: Policy,
         icon: '/images/edit-white.png',

@@ -8,3 +8,4 @@ export * from './card.actions';
 export * from './order.actions';
 export * from './branch.actions';
 export * from './setting.actions';
+export * from './lang.actions';

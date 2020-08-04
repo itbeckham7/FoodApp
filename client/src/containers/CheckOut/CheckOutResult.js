@@ -13,9 +13,10 @@ import {
   getOrderInitialValue,
   getOrderError,
   getOrderProcessing,
+  getLangLang,
 } from '../../store/selectors';
-import config from '../../config';
 import {getExtraPrice} from '../../utils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -112,8 +113,12 @@ const styles = (theme) => ({
 class CheckOutResult extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       bags: null,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
   }
 
@@ -130,26 +135,39 @@ class CheckOutResult extends React.Component {
       });
 
       const result = this.props.match.params.result;
-      if (result == 'success') {
+      if (result === 'success') {
         this.props.clearBag(this.props.me.id);
       }
     });
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   render() {
     const { classes, orderInitialValue } = this.props;
-    const { bags } = this.state;
+    const { bags, _t } = this.state;
     const result = this.props.match.params.result;
 
     var totalPrice = 0;
     var currency = '';
-    var itemCounts = 0;
 
     if (bags && bags.length > 0) {
-      itemCounts = bags.length;
       bags.map((bag) => {
         currency = bag.currency;
         totalPrice += (bag.price + getExtraPrice(bag.bagExtras)) * bag.qty;
+        return bag;
       });
     }
 
@@ -163,11 +181,11 @@ class CheckOutResult extends React.Component {
 
     var cardImage = '';
     var cardNumberElem = [];
-    if (orderInitialValue && orderInitialValue.firstName != '') {
-      var cardImage =
-        orderInitialValue.cardType == 'mastercard'
+    if (orderInitialValue && orderInitialValue.firstName !== '') {
+      cardImage =
+        orderInitialValue.cardType === 'mastercard'
           ? '/images/MasterCard_Logo.svg.png'
-          : orderInitialValue.cardType == 'visa'
+          : orderInitialValue.cardType === 'visa'
           ? '/images/visa_PNG30.png'
           : '/images/knet-icon.png';
 
@@ -181,10 +199,10 @@ class CheckOutResult extends React.Component {
     }
 
     var resultImg = '/images/tick-blue.png';
-    var resultText = ' Your confirmation is successful';
-    if (result == 'fail') {
+    var resultText = _t.checkout.confirm_success;
+    if (result === 'fail') {
       resultImg = '/images/Group-3.png';
-      resultText = ' Your confirmation is unsuccessful';
+      resultText = _t.checkout.confirm_unsuccess;
     }
     return (
       <div className={classes.root}>
@@ -196,7 +214,7 @@ class CheckOutResult extends React.Component {
                 variant="h6"
                 className={classes.pageTitleText}
               >
-                CHECK OUT
+                {_t.checkout.check_out}
               </Typography>
             </div>
             <div className={classes.dateSec}>
@@ -205,7 +223,7 @@ class CheckOutResult extends React.Component {
                 variant="h6"
                 className={classes.topDateText}
               >
-                Date:
+                {_t.checkout.date}:
               </Typography>
               <Typography
                 component="span"
@@ -221,7 +239,7 @@ class CheckOutResult extends React.Component {
                 variant="h6"
                 className={classes.topDateText}
               >
-                Total Bill:
+                {_t.checkout.total_bill}:
               </Typography>
               <Typography
                 component="span"
@@ -256,7 +274,7 @@ class CheckOutResult extends React.Component {
             >
               <div className={classes.infoTitleSec}>
                 <span className={classes.paymentStyle}>
-                  <img src={cardImage} />
+                  <img src={cardImage} alt=""/>
                 </span>
                 <Typography
                   component="span"
@@ -273,7 +291,7 @@ class CheckOutResult extends React.Component {
                     padding: '40px',
                   }}
                 >
-                  <img src={resultImg} />
+                  <img src={resultImg} alt=""/>
                   <Typography
                     component="p"
                     variant="h6"
@@ -286,7 +304,7 @@ class CheckOutResult extends React.Component {
             </div>
 
             <div className={classes.checkoutBtnSec}>
-              {result == 'success' && (
+              {result === 'success' && (
                 <Button
                   variant="contained"
                   size="large"
@@ -297,10 +315,10 @@ class CheckOutResult extends React.Component {
                     this.props.history.push('/dashboard/home');
                   }}
                 >
-                  Home
+                  {_t.checkout.home}
                 </Button>
               )}
-              {result == 'fail' && (
+              {result === 'fail' && (
                 <Button
                   variant="contained"
                   size="large"
@@ -311,7 +329,7 @@ class CheckOutResult extends React.Component {
                     this.props.history.push('/dashboard/home');
                   }}
                 >
-                  Try Again
+                  {_t.checkout.try_again}
                 </Button>
               )}
               <Button
@@ -324,7 +342,7 @@ class CheckOutResult extends React.Component {
                   window.history.back();
                 }}
               >
-                Back
+                {_t.checkout.back}
               </Button>
             </div>
           </div>
@@ -343,6 +361,7 @@ const mapStateToProps = (state) => {
     orderInitialValue: getOrderInitialValue(state),
     isProcessingOrder: getOrderProcessing(state),
     errorMessageOrder: getOrderError(state),
+    lang: getLangLang(state),
   };
 };
 

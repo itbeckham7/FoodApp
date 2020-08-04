@@ -1,11 +1,8 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import Slide from '@material-ui/core/Slide';
-import { ChevronRight } from 'mdi-material-ui';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -15,14 +12,12 @@ import {
   getOrderOrder,
   getOrderProcessing,
   getOrderError,
+  getLangLang,
 } from '../../store/selectors';
 import { getOrder } from '../../store/actions';
 import config from '../../config';
-import { getTimeString, getTrans, getExtraPrice } from '../../utils';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import { getTrans, getExtraPrice } from '../../utils';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -181,14 +176,17 @@ const styles = (theme) => ({
 class OrderDetail extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       me: props.me,
       order: null,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr',
     };
   }
 
   componentWillMount() {
-    const { me } = this.props;
     const orderId = this.props.match.params.orderId;
 
     this.props.getOrder(orderId).then(() => {
@@ -202,15 +200,30 @@ class OrderDetail extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr',
+      });
+    }
+  }
+
   renderBags() {
     const { classes } = this.props;
-    const { order } = this.state;
+    const { order, _t } = this.state;
+    var lang = this.props.lang ? this.props.lang.abbr : 'EN';
 
     var bagElems = [];
     if (order && order.bags && order.bags.length > 0) {
       const bags = order.bags;
       bags.map((bag) => {
-        var trans = getTrans(bag.food, 'EN');
+        var trans = getTrans(bag.food, lang);
         bagElems.push(
           <Grid container className={classes.bagElem} key={bag.foodId}>
             <div className={classes.bagElemImageSec}>
@@ -229,14 +242,14 @@ class OrderDetail extends React.Component {
                 variant="h6"
                 className={classes.bagElemTitleSpan}
               >
-                {trans.title}
+                {trans ? trans.title : ''}
               </Typography>
               <Typography
                 component="p"
                 variant="h6"
                 className={classes.bagElemNote}
               >
-                Notes: {bag.note ? bag.note : ''}
+                {_t.bag.notes}: {bag.note ? bag.note : ''}
               </Typography>
             </div>
 
@@ -258,6 +271,8 @@ class OrderDetail extends React.Component {
             </div>
           </Grid>
         );
+
+        return bag
       });
     }
 
@@ -274,7 +289,7 @@ class OrderDetail extends React.Component {
                 padding: '12px 0 30px',
               }}
             >
-              <span className={classes.totalPriceText1}>TOTAL</span>
+              <span className={classes.totalPriceText1}>{_t.bag.total}</span>
               <span className={classes.totalPriceText2}>
                 {order.currency}
                 {order.price}
@@ -288,13 +303,13 @@ class OrderDetail extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { me, order } = this.state;
+    const { order, _t } = this.state;
 
     var cardIcon = '';
     if (order) {
       cardIcon = '/images/MasterCard_Logo.svg.png';
-      if (order.cardType == 'visa') cardIcon = '/images/visa_PNG30.png';
-      else if (order.cardType == 'knet') cardIcon = '/images/knet-icon.png';
+      if (order.cardType === 'visa') cardIcon = '/images/visa_PNG30.png';
+      else if (order.cardType === 'knet') cardIcon = '/images/knet-icon.png';
     }
 
     return (
@@ -306,7 +321,7 @@ class OrderDetail extends React.Component {
               variant="h6"
               className={classes.pageTitle}
             >
-              Order Detail
+              {_t.order.order_detail}
             </Typography>
           </div>
           {order && (
@@ -319,20 +334,20 @@ class OrderDetail extends React.Component {
                     variant="h6"
                     className={classes.paymentTitle}
                   >
-                    Order Information
+                    {_t.order.order_information}
                   </Typography>
                 </div>
                 <div className={classes.paymentInfoElem}>
                   <div className={classes.paymentInfoElemLabel}>
-                    Card Type :
+                    {_t.profile.card_type} :
                   </div>
                   <div className={classes.paymentInfoElemValue}>
-                    <img src={cardIcon} />
+                    <img src={cardIcon} alt=""/>
                   </div>
                 </div>
                 <div className={classes.paymentInfoElem}>
                   <div className={classes.paymentInfoElemLabel}>
-                    Card Number :
+                    {_t.profile.card_number} :
                   </div>
                   <div className={classes.paymentInfoElemValue}>
                     {order.cardNumber}
@@ -340,7 +355,7 @@ class OrderDetail extends React.Component {
                 </div>
                 <div className={classes.paymentInfoElem}>
                   <div className={classes.paymentInfoElemLabel}>
-                    Holder Name :
+                    {_t.profile.holder_name} :
                   </div>
                   <div className={classes.paymentInfoElemValue}>
                     {order.holderName}
@@ -348,7 +363,7 @@ class OrderDetail extends React.Component {
                 </div>
                 <div className={classes.paymentInfoElem} style={{marginTop: '10px'}}>
                   <div className={classes.paymentInfoElemLabel}>
-                    Delivery Style :
+                    {_t.profile.delivery_style} :
                   </div>
                   <div className={classes.paymentInfoElemValue}>
                     {order.deliveryStyle}
@@ -356,7 +371,7 @@ class OrderDetail extends React.Component {
                 </div>
                 <div className={classes.paymentInfoElem} style={{marginTop: '10px'}}>
                   <div className={classes.paymentInfoElemLabel}>
-                    Order Status :
+                    {_t.profile.order_status} :
                   </div>
                   <div className={classes.paymentInfoElemValue}>
                     {order.status}
@@ -371,7 +386,7 @@ class OrderDetail extends React.Component {
                   className={classes.trackBtn}
                   onClick={() => {this.props.history.push(`/profile/ordertrack/${order._id}`)}}
                 >
-                  Track Order
+                  {_t.order.track_order}
                 </Button>
               </div>
             </div>
@@ -389,6 +404,7 @@ const mapStateToProps = (state) => {
     order: getOrderOrder(state),
     isProcessing: getOrderProcessing(state),
     errorMessage: getOrderError(state),
+    lang: getLangLang(state),
   };
 };
 

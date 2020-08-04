@@ -1,9 +1,6 @@
 import React from 'react';
 import Alert from '@material-ui/lab/Alert';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
@@ -11,9 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { Facebook, Google } from 'mdi-material-ui';
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import Languages from './Languages';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -27,11 +22,10 @@ import {
 import {
   getProcessing,
   getError,
-  getSettingSetting,
-  getSettingProcessing,
-  getSettingError,
+  getLangLang,
 } from '../../store/selectors';
 import { email, minLength, required } from '../../utils/formValidator';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -42,7 +36,8 @@ const styles = (theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundImage: 'url(images/signin-bk.png)',
-    backgroundPosition: 'top',
+    backgroundPosition: 'center',
+    backgroundSize: 'auto 100%',
     height: '100%',
     padding: theme.spacing(0, 2),
   },
@@ -61,6 +56,18 @@ const styles = (theme) => ({
     margin: theme.spacing(4, 0, 2),
   },
   logoText: {
+    textAlign: 'center',
+    color: '#fff',
+    marginTop: '7vh',
+    fontSize: '2.3rem',
+  },
+  logoText1: {
+    textAlign: 'center',
+    color: '#fff',
+    marginTop: theme.spacing(1),
+    fontSize: '1.5rem',
+  },
+  title: {
     textAlign: 'center',
     color: '#232020',
     fontSize: '2.5rem',
@@ -91,7 +98,31 @@ const styles = (theme) => ({
 });
 
 class SignIn extends React.Component {
-  
+  constructor(props) {
+    super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      trans: translation[lang],
+    };
+  }
+
+  componentWillUnmount() {
+    this.props.unloadAuthPage();
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (lang === undefined && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        trans: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
+  }
 
   onSubmit = (formValues) => {
     return this.props.signIn(formValues).then(() => {
@@ -125,10 +156,6 @@ class SignIn extends React.Component {
     });
   };
 
-  componentWillUnmount() {
-    this.props.unloadAuthPage();
-  }
-
   renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
     <TextField
       label={label}
@@ -151,21 +178,50 @@ class SignIn extends React.Component {
       submitting,
       valid,
       error,
+      lang
     } = this.props;
+    const { trans } = this.state;
+
+    var direction = lang && lang.abbr === 'AR' ? 'rtl' : 'ltr'
 
     return (
-      <div className={classes.root}>
+      <div className={classes.root} style={{direction: direction}}>
         <CssBaseline />
         <div className={classes.paper}>
-          <Grid container style={{ flex: 1 }}></Grid>
-          <Grid container style={{ flex: 1.5 }}>
-            <Grid xs={12} item>
+          <Grid
+            container
+            style={{
+              flex: 1,
+              textAlign: 'center',
+              marginTop: '16px',
+            }}
+          >
+            <Grid xs={12} item className={classes.logoSec}>
+              <Languages />
               <Typography
                 component="h4"
                 variant="h4"
                 className={classes.logoText}
               >
-                Login
+                {trans.auth.logo}
+              </Typography>
+              <Typography
+                component="h4"
+                variant="h5"
+                className={classes.logoText1}
+              >
+                {trans.auth.food_shop}
+              </Typography>
+            </Grid>
+          </Grid>
+          <Grid container style={{ flex: 1.5 }}>
+            <Grid xs={12} item>
+              <Typography
+                component="h4"
+                variant="h4"
+                className={classes.title}
+              >
+                {trans.auth.login}
               </Typography>
               <form
                 className={classes.form}
@@ -175,7 +231,7 @@ class SignIn extends React.Component {
                   <Grid item xs={12} className={classes.inputElem}>
                     <Field
                       id="email"
-                      label="Email Address"
+                      label={trans.auth.email_address}
                       name="email"
                       autoComplete="email"
                       component={this.renderTextField}
@@ -184,7 +240,7 @@ class SignIn extends React.Component {
                   <Grid item xs={12} className={classes.inputElem}>
                     <Field
                       name="password"
-                      label="Password"
+                      label={trans.auth.password}
                       type="password"
                       id="password"
                       autoComplete="current-password"
@@ -200,17 +256,17 @@ class SignIn extends React.Component {
                   type="submit"
                   variant="contained"
                 >
-                  Submit
+                  {trans.auth.submit}
                 </Button>
                 <Grid container>
                   <Grid xs={12} item className={classes.textLink}>
-                    <span>Don't have a account? </span>
+                    <span>{trans.auth.dont_have_account}</span>
                     <Link
                       className={classes.textLinkLink}
                       href="/signup"
                       variant="body2"
                     >
-                      Sign up
+                      {trans.auth.sign_up}
                     </Link>
                   </Grid>
                 </Grid>
@@ -226,11 +282,11 @@ class SignIn extends React.Component {
               severity="error"
               action={
                 <Link href="/request-verification-email" variant="body2">
-                  Click here
+                  {trans.auth.click_here}
                 </Link>
               }
             >
-              Email is not verified. Have not received verification email?
+              {trans.auth.email_is_not_verified}
             </Alert>
           )}
         </Snackbar>
@@ -242,6 +298,7 @@ const mapStateToProps = (state) => {
   return {
     isProcessing: getProcessing(state),
     errorMessage: getError(state),
+    lang: getLangLang(state),
   };
 };
 

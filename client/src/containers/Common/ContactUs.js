@@ -8,7 +8,9 @@ import {
   getBagProcessing,
   getBagError,
   getCurrentUser,
+  getLangLang
 } from '../../store/selectors';
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -92,7 +94,32 @@ const styles = (theme) => ({
   },
 });
 
-class AboutUs extends React.Component {
+class ContactUs extends React.Component {
+
+  constructor(props) {
+    super();
+    
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
+    this.state = {
+      _t: translation[lang],
+    };
+  }
+
+  componentWillMount() {
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+      });
+    }
+  }
 
   renderContactInfo() {
     const { classes } = this.props;
@@ -107,13 +134,13 @@ class AboutUs extends React.Component {
             </Typography>
           </Grid>
           <Grid xs={4} item className={classes.contactElemText} style={{borderLeft: '1px solid #E5293E', borderRight: '1px solid #E5293E'}}>
-            <img src="/images/phone-solid.png" className={classes.contactElemImage}/>
+            <img src="/images/phone-solid.png" className={classes.contactElemImage} alt=""/>
             <Typography component="span" className={classes.contactElemText}>
               KUWAIT
             </Typography>
           </Grid>
           <Grid xs={4} item className={classes.contactElemText}>
-            <img src="/images/map-marker-alt-solid.png" className={classes.contactElemImage}/>
+            <img src="/images/map-marker-alt-solid.png" className={classes.contactElemImage} alt=""/>
             <Typography component="span" className={classes.contactElemText}>
               KUWAIT
             </Typography>
@@ -129,6 +156,7 @@ class AboutUs extends React.Component {
     const {
       classes,
     } = this.props;
+    const { _t } = this.state;
 
     return (
       <div className={classes.root}>
@@ -140,7 +168,7 @@ class AboutUs extends React.Component {
                 variant="h6"
                 className={classes.pageTitleText}
               >
-                Contact Us
+                {_t.common.contact_us}
               </Typography>
             </div>
             <div
@@ -166,7 +194,7 @@ class AboutUs extends React.Component {
               }}
             >
               <div className={classes.infoTitleSec}>
-                <img src="/images/Online-world-pana.png" />
+                <img src="/images/Online-world-pana.png" alt=""/>
               </div>
               <div className={classes.infoContentSec}>
                 {this.renderContactInfo()}
@@ -184,10 +212,11 @@ const mapStateToProps = (state) => {
     isProcessing: getBagProcessing(state),
     errorMessage: getBagError(state),
     me: getCurrentUser(state),
+    lang: getLangLang(state),
   };
 };
 
 export default compose(
   connect(mapStateToProps, {}),
   withStyles(styles)
-)(AboutUs);
+)(ContactUs);

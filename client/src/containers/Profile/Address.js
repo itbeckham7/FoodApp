@@ -2,7 +2,6 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
 import AddAddressModal from './AddAddressModal';
 import UpdateAddressModal from './UpdateAddressModal';
 import csc from 'country-state-city';
@@ -13,9 +12,8 @@ import {
   getCurrentUser,
   getSignedInWith,
   getAddressAddresses,
-  getAddressProcessing,
-  getAddressError,
   getAddressActiveAddress,
+  getLangLang
 } from '../../store/selectors';
 import {
   updateProfile,
@@ -25,10 +23,7 @@ import {
   getActiveAddress,
   changeAddressInitialValues,
 } from '../../store/actions';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import * as translation from '../../trans';
 
 const styles = (theme) => ({
   root: {
@@ -118,12 +113,16 @@ const styles = (theme) => ({
 class Address extends React.Component {
   constructor(props) {
     super();
+
+    var lang = props.lang ? props.lang.abbr.toLowerCase() : 'en';
     this.state = {
       me: props.me,
       addresses: null,
       selectAddress: null,
       isVisibleAddAddressDlg: false,
       isVisibleUpdateAddressDlg: false,
+      _t: translation[lang],
+      direction: lang === 'ar' ? 'rtl' : 'ltr'
     };
 
     this.activeAddress = this.activeAddress.bind(this);
@@ -146,6 +145,20 @@ class Address extends React.Component {
       var addresses = this.props.addresses;
       this.setState({ addresses });
     });
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    const { lang } = this.props;
+
+    if (
+      (!lang && nextProps.lang) ||
+      (lang && nextProps.lang && lang.abbr !== nextProps.lang.abbr)
+    ) {
+      this.setState({
+        _t: translation[nextProps.lang.abbr.toLowerCase()],
+        direction: nextProps.lang.abbr === 'AR' ? 'rtl' : 'ltr'
+      });
+    }
   }
 
   closeAddAddressDlg() {
@@ -193,7 +206,7 @@ class Address extends React.Component {
 
   renderAddresses() {
     const { classes } = this.props;
-    const { addresses } = this.state;
+    const { addresses, _t } = this.state;
     
     if (addresses && addresses.length > 0) {
       var addressElems = [];
@@ -222,17 +235,19 @@ class Address extends React.Component {
                 aria-label="active address"
                 onClick={this.activeAddress.bind(this, address._id)}
               >
-                <img src={checkImage} />
+                <img src={checkImage} alt=""/>
               </IconButton>
             </div>
           </div>
         );
+
+        return address;
       });
       return <div>{addressElems}</div>;
     } else {
       return (
         <div className={classes.noAddress}>
-          There are no addresses. Please add new address.
+          {_t.profile.no_address}
         </div>
       );
     }
@@ -245,10 +260,10 @@ class Address extends React.Component {
   render() {
     const { classes } = this.props;
     const {
-      me,
       isVisibleAddAddressDlg,
       isVisibleUpdateAddressDlg,
       selectAddress,
+      _t
     } = this.state;
 
     return (
@@ -260,7 +275,7 @@ class Address extends React.Component {
               variant="h6"
               className={classes.pageTitle}
             >
-              Shipping Address
+              {_t.profile.shipping_address}
             </Typography>
           </div>
           <div className={classes.mainSec}>
@@ -282,7 +297,7 @@ class Address extends React.Component {
               this.setState({ isVisibleAddAddressDlg: true });
             }}
           >
-            New Address
+            {_t.profile.new_address}
           </Button>
           {isVisibleAddAddressDlg && (
             <AddAddressModal
@@ -309,6 +324,7 @@ const mapStateToProps = (state) => {
     authProvider: getSignedInWith(state),
     addresses: getAddressAddresses(state),
     activeAddress: getAddressActiveAddress(state),
+    lang: getLangLang(state),
   };
 };
 

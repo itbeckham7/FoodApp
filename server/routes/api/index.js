@@ -13,6 +13,7 @@ const addressesRoutes = require('./addresses.route');
 const cardsRoutes = require('./cards.route');
 const ordersRoutes = require('./orders.route');
 const settingsRoutes = require('./settings.route');
+const languagesRoutes = require('./languages.route');
 
 const router = express.Router();
 
@@ -34,5 +35,6 @@ router.use('/addresses', addressesRoutes);
 router.use('/cards', cardsRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/languages', languagesRoutes);
 
 module.exports = router;
